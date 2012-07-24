@@ -1,0 +1,6 @@
+C:\dev\SalsaSpike\Importer\bin\Debug\Importer.exe.config
+C:\dev\SalsaSpike\Importer\bin\Debug\Importer.exe
+C:\dev\SalsaSpike\Importer\bin\Debug\Importer.pdb
+C:\dev\SalsaSpike\Importer\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\dev\SalsaSpike\Importer\obj\x86\Debug\Importer.exe
+C:\dev\SalsaSpike\Importer\obj\x86\Debug\Importer.pdb
