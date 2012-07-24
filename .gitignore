@@ -1,3 +1,9 @@
 SalsaImporter.5.1.ReSharper.user
 SalsaImporter.*.suo
 _ReSharper.*
+SalsaImporter.sln.DotSettings.user
+
+SalsaImporter/bin/
+SalsaImporterTests/bin/
+SalsaImporter/obj/
+SalsaImporterTests/obj/

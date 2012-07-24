@@ -13,8 +13,7 @@ namespace SalsaImporter
     {
         static void Main(string[] args)
         {
-            ServicePointManager.DefaultConnectionLimit = 50;
-            System.Net.ServicePointManager.Expect100Continue = false;
+            
             var client = new SalsaClient();
             client.AuthenticateUser();
             var start = DateTime.Now;
