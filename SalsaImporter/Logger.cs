@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Importer
+namespace SalsaImporter
 {
     public class Logger
     {

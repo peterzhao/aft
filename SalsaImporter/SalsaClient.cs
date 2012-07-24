@@ -7,7 +7,7 @@ using System.Net;
 using System.Security.Policy;
 using System.Text;
 
-namespace Importer
+namespace SalsaImporter
 {
     public class SalsaClient
     {
