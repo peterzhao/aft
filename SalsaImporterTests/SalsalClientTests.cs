@@ -11,13 +11,22 @@ namespace SalsaImporterTests
         public void SetUp()
         {
             client = new SalsaClient();
-            client.AuthenticateUser();
+            client.Authenticate();
         }
+
+
         [Test]
         public void ShouldGetSupporters()
         {
             var response = client.PullObejcts();
             Assert.IsNotNullOrEmpty(response);
+        }
+
+        [Test]
+        public void ShouldGetCountOfSupporters()
+        {
+            var count = client.Count();
+            Assert.Greater(0, count);
         }
     }
 }

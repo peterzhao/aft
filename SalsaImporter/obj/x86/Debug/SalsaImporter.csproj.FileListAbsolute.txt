@@ -1,5 +1,0 @@
-c:\Users\developer\projects\aft\SalsaImporter\bin\Debug\SalsaImporter.exe.config
-c:\Users\developer\projects\aft\SalsaImporter\bin\Debug\SalsaImporter.exe
-c:\Users\developer\projects\aft\SalsaImporter\bin\Debug\SalsaImporter.pdb
-c:\Users\developer\projects\aft\SalsaImporter\obj\x86\Debug\SalsaImporter.exe
-c:\Users\developer\projects\aft\SalsaImporter\obj\x86\Debug\SalsaImporter.pdb

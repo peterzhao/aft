@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Text;
+using System.Xml.Linq;
 
 namespace SalsaImporter
 {
@@ -16,10 +18,10 @@ namespace SalsaImporter
             ServicePointManager.Expect100Continue = false;
         }
 
-        public void AuthenticateUser()
+        public void Authenticate()
         {
             Logger.Debug("authenticating...");
-            string url = ConfigurationManager.AppSettings["authenticationUrl"];
+            string url = ConfigurationManager.AppSettings["salsaApiUrl"];
             string username = ConfigurationManager.AppSettings["salsaUserName"];
             string password = ConfigurationManager.AppSettings["salsaPassword"];
             WebRequest authenticate =
@@ -36,7 +38,7 @@ namespace SalsaImporter
         {
             Logger.Debug("Pulling objects...");
             var webRequest = new ExtentedWebClient(cookies, 30000);
-            string url = ConfigurationManager.AppSettings["authenticationUrl"] + "api/getObjects.sjs?object=supporter";
+            string url = ConfigurationManager.AppSettings["salsaApiUrl"] + "api/getObjects.sjs?object=supporter";
             string response = webRequest.DownloadString(url);
             Logger.Debug("response from PulObjects: " + response);
             return response;
@@ -48,10 +50,25 @@ namespace SalsaImporter
             {
                 Logger.Debug("Pushing Objects...");
 
-                string url = ConfigurationManager.AppSettings["authenticationUrl"] + "save";
+                string url = ConfigurationManager.AppSettings["salsaApiUrl"] + "save";
                 byte[] result = client.UploadValues(url, "POST", nameValues);
                 string response = Encoding.UTF8.GetString(result);
                 Logger.Debug("response: " + response);
+            }
+        }
+
+        public int Count()
+        {
+            using (var client = new ExtentedWebClient(cookies, 3000))
+            {
+                Logger.Debug("Counting Objects...");
+
+                string url = ConfigurationManager.AppSettings["salsaApiUrl"] + "api/getCount.sjs?object=supporter&countColumn=supporter_KEY";
+                string result = client.DownloadString(url);
+                Logger.Debug("response: " + result);
+                var xml = XDocument.Parse(result);
+                var value = xml.Descendants("count").First().Value;
+                return int.Parse(value);
             }
         }
     }

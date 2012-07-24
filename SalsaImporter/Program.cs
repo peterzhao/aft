@@ -15,7 +15,7 @@ namespace SalsaImporter
         {
             
             var client = new SalsaClient();
-            client.AuthenticateUser();
+            client.Authenticate();
             var start = DateTime.Now;
             var tasks = new List<Task>();
            
