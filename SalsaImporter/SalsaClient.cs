@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
@@ -44,6 +45,26 @@ namespace SalsaImporter
             return response;
         }
 
+        public void PullSupporters(Action<List<XElement>> batchHandler)
+        {
+            int start = 0;
+            while(true)
+            {
+                Logger.Debug("Pulling objects... start: " + start);
+                var webRequest = new ExtentedWebClient(cookies, 30000);
+                string url =  String.Format("{0}api/getObjects.sjs?object=supporter&condition=supporter_KEY>{1}&limit=500&orderBy=supporter_KEY",
+                    ConfigurationManager.AppSettings["salsaApiUrl"], start);
+                string response = webRequest.DownloadString(url);
+                //Logger.Debug("response from PulObjects: " + response);
+                var supporters = XDocument.Parse(response).Descendants("item").ToList();
+                start = int.Parse(supporters.Last().Element("supporter_KEY").Value);
+                batchHandler(supporters);
+                if (supporters.Count < 500) return;
+                if (start == 0) throw new ApplicationException("Wrong response from server");
+                
+            }
+        }
+
         public void PushObject(NameValueCollection nameValues)
         {
             using (var client = new ExtentedWebClient(cookies, 3000))
@@ -63,11 +84,12 @@ namespace SalsaImporter
             {
                 Logger.Debug("Counting Objects...");
 
-                string url = ConfigurationManager.AppSettings["salsaApiUrl"] + "api/getCount.sjs?object=supporter&countColumn=supporter_KEY";
+                string url = ConfigurationManager.AppSettings["salsaApiUrl"] +
+                             "api/getCount.sjs?object=supporter&countColumn=supporter_KEY";
                 string result = client.DownloadString(url);
                 Logger.Debug("response: " + result);
-                var xml = XDocument.Parse(result);
-                var value = xml.Descendants("count").First().Value;
+                XDocument xml = XDocument.Parse(result);
+                string value = xml.Descendants("count").First().Value;
                 return int.Parse(value);
             }
         }
