@@ -25,8 +25,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldGetCountOfSupporters()
         {
-            var count = client.Count();
-            Assert.Greater(0, count);
+            Assert.Greater(client.Count(), 0);
         }
     }
 }
