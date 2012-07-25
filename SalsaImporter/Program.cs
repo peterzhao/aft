@@ -25,19 +25,18 @@ namespace SalsaImporter
                 tasks.Add(Task.Factory.StartNew(wk =>
                 {
                     var nameValues = new NameValueCollection();
-                    nameValues.Add("xml", "");
                     nameValues.Add("object", "supporter");
                     nameValues.Add("Email", "mike" + i + "@abc.com");
                     nameValues.Add("key", "0");
                     nameValues.Add("First_Name", "Mike" + i);
                     nameValues.Add("Last_Name", "Handsome" + i);
-                    client.PushObject(nameValues);
+                    client.SaveSupporter(nameValues);
                 }, null));
                
             }
             Task.WaitAll(tasks.ToArray());
             var pushEnd = DateTime.Now;
-            client.PullObejcts();
+            client.PullObjects();
             var pullEnd = DateTime.Now;
 
             Console.WriteLine("Push spent(ms):" + (pushEnd - start).TotalMilliseconds);
