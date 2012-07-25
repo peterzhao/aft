@@ -26,12 +26,7 @@ namespace SalsaImporterTests
             Assert.AreEqual(0, client.Count());
         }
 
-        [Test]
-        public void ShouldGetSupporters()
-        {
-            var response = client.PullObjects();
-            Assert.IsNotNullOrEmpty(response);
-        }
+      
 
         [Test]
         public void ShouldGetSupporterById()

@@ -38,15 +38,7 @@ namespace SalsaImporter
         }
 
 
-        public string PullObjects()
-        {
-            Logger.Debug("Pulling objects...");
-            var webRequest = new ExtentedWebClient(cookies, 30000);
-            string url = salsaUrl + "api/getObjects.sjs?object=supporter";
-            string response = webRequest.DownloadString(url);
-            Logger.Debug("response from PulObjects: " + response);
-            return response;
-        }
+      
 
         public void GetSupporters(Action<List<XElement>> batchHandler, int limit)
         {
@@ -85,22 +77,7 @@ namespace SalsaImporter
             return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
         }
 
-        private string InvokeActionOnSubscriber(NameValueCollection data, string action)
-        {
-            string response;
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug("Pushing Objects...");
-                data.Add("xml", "");
-                data.Add("object", "supporter");
-
-                string url = salsaUrl + action;
-                byte[] result = client.UploadValues(url, "POST", data);
-                response = Encoding.UTF8.GetString(result);
-                Logger.Debug("response: " + response);
-            }
-            return response;
-        }
+       
 
         public int Count()
         {
@@ -155,6 +132,23 @@ namespace SalsaImporter
         {
             GetSupporters(
                 supporters => DeleteSupporters(supporters.Select(s => s.Element("supporter_KEY").Value)), 500);
+        }
+
+        private string InvokeActionOnSubscriber(NameValueCollection data, string action)
+        {
+            string response;
+            using (var client = new ExtentedWebClient(cookies, 3000))
+            {
+                Logger.Debug("Pushing Objects...");
+                data.Add("xml", "");
+                data.Add("object", "supporter");
+
+                string url = salsaUrl + action;
+                byte[] result = client.UploadValues(url, "POST", data);
+                response = Encoding.UTF8.GetString(result);
+                Logger.Debug("response: " + response);
+            }
+            return response;
         }
     }
 }
