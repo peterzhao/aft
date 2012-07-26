@@ -36,6 +36,7 @@ namespace SalsaImporterTests
             XElement support = client.GetSupporter(id);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
+            Assert.AreEqual("AFTTESTING", support.Element("data_sourse").Value);
         }
 
         [Test]
@@ -148,7 +149,8 @@ namespace SalsaImporterTests
                            {"Email", firstName + "@abc.com"},
                            {"key", "0"},
                            {"First_Name", firstName},
-                           {"Last_Name", "Testing"}
+                           {"Last_Name", "Testing"},
+                           {"data_sourse", "AFTTESTING"}
                        };
         }
     }
