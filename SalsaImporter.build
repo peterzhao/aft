@@ -34,7 +34,7 @@
     <Error Text="Missing or invalid value specified for the NUnitDirectory property"
       Condition="$(UnitTestProject) != '' And !Exists('$(NUnitDirectory)')" />
    
-    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll" 
+    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest" 
     WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
   </Target> 
   
