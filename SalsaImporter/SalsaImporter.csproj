@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aft\AftDbContext.cs" />
+    <Compile Include="Aft\Supporter.cs" />
+    <Compile Include="Aft\SupporterMapper.cs" />
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>
     </Compile>

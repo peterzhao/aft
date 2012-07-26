@@ -1,0 +1,138 @@
+﻿using System;
+using System.Collections.Specialized;
+using NUnit.Framework;
+using SalsaImporter.Aft;
+
+namespace SalsaImporterTests.Aft
+{
+    [TestFixture]
+    public class SupporterMapperTests
+    {
+        [Test]
+        public void ShouldMapToNameValues()
+        {
+            var supporter = new Supporter
+                                {
+                                    Id = 456,
+                                    supporter_KEY = 123456,
+                                    Last_Modified = new DateTime(2012, 3, 15),
+                                    Date_Created = new DateTime(2012, 3, 16),
+                                    Title = "myTitle",
+                                    First_Name = "Tom",
+                                    MI = "MI",
+                                    Last_Name = "Alex",
+                                    Suffix = "Mr.",
+                                    Email = "ATom@abc.com",
+                                    Password = "password",
+                                    Receive_Email = -9,
+                                    Email_Preference = "HTML",
+                                    Last_Bounce = new DateTime(2012, 5, 13),
+                                    Receive_Phone_Blasts = 8,
+                                    Phone = "14168805783",
+                                    Cell_Phone = "16473451234",
+                                    Phone_Provider = "Bell",
+                                    Work_Phone = "16472911234",
+                                    Pager = "14163456789",
+                                    Home_Fax = "14168906789",
+                                    Work_Fax = "14168903456",
+                                    Street = "100 Main Street",
+                                    Street_2 = "Apt 100",
+                                    Street_3 = "Suit 201",
+                                    City = "Toronto",
+                                    State = "ON",
+                                    Zip = "M2B 2C9",
+                                    PRIVATE_Zip_Plus_4 = "",
+                                    County = "Woods",
+                                    District = "NA",
+                                    Country = "Canada",
+                                    Latitude = 57.34f,
+                                    Longitude = 104.24f,
+                                    Organization = "AFT",
+                                    Department = "Accounting",
+                                    Occupation = "Teacher",
+                                    Instant_Messenger_Service = "YAHOO",
+                                    Instant_Messenger_Name = "atom@yahoo.com",
+                                    Web_Page = "http://www.atom.com",
+                                    Alternative_Email = "atom@gmail.com",
+                                    Other_Data_1 = "data1",
+                                    Other_Data_2 = "data2",
+                                    Other_Data_3 = "data3",
+                                    Notes = "my notes",
+                                    Source = "AFTTesting",
+                                    Source_Details = "AFT NA",
+                                    Source_Tracking_Code = "03",
+                                    Tracking_Code = "001",
+                                    Status = "Active",
+                                    uid = "adefesdf",
+                                    Timezone = "",
+                                    Language_Code = "en"
+                                };
+            NameValueCollection nameValues = new SupporterMapper().ToNameValues(supporter);
+
+            Assert.AreEqual(nameValues["aft_id"], "456");
+            Assert.AreEqual(nameValues["supporter_KEY"], "123456");
+            Assert.IsNull(nameValues["Id"]);
+            Assert.IsNull(nameValues["Last_Modified"]);
+            Assert.IsNull(nameValues["Date_Created"]);
+            Assert.AreEqual(nameValues["Title"], "myTitle");
+            Assert.AreEqual(nameValues["First_Name"], "Tom");
+            Assert.AreEqual(nameValues["MI"], "MI");
+            Assert.AreEqual(nameValues["Last_Name"], "Alex");
+            Assert.AreEqual(nameValues["Suffix"], "Mr.");
+            Assert.AreEqual(nameValues["Email"], "ATom@abc.com");
+            Assert.AreEqual(nameValues["Password"], "password");
+            Assert.AreEqual(nameValues["Receive_Email"], "-9");
+            Assert.AreEqual(nameValues["Email_Preference"], "HTML");
+            Assert.IsNull(nameValues["Last_Bounce"]);
+            Assert.AreEqual(nameValues["Receive_Phone_Blasts"], "8");
+            Assert.AreEqual(nameValues["Phone"], "14168805783");
+            Assert.AreEqual(nameValues["Cell_Phone"], "16473451234");
+            Assert.AreEqual(nameValues["Phone_Provider"], "Bell");
+            Assert.AreEqual(nameValues["Work_Phone"], "16472911234");
+            Assert.AreEqual(nameValues["Pager"], "14163456789");
+            Assert.AreEqual(nameValues["Home_Fax"], "14168906789");
+            Assert.AreEqual(nameValues["Work_Fax"], "14168903456");
+            Assert.AreEqual(nameValues["Street"], "100 Main Street");
+            Assert.AreEqual(nameValues["Street_2"], "Apt 100");
+            Assert.AreEqual(nameValues["Street_3"], "Suit 201");
+            Assert.AreEqual(nameValues["City"], "Toronto");
+            Assert.AreEqual(nameValues["State"], "ON");
+            Assert.AreEqual(nameValues["Zip"], "M2B 2C9");
+            Assert.AreEqual(nameValues["PRIVATE_Zip_Plus_4"], "");
+            Assert.AreEqual(nameValues["County"], "Woods");
+            Assert.AreEqual(nameValues["District"], "NA");
+            Assert.AreEqual(nameValues["Country"], "Canada");
+            Assert.AreEqual(nameValues["Latitude"], "57.34");
+            Assert.AreEqual(nameValues["Longitude"], "104.24");
+            Assert.AreEqual(nameValues["Organization"], "AFT");
+            Assert.AreEqual(nameValues["Department"], "Accounting");
+            Assert.AreEqual(nameValues["Occupation"], "Teacher");
+            Assert.AreEqual(nameValues["Instant_Messenger_Service"], "YAHOO");
+            Assert.AreEqual(nameValues["Instant_Messenger_Name"], "atom@yahoo.com");
+            Assert.AreEqual(nameValues["Web_Page"], "http://www.atom.com");
+            Assert.AreEqual(nameValues["Alternative_Email"], "atom@gmail.com");
+            Assert.AreEqual(nameValues["Other_Data_1"], "data1");
+            Assert.AreEqual(nameValues["Other_Data_2"], "data2");
+            Assert.AreEqual(nameValues["Other_Data_3"], "data3");
+            Assert.AreEqual(nameValues["Notes"], "my notes");
+            Assert.AreEqual(nameValues["Source"], "AFTTesting");
+            Assert.AreEqual(nameValues["Source_Details"], "AFT NA");
+            Assert.AreEqual(nameValues["Source_Tracking_Code"], "03");
+            Assert.AreEqual(nameValues["Tracking_Code"], "001");
+            Assert.AreEqual(nameValues["Status"], "Active");
+            Assert.AreEqual(nameValues["uid"], "adefesdf");
+            Assert.AreEqual(nameValues["Timezone"], "");
+            Assert.AreEqual(nameValues["Language_Code"], "en");
+        }
+
+        [Test]
+        public void ShouldMapToNameValuesWithoutNullValue()
+        {
+            var supporter = new Supporter {Id = 3456, Email = "jim@abc.com"};
+            var nameValues = new SupporterMapper().ToNameValues(supporter);
+            Assert.AreEqual(nameValues["Email"], "jim@abc.com");
+            Assert.AreEqual(2, nameValues.Keys.Count);
+        }
+
+    }
+}
