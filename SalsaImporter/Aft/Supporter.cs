@@ -57,7 +57,30 @@ namespace SalsaImporter.Aft
         public string uid { get; set; }
         public string Timezone { get; set; }
         public string Language_Code { get; set; }
-
-        
+        public string CustomString0 { get; set; }
+        public string CustomString1 { get; set; }
+        public string CustomString2 { get; set; }
+        public string CustomString3 { get; set; }
+        public string CustomString4 { get; set; }
+        public string CustomString5 { get; set; }
+        public string CustomString6 { get; set; }
+        public string CustomString7 { get; set; }
+        public string CustomString8 { get; set; }
+        public string CustomString9 { get; set; }
+        public int? CustomInteger0 { get; set; }       
+        public int? CustomInteger1 { get; set; }       
+        public int? CustomInteger2 { get; set; }       
+        public int? CustomInteger3 { get; set; }       
+        public int? CustomInteger4 { get; set; }
+        public bool? CustomBoolean0 { get; set; }
+        public bool? CustomBoolean1 { get; set; }
+        public bool? CustomBoolean2 { get; set; }
+        public bool? CustomBoolean3 { get; set; }
+        public bool? CustomBoolean4 { get; set; }
+        public bool? CustomBoolean5 { get; set; }
+        public bool? CustomBoolean6 { get; set; }
+        public bool? CustomBoolean7 { get; set; }
+        public bool? CustomBoolean8 { get; set; }
+        public bool? CustomBoolean9 { get; set; }
     }
 }

@@ -65,7 +65,9 @@ namespace SalsaImporterTests.Aft
                                     Status = "Active",
                                     uid = "adefesdf",
                                     Timezone = "",
-                                    Language_Code = "en"
+                                    Language_Code = "en",
+                                    CustomBoolean0 = true,
+                                    CustomBoolean1 = false
                                 };
             var nameValues = new SupporterMapper().ToNameValues(supporter);
 
@@ -122,6 +124,9 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(nameValues["uid"], "adefesdf");
             Assert.AreEqual(nameValues["Timezone"], "");
             Assert.AreEqual(nameValues["Language_Code"], "en");
+            Assert.AreEqual(nameValues["CustomBoolean0"], "True");
+            Assert.AreEqual(nameValues["CustomBoolean1"], "False");
+            
         }
 
         [Test]

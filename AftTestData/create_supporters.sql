@@ -1,5 +1,5 @@
---DROP TABLE [dbo].[Subscribers]
-CREATE TABLE [dbo].[Subscribers]
+--DROP TABLE [dbo].[Supporters]
+CREATE TABLE [dbo].[Supporters]
 (
   [Id] INT NOT NULL PRIMARY KEY IDENTITY
 , [AFT_Created] DATETIME2 NOT NULL DEFAULT GETDATE()
