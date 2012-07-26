@@ -15,10 +15,10 @@ namespace SalsaImporter.Aft
         public string Suffix { get; set; }
         public string Email { get; set; }
         //public string Password { get; set; }
-        public int? Receive_Email { get; set; } //tinyint	YES	1	
+        //public int? Receive_Email { get; set; } //tinyint	YES	1	
         public string Email_Preference { get; set; } //	HTML Email	
         public DateTime? Last_Bounce { get; set; }
-        public int? Receive_Phone_Blasts { get; set; } //tinyint	
+        //public int? Receive_Phone_Blasts { get; set; } //tinyint	
         public string Phone { get; set; }
         public string Cell_Phone { get; set; }
         public string Phone_Provider { get; set; }

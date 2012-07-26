@@ -23,10 +23,10 @@ namespace SalsaImporterTests.Aft
                                     Last_Name = "Alex",
                                     Suffix = "Mr.",
                                     Email = "ATom@abc.com",
-                                    Receive_Email = -9,
+                                    //Receive_Email = -9,
                                     Email_Preference = "HTML",
                                     Last_Bounce = new DateTime(2012, 5, 13),
-                                    Receive_Phone_Blasts = 8,
+                                    //Receive_Phone_Blasts = 8,
                                     Phone = "14168805783",
                                     Cell_Phone = "16473451234",
                                     Phone_Provider = "Bell",
@@ -79,8 +79,8 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(nameValues["Last_Name"], "Alex");
             Assert.AreEqual(nameValues["Suffix"], "Mr.");
             Assert.AreEqual(nameValues["Email"], "ATom@abc.com");
-            Assert.AreEqual(nameValues["Receive_Email"], "-9");
-            Assert.AreEqual(nameValues["Email_Preference"], "HTML");
+            //Assert.AreEqual(nameValues["Receive_Email"], "-9");
+            //Assert.AreEqual(nameValues["Email_Preference"], "HTML");
             Assert.IsNull(nameValues["Last_Bounce"]);
             Assert.AreEqual(nameValues["Receive_Phone_Blasts"], "8");
             Assert.AreEqual(nameValues["Phone"], "14168805783");
