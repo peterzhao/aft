@@ -8,7 +8,7 @@ namespace SalsaImporter.Aft
 {
     public class SupporterMapper
     {
-        readonly string[] ignoredFields = new []{"Last_Modified", "Date_Created", "Last_Bounce", "Id"};
+        readonly string[] ignoredFields = new[] { "Last_Modified", "Date_Created", "Last_Bounce", "Id", "Source_Tracking_Code" };
         public NameValueCollection ToNameValues(Supporter supporter)
         {
             var result = new NameValueCollection();
@@ -21,7 +21,7 @@ namespace SalsaImporter.Aft
                         result.Add(property.Name, value.ToString());
                 }
             }
-            result.Add("aft_id", supporter.Id.ToString());
+            result.Add("Source_Tracking_Code", supporter.Id.ToString());
             return result;
         }
     }

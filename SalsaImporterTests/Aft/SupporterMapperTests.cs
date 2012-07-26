@@ -67,9 +67,8 @@ namespace SalsaImporterTests.Aft
                                     Timezone = "",
                                     Language_Code = "en"
                                 };
-            NameValueCollection nameValues = new SupporterMapper().ToNameValues(supporter);
+            var nameValues = new SupporterMapper().ToNameValues(supporter);
 
-            Assert.AreEqual(nameValues["aft_id"], "456");
             Assert.AreEqual(nameValues["supporter_KEY"], "123456");
             Assert.IsNull(nameValues["Id"]);
             Assert.IsNull(nameValues["Last_Modified"]);
@@ -117,7 +116,7 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(nameValues["Notes"], "my notes");
             Assert.AreEqual(nameValues["Source"], "AFTTesting");
             Assert.AreEqual(nameValues["Source_Details"], "AFT NA");
-            Assert.AreEqual(nameValues["Source_Tracking_Code"], "03");
+            Assert.AreEqual(nameValues["Source_Tracking_Code"], "456");
             Assert.AreEqual(nameValues["Tracking_Code"], "001");
             Assert.AreEqual(nameValues["Status"], "Active");
             Assert.AreEqual(nameValues["uid"], "adefesdf");
