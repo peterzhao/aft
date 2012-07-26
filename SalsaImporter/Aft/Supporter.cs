@@ -14,7 +14,7 @@ namespace SalsaImporter.Aft
         public string Last_Name { get; set; }
         public string Suffix { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+        //public string Password { get; set; }
         public int? Receive_Email { get; set; } //tinyint	YES	1	
         public string Email_Preference { get; set; } //	HTML Email	
         public DateTime? Last_Bounce { get; set; }

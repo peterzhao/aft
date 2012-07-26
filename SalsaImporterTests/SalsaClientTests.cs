@@ -26,6 +26,15 @@ namespace SalsaImporterTests
             Assert.AreEqual(0, client.Count());
         }
 
+        [Test]
+        public void ShouldGetSupportersEventhoughHavingNoSupporters()
+        {
+            client.DeleteAllSupporters();
+            var actualTimes = 0;
+            Action<List<XElement>> action = supports => actualTimes += 1;
+            client.GetSupporters(action, 500);
+            Assert.AreEqual(0, actualTimes);
+        }
       
 
         [Test]
@@ -36,7 +45,6 @@ namespace SalsaImporterTests
             XElement support = client.GetSupporter(id);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
-            Assert.AreEqual("AFTTESTING", support.Element("data_sourse").Value);
         }
 
         [Test]
@@ -89,9 +97,12 @@ namespace SalsaImporterTests
                 supporters.Add(GenerateSupporter());
             
             client.SaveSupporters(supporters);
-            
+
             foreach (var supporter in supporters)
-                Assert.IsTrue(DoesSupporterExist(supporter.Get("supporter_KEY")));
+            {
+                var id = supporter.Get("supporter_KEY");
+                Assert.IsTrue(DoesSupporterExist(id));
+            }
         }
 
         [Test]
@@ -149,8 +160,7 @@ namespace SalsaImporterTests
                            {"Email", firstName + "@abc.com"},
                            {"key", "0"},
                            {"First_Name", firstName},
-                           {"Last_Name", "Testing"},
-                           {"data_sourse", "AFTTESTING"}
+                           {"Last_Name", "Testing"}
                        };
         }
     }

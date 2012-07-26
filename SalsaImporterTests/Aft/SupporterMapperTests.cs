@@ -23,7 +23,6 @@ namespace SalsaImporterTests.Aft
                                     Last_Name = "Alex",
                                     Suffix = "Mr.",
                                     Email = "ATom@abc.com",
-                                    Password = "password",
                                     Receive_Email = -9,
                                     Email_Preference = "HTML",
                                     Last_Bounce = new DateTime(2012, 5, 13),
@@ -63,7 +62,6 @@ namespace SalsaImporterTests.Aft
                                     Source_Tracking_Code = "03",
                                     Tracking_Code = "001",
                                     Status = "Active",
-                                    uid = "adefesdf",
                                     Timezone = "",
                                     Language_Code = "en",
                                     CustomBoolean0 = true,
@@ -81,7 +79,6 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(nameValues["Last_Name"], "Alex");
             Assert.AreEqual(nameValues["Suffix"], "Mr.");
             Assert.AreEqual(nameValues["Email"], "ATom@abc.com");
-            Assert.AreEqual(nameValues["Password"], "password");
             Assert.AreEqual(nameValues["Receive_Email"], "-9");
             Assert.AreEqual(nameValues["Email_Preference"], "HTML");
             Assert.IsNull(nameValues["Last_Bounce"]);
@@ -118,10 +115,10 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(nameValues["Notes"], "my notes");
             Assert.AreEqual(nameValues["Source"], "AFTTesting");
             Assert.AreEqual(nameValues["Source_Details"], "AFT NA");
-            Assert.AreEqual(nameValues["Source_Tracking_Code"], "456");
+            Assert.AreEqual(nameValues["Source_Tracking_Code"], "03");
             Assert.AreEqual(nameValues["Tracking_Code"], "001");
             Assert.AreEqual(nameValues["Status"], "Active");
-            Assert.AreEqual(nameValues["uid"], "adefesdf");
+            Assert.AreEqual(nameValues["uid"], "456");
             Assert.AreEqual(nameValues["Timezone"], "");
             Assert.AreEqual(nameValues["Language_Code"], "en");
             Assert.AreEqual(nameValues["CustomBoolean0"], "True");

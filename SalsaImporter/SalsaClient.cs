@@ -54,6 +54,7 @@ namespace SalsaImporter
                 string response = webRequest.DownloadString(url);
                 Logger.Debug("response from PulObjects: " + response);
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
+                if (supporters.Count == 0) return;
                 start = Int32.Parse(supporters.Last().Element("supporter_KEY").Value);
                 batchHandler(supporters);
                 if (supporters.Count < limit) return;
@@ -109,13 +110,13 @@ namespace SalsaImporter
             }
         }
 
-        public void SaveSupporters(List<NameValueCollection> supporters)
+        public void SaveSupporters(IEnumerable<NameValueCollection> supporters)
         {
             IEnumerable<Task> tasks = supporters.Select(supporter =>
                                                         Task.Factory.StartNew(wk =>
                                                                                   {
                                                                                       var id = SaveSupporter(supporter);
-                                                                                      supporter.Add("supporter_KEY",id);
+                                                                                      supporter["supporter_KEY"] = id;
                                                                                   }, null));
             Task.WaitAll(tasks.ToArray());
         }
