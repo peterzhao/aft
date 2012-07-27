@@ -44,7 +44,7 @@ namespace SalsaImporter
         }
 
 
-        public void SalsaGetObjects(string objectType,
+        public void ApplyToObjects(string objectType,
                                     int blockSize,
                                     Action<List<XElement>> batchHandler,
                                     IEnumerable<String> fieldsToReturn = null)
@@ -82,14 +82,13 @@ namespace SalsaImporter
         public void DeleteObject(string objectType, string key)
         {
             var data = new NameValueCollection {{"key", key}};
-            SalsaPost("delete", objectType, data);
+            Post("delete", objectType, data);
         }
-
 
         public string SaveSupporter(NameValueCollection data)
         {
             string response;
-            response = SalsaPost("save", "supporter", data);
+            response = Post("save", "supporter", data);
             return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
         }
 
@@ -100,17 +99,7 @@ namespace SalsaImporter
 
         public XElement GetSupporter(string key)
         {
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug("Getting supporter ...");
-
-                string url = String.Format("{0}api/getObject.sjs?object=supporter&key={1}", salsaUrl, key);
-                ;
-                string result = ExtentedWebClient.Try(() => client.DownloadString(url), 3);
-                Logger.Debug("response: " + result);
-                XDocument xml = XDocument.Parse(result);
-                return xml.Element("data").Element("supporter").Element("item");
-            }
+            return GetObject(key, "supporter");
         }
 
         public void SaveSupporters(IEnumerable<NameValueCollection> supporters)
@@ -134,7 +123,7 @@ namespace SalsaImporter
 
         public void DeleteAllObjects(string objectType)
         {
-            SalsaGetObjects(objectType,
+            ApplyToObjects(objectType,
                             500,
                             supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)),
                             new List<string> {objectType + "_KEY"});
@@ -143,6 +132,22 @@ namespace SalsaImporter
         public int CustomColumnCount()
         {
             return CountObjects("custom_column");
+        }
+
+        public string CreateSupporterCustomColumn(NameValueCollection customField)
+        {
+            customField.Set("key", "0");  // this is to indicate creation   
+            customField.Set("database_table_KEY", "142"); // Not sure what this is, but neccesary
+            customField.Set("data_table", "supporter_custom");  // Custom field table for supporters
+
+            string response = Post("save", "custom_column", customField);
+           
+            return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
+        }
+
+        public XElement GetCustomColumn(string key)
+        {
+            return GetObject(key, "custom_column");
         }
 
         private int CountObjects(string objectType)
@@ -159,14 +164,27 @@ namespace SalsaImporter
             }
         }
 
-        private string SalsaPost(string action, string objectType, NameValueCollection data)
+        private XElement GetObject(string key, string objectType)
+        {
+            using (var client = new ExtentedWebClient(cookies, 3000))
+            {
+                Logger.Debug(string.Format("Getting {0} {1}...", objectType, key));
+                string url = String.Format("{0}api/getObject.sjs?object={1}&key={2}", salsaUrl, objectType, key);
+                string result = ExtentedWebClient.Try(() => client.DownloadString(url), 3);
+                Logger.Debug("response: " + result);
+                XDocument xml = XDocument.Parse(result);
+                return xml.Element("data").Element(objectType).Element("item");
+            }
+        }
+
+        private string Post(string action, string objectType, NameValueCollection data)
         {
             string response;
             using (var client = new ExtentedWebClient(cookies, 3000))
             {
                 Logger.Debug(string.Format("POST to {0} {1} with {2}", action, objectType, data));
-                data.Add("xml", "");
-                data.Add("object", objectType);
+                data.Set("xml", "");
+                data.Set("object", objectType);
 
                 string url = salsaUrl + action;
                 byte[] result = ExtentedWebClient.Try(() => client.UploadValues(url, "POST", data), 3);

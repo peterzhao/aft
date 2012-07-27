@@ -30,7 +30,7 @@ namespace SalsaImporterTests
             client.DeleteAllObjects("supporter");
             var actualTimes = 0;
             Action<List<XElement>> action = supports => actualTimes += 1;
-            client.SalsaGetObjects("supporter", 500, action);
+            client.ApplyToObjects("supporter", 500, action);
             Assert.AreEqual(0, actualTimes);
         }
 
@@ -40,10 +40,6 @@ namespace SalsaImporterTests
             client.DeleteAllObjects("supporter");
             Assert.AreEqual(0, client.SupporterCount());
         }
-
-      
-
-      
 
         [Test]
         public void ShouldGetSupporterById()
@@ -84,7 +80,7 @@ namespace SalsaImporterTests
             var actualTimes = 0;
             Action<List<XElement>> action =  supports => actualTimes += 1;
             var expectedTimes = Math.Ceiling(total/500.0);
-            client.SalsaGetObjects("supporter", limit, action);
+            client.ApplyToObjects("supporter", limit, action);
 
             Assert.AreEqual(expectedTimes, actualTimes);
         }
@@ -144,13 +140,33 @@ namespace SalsaImporterTests
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
         }
-        
+
         [Test]
         public void ShouldDeleteAllCustomFields()
         {
             client.DeleteAllObjects("custom_column");
             Assert.AreEqual(0, client.CustomColumnCount());
         }
+
+        [Test]
+        public void ShouldCreateSupporterCustomField()
+        {
+            var customField = new NameValueCollection
+                                          {
+                                              {"name", "testfield"},
+                                              {"label", "Test Field"}, 
+                                              {"type", "varchar"}, 
+                                              {"data_column", "VARCHAR0"}
+                                          };
+            string id = client.CreateSupporterCustomColumn(customField);
+
+            XElement fromSalsa = client.GetCustomColumn(id);
+            Assert.AreEqual(customField.Get("name"), fromSalsa.Element("name").Value);
+            Assert.AreEqual(customField.Get("label"), fromSalsa.Element("label").Value);
+            Assert.AreEqual(customField.Get("type"), fromSalsa.Element("type").Value);
+            Assert.AreEqual(customField.Get("data_column"), fromSalsa.Element("data_column").Value);
+        }
+
 
         private bool DoesSupporterExist(string id)
         {
@@ -172,11 +188,13 @@ namespace SalsaImporterTests
         {
             return new NameValueCollection
                        {
-                           {"Email", firstName + "@abc.com"},
                            {"key", "0"},
+                           {"Email", firstName + "@abc.com"},
                            {"First_Name", firstName},
                            {"Last_Name", "Testing"}
                        };
         }
+
+
     }
 }
