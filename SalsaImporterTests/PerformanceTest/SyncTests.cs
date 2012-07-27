@@ -23,6 +23,11 @@ namespace SalsaImporterTests.PerformanceTest
            new Sync().PushNewSupportsToSalsa();
         }
 
+        //[Test]
+        public void ShouldCreatePerformanceTestCustomFields()
+        {
+            new Sync().EnsureTestingCustomColumnExist();
+        }
 
     }
 }

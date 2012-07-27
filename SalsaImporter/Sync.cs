@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
@@ -8,11 +9,18 @@ namespace SalsaImporter
 {
     public class Sync
     {
+        private readonly SalsaClient _salsa;
+
+        public Sync()
+        {
+            _salsa = new SalsaClient();
+            _salsa.Authenticate();
+        }
+
         public void PushNewSupportsToSalsa()
         {
             Logger.Info("Start performance test...");
-            var salsa = new SalsaClient();
-            salsa.Authenticate();
+        
             var begin = DateTime.Now;
             var mapper = new SupporterMapper();
             var batchSize = 100;
@@ -20,7 +28,7 @@ namespace SalsaImporter
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                salsa.CreateSupporters(nameValuesList);
+                _salsa.CreateSupporters(nameValuesList);
                 nameValuesList.ForEach(nameValues =>
                 {
                     var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
@@ -31,6 +39,45 @@ namespace SalsaImporter
 
             var finished = DateTime.Now;
             Logger.Info("finished:" + (finished - begin).TotalSeconds);
+        }
+
+        public void EnsureTestingCustomColumnExist()
+        {
+
+            _salsa.DeleteAllObjects("custom_column");
+            for (int i=0;i < 10;i++)
+            {
+                var customColumn = new NameValueCollection
+                                          {
+                                              {"name", String.Format("CustomString{0}", i)},
+                                              {"label", String.Format("Custom String {0}", i)}, 
+                                              {"type", "varchar"}, 
+                                              {"data_column", String.Format("VARCHAR{0}", i)}
+                                          };
+                _salsa.CreateSupporterCustomColumn(customColumn);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                var customColumn = new NameValueCollection
+                                          {
+                                              {"name", String.Format("CustomBoolean{0}", i)},
+                                              {"label", String.Format("Custom Boolean {0}", i)}, 
+                                              {"type", "bool"}, 
+                                              {"data_column", String.Format("BOOL{0}", i)}
+                                          };
+                _salsa.CreateSupporterCustomColumn(customColumn);
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                var customColumn = new NameValueCollection
+                                          {
+                                              {"name", String.Format("CustomInteger{0}", i)},
+                                              {"label", String.Format("Custom Integer {0}", i)}, 
+                                              {"type", "int"}, 
+                                              {"data_column", String.Format("BOOL{0}", i)}
+                                          };
+                _salsa.CreateSupporterCustomColumn(customColumn);
+            }
         }
 
         private void EachBatchOfSupportersFromAft(int batchSize, int? totalLimit, Action<List<Supporter>> batchHandler)
