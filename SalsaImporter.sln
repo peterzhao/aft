@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalsaImporter", "SalsaImpor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalsaImporterTests", "SalsaImporterTests\SalsaImporterTests.csproj", "{80D931AC-8A87-483B-A0BB-CE7D85D023DC}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "AftTestData", "AftTestData\AftTestData.sqlproj", "{CAE0AAA1-5133-401D-890C-F1116B58B207}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B0DCA933-350E-41C0-B178-564682959132}"
 	ProjectSection(SolutionItems) = preProject
 		SalsaImporter.build = SalsaImporter.build
@@ -32,20 +30,6 @@ Global
 		{80D931AC-8A87-483B-A0BB-CE7D85D023DC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{80D931AC-8A87-483B-A0BB-CE7D85D023DC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{80D931AC-8A87-483B-A0BB-CE7D85D023DC}.Release|x86.ActiveCfg = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
-		{CAE0AAA1-5133-401D-890C-F1116B58B207}.Release|x86.ActiveCfg = Release|Any CPU
 		{CD335241-5D26-4A1C-8FBF-40C1BC8F10E9}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{CD335241-5D26-4A1C-8FBF-40C1BC8F10E9}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{CD335241-5D26-4A1C-8FBF-40C1BC8F10E9}.Debug|Mixed Platforms.Build.0 = Debug|x86
