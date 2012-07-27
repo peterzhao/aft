@@ -14,7 +14,10 @@ namespace SalsaImporter
         static void Main(string[] args)
         {
             
-         
+            var client = new SalsaClient();
+            client.Authenticate();
+            var count = client.Count();
+            Console.WriteLine("total supporter on salsa:" + count);
             Console.ReadKey();
         }
     }
