@@ -140,7 +140,7 @@ namespace SalsaImporterTests
             Assert.IsFalse(DoesSupporterExist(id));
         }
         
-        [Test]
+        //[Test]
         public void ShouldDeleteAllCustomFields()
         {
             client.DeleteAllObjects("custom_column");
