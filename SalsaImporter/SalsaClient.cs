@@ -20,6 +20,7 @@ namespace SalsaImporter
             salsaUrl = Config.SalsaApiUri;
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.Expect100Continue = false;
+            System.Net.ServicePointManager.CertificatePolicy = new TrustAllCertificatePolicy();
         }
 
         public void Authenticate()

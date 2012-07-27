@@ -15,4 +15,9 @@
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
     <salsaPassword>notenote</salsaPassword>
   </production>
+  <stub>
+    <salsaApiUrl>http://10.10.67.164:4567/</salsaApiUrl>
+    <salsaUserName>peter</salsaUserName>
+    <salsaPassword>1234</salsaPassword>
+  </stub>
 </environments>

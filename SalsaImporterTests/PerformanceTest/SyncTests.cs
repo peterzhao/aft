@@ -11,9 +11,10 @@ namespace SalsaImporterTests.PerformanceTest
     [Category("PerformanceTest")]
     public class SyncTests
     {
-        public void SycTests()
+        public SyncTests()
         {
             Config.Environment = Config.PerformanceTest;
+            //Config.Environment = Config.Stub;
         }
 
         private void GetSupportersFromAft(AftDbContext db, int batchSize, int? totalLimit, Action<List<Supporter>> batchHandler)
@@ -46,7 +47,7 @@ namespace SalsaImporterTests.PerformanceTest
             var db = new AftDbContext();
             var mapper = new SupporterMapper();
             var batchSize = 100;
-            int? totalLimit = 1000;
+            int? totalLimit = 100000;
             GetSupportersFromAft(db, batchSize, totalLimit, supporters =>
                                 {
                                     var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
