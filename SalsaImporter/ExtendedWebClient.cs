@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Net;
 
 namespace SalsaImporter
@@ -27,6 +28,28 @@ namespace SalsaImporter
                 webRequest.Timeout = _timeout;
             }
             return request;
+        }
+
+
+        public static TResult Try<TResult>(Func<TResult> func, int tryTimes)
+        {
+            int count = 0;
+
+            while (count < tryTimes)
+            {
+                try
+                {
+                    return func();
+                }
+                catch (WebException exception)
+                {
+                    if(exception.Message != "The operation has timed out")
+                        throw exception;
+                    Logger.Warn("ExtendedWebClient catch timeout exception and try again.");
+                }
+                count += 1;
+            }
+            throw new WebException("The operation has timed out after try " + tryTimes + " times.");
         }
     }
 }

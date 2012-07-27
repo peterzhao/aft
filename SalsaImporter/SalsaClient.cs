@@ -25,16 +25,20 @@ namespace SalsaImporter
         public void Authenticate()
         {
             Logger.Debug("authenticating...");
-            string url = salsaUrl;
-            string username = ConfigurationManager.AppSettings["salsaUserName"];
-            string password = ConfigurationManager.AppSettings["salsaPassword"];
-            WebRequest authenticate =
-                WebRequest.Create(url + "api/authenticate.sjs?email=" + username + "&password=" + password);
-            ((HttpWebRequest) authenticate).CookieContainer = cookies;
-            authenticate.Method = "POST";
-            authenticate.ContentType = "application/x-www-form-urlencoded";
-            var authenticatedResponse = (HttpWebResponse) authenticate.GetResponse();
-            Logger.Debug("response status code" + authenticatedResponse.StatusCode);
+            var url = salsaUrl;
+            var username = ConfigurationManager.AppSettings["salsaUserName"];
+            var password = ConfigurationManager.AppSettings["salsaPassword"];
+            var response = ExtentedWebClient.Try(() =>
+                                                     {
+                                                         var webRequest = WebRequest.Create(url + "api/authenticate.sjs?email=" + username + "&password=" + password);
+                                                         ((HttpWebRequest)webRequest).CookieContainer = cookies;
+                                                         webRequest.Method = "POST";
+                                                         webRequest.ContentType = "application/x-www-form-urlencoded";
+                                                         return (HttpWebResponse) webRequest.GetResponse();
+                                                     }, 3);
+          
+           
+            Logger.Debug("response: " + response);
         }
 
 
@@ -46,12 +50,12 @@ namespace SalsaImporter
             while (true)
             {
                 Logger.Debug("Pulling objects... start: " + start);
-                var webRequest = new ExtentedWebClient(cookies, 30000);
+                var webClient = new ExtentedWebClient(cookies, 30000);
                 string url =
                     String.Format(
                         "{0}api/getObjects.sjs?object={1}&condition={2}>{3}&limit={4}&orderBy={2}",
                         salsaUrl, objectType, keyFieldName, start, blockSize);
-                string response = webRequest.DownloadString(url);
+                string response = ExtentedWebClient.Try(() =>webClient.DownloadString(url), 3);
                 Logger.Debug("response from PullObjects: " + response);
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
                 if (supporters.Count == 0) return;
@@ -89,7 +93,7 @@ namespace SalsaImporter
 
                 string url = String.Format("{0}api/getObject.sjs?object=supporter&key={1}", salsaUrl, key);
                 ;
-                string result = client.DownloadString(url);
+                string result = ExtentedWebClient.Try(() =>client.DownloadString(url), 3);
                 Logger.Debug("response: " + result);
                 XDocument xml = XDocument.Parse(result);
                 return xml.Element("data").Element("supporter").Element("item");
@@ -130,7 +134,7 @@ namespace SalsaImporter
             {
                 Logger.Debug("Counting Objects...");
                 string url = salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={1}_KEY", objectType, objectType);
-                string result = client.DownloadString(url);
+                string result = ExtentedWebClient.Try(() =>client.DownloadString(url), 3);
                 Logger.Debug("response: " + result);
                 XDocument xml = XDocument.Parse(result);
                 string value = xml.Descendants("count").First().Value;
@@ -148,7 +152,7 @@ namespace SalsaImporter
                 data.Add("object", objectType);
 
                 string url = salsaUrl + action;
-                byte[] result = client.UploadValues(url, "POST", data);
+                byte[] result = ExtentedWebClient.Try(() => client.UploadValues(url, "POST", data), 3);
                 response = Encoding.UTF8.GetString(result);
                 Logger.Debug("response: " + response);
             }

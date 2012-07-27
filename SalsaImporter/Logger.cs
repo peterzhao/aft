@@ -19,14 +19,17 @@ namespace SalsaImporter
 
         public static void Warn(string message)
         {
+            Console.WriteLine(DateTime.Now + " " + message);
         }
 
         public static void Error(string message, Exception e = null)
         {
+            Console.WriteLine(DateTime.Now + " " + message);
         }
 
         public static void Fatal(string message, Exception e = null)
         {
+            Console.WriteLine(DateTime.Now + " " + message);
         }
     }
 }
