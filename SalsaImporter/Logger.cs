@@ -10,6 +10,7 @@ namespace SalsaImporter
      
         public static void Debug(string message)
         {
+            Console.WriteLine(DateTime.Now + " " + message);
         }
 
         public static void Info(string message)

@@ -86,11 +86,9 @@ namespace SalsaImporter
             Post("delete", objectType, data);
         }
 
-        public string SaveSupporter(NameValueCollection data)
+        public string CreateSupporter(NameValueCollection supporter)
         {
-            string response;
-            response = Post("save", "supporter", data);
-            return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
+            return Create("supporter", supporter);
         }
 
         public int SupporterCount()
@@ -103,12 +101,12 @@ namespace SalsaImporter
             return GetObject(key, "supporter");
         }
 
-        public void SaveSupporters(IEnumerable<NameValueCollection> supporters)
+        public void CreateSupporters(IEnumerable<NameValueCollection> supporters)
         {
             IEnumerable<Task> tasks = supporters.Select(supporter =>
                                                         Task.Factory.StartNew(wk =>
                                                                                   {
-                                                                                      var id = SaveSupporter(supporter);
+                                                                                      var id = CreateSupporter(supporter);
                                                                                       supporter["supporter_KEY"] = id;
                                                                                   }, null));
             Task.WaitAll(tasks.ToArray());
@@ -137,12 +135,15 @@ namespace SalsaImporter
 
         public string CreateSupporterCustomColumn(NameValueCollection customField)
         {
-            customField.Set("key", "0");  // this is to indicate creation   
             customField.Set("database_table_KEY", "142"); // Not sure what this is, but neccesary
             customField.Set("data_table", "supporter_custom");  // Custom field table for supporters
+            return Create("custom_column", customField);
+        }
 
-            string response = Post("save", "custom_column", customField);
-           
+        private string Create(string objectType, NameValueCollection customField)
+        {
+            customField.Set("key", "0"); // this is to indicate creation   
+            string response = Post("save", objectType, customField);
             return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
         }
 

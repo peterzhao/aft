@@ -51,7 +51,7 @@ namespace SalsaImporterTests.PerformanceTest
             GetSupportersFromAft(db, batchSize, totalLimit, supporters =>
                                 {
                                     var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                                    salsa.SaveSupporters(nameValuesList);
+                                    salsa.CreateSupporters(nameValuesList);
                                     nameValuesList.ForEach(nameValues =>
                                     {
                                         var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));

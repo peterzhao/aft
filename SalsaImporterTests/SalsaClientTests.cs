@@ -45,7 +45,7 @@ namespace SalsaImporterTests
         public void ShouldGetSupporterById()
         {
             var firstName = NewName();
-            var id = client.SaveSupporter(GenerateSupporter(firstName));
+            var id = client.CreateSupporter(GenerateSupporter(firstName));
             XElement support = client.GetSupporter(id);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
@@ -68,7 +68,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldGetCountOfSupporters()
         {
-            client.SaveSupporter(GenerateSupporter());
+            client.CreateSupporter(GenerateSupporter());
             Assert.Greater(client.SupporterCount(), 0);
         }
 
@@ -88,7 +88,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldCreateSupporter()
         {
-            var id = client.SaveSupporter(GenerateSupporter());
+            var id = client.CreateSupporter(GenerateSupporter());
             Assert.AreNotEqual(0, id);
             Assert.IsTrue(DoesSupporterExist(id));
         }
@@ -100,7 +100,7 @@ namespace SalsaImporterTests
             for (var i = 0; i < 3; i++)
                 supporters.Add(GenerateSupporter());
             
-            client.SaveSupporters(supporters);
+            client.CreateSupporters(supporters);
 
             foreach (var supporter in supporters)
             {
@@ -115,7 +115,7 @@ namespace SalsaImporterTests
             var supporters = new List<NameValueCollection>();
             for (var i = 0; i < 3; i++)
                 supporters.Add(GenerateSupporter());
-            client.SaveSupporters(supporters);
+            client.CreateSupporters(supporters);
 
             client.DeleteObjects("supporter", supporters.Select(s => s.Get("supporter_KEY")));
 
@@ -126,7 +126,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldDeleteSupporter()
         {
-            var id = client.SaveSupporter(GenerateSupporter());
+            var id = client.CreateSupporter(GenerateSupporter());
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
 
@@ -135,7 +135,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldAllowDeletingDeletedSupporter()
         {
-            var id = client.SaveSupporter(GenerateSupporter());
+            var id = client.CreateSupporter(GenerateSupporter());
             client.DeleteObject("supporter", id);
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
@@ -151,21 +151,53 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldCreateSupporterCustomField()
         {
-            var customField = new NameValueCollection
+            string name = "testfield";
+            string label = "Test Field";
+            string type = "varchar";
+            string column = "VARCHAR0";
+            
+            var customColumn = new NameValueCollection
                                           {
-                                              {"name", "testfield"},
+                                              {"name", name},
+                                              {"label", label}, 
+                                              {"type", type}, 
+                                              {"data_column", column}
+                                          };
+            string customColumnId = client.CreateSupporterCustomColumn(customColumn);
+
+            XElement customColumnFromSalsa = client.GetCustomColumn(customColumnId);
+            Assert.AreEqual(name, customColumnFromSalsa.Element("name").Value);
+            Assert.AreEqual(label, customColumnFromSalsa.Element("label").Value);
+            Assert.AreEqual(type, customColumnFromSalsa.Element("type").Value);
+            Assert.AreEqual(column, customColumnFromSalsa.Element("data_column").Value);
+        }
+
+        [Test]
+        public void ShouldReadWriteCustomFieldOnSupporter()
+        {
+            string name = "testfield";
+            string valueOnSupporter = "TestCustomFieldValue";
+
+            var customColumn = new NameValueCollection
+                                          {
+                                              {"name", name},
                                               {"label", "Test Field"}, 
                                               {"type", "varchar"}, 
                                               {"data_column", "VARCHAR0"}
                                           };
-            string id = client.CreateSupporterCustomColumn(customField);
+            
+            client.DeleteAllObjects("custom_column");
+            client.CreateSupporterCustomColumn(customColumn);
 
-            XElement fromSalsa = client.GetCustomColumn(id);
-            Assert.AreEqual(customField.Get("name"), fromSalsa.Element("name").Value);
-            Assert.AreEqual(customField.Get("label"), fromSalsa.Element("label").Value);
-            Assert.AreEqual(customField.Get("type"), fromSalsa.Element("type").Value);
-            Assert.AreEqual(customField.Get("data_column"), fromSalsa.Element("data_column").Value);
+            NameValueCollection supporter = GenerateSupporter();
+            supporter.Add(name, valueOnSupporter);
+
+            string supporterId = client.CreateSupporter(supporter);
+            XElement supporterFromSalsa = client.GetSupporter(supporterId);
+            Console.WriteLine(supporterFromSalsa);
+            Assert.AreEqual(valueOnSupporter, supporterFromSalsa.Element(name).Value);
         }
+
 
 
         private bool DoesSupporterExist(string id)
@@ -188,7 +220,6 @@ namespace SalsaImporterTests
         {
             return new NameValueCollection
                        {
-                           {"key", "0"},
                            {"Email", firstName + "@abc.com"},
                            {"First_Name", firstName},
                            {"Last_Name", "Testing"}
