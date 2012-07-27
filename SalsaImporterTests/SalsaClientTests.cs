@@ -22,14 +22,14 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldDeleteAllSupporters()
         {
-            client.DeleteAllSupporters();
+            client.DeleteAllObjects("supporter");
             Assert.AreEqual(0, client.SupporterCount());
         }
 
         [Test]
         public void ShouldGetSupportersEventhoughHavingNoSupporters()
         {
-            client.DeleteAllSupporters();
+            client.DeleteAllObjects("supporter");
             var actualTimes = 0;
             Action<List<XElement>> action = supports => actualTimes += 1;
             client.SalsaGetObjects("supporter", 500, action);
@@ -113,7 +113,7 @@ namespace SalsaImporterTests
                 supporters.Add(GenerateSupporter());
             client.SaveSupporters(supporters);
 
-            client.DeleteSupporters(supporters.Select(s => s.Get("supporter_KEY")));
+            client.DeleteObjects("supporter", supporters.Select(s => s.Get("supporter_KEY")));
 
             foreach (var supporter in supporters)
                 Assert.IsFalse(DoesSupporterExist(supporter.Get("supporter_KEY")));
@@ -123,7 +123,7 @@ namespace SalsaImporterTests
         public void ShouldDeleteSupporter()
         {
             var id = client.SaveSupporter(GenerateSupporter());
-            client.DeleteSupporter(id);
+            client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
 
         }
@@ -132,18 +132,17 @@ namespace SalsaImporterTests
         public void ShouldAllowDeletingDeletedSupporter()
         {
             var id = client.SaveSupporter(GenerateSupporter());
-            client.DeleteSupporter(id);
-            client.DeleteSupporter(id);
+            client.DeleteObject("supporter", id);
+            client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
         }
-
-//        
-//        [Test]
-//        public void ShouldDeleteAllCustomFields()
-//        {
-//            client.DeleteAllCustomColumns();
-//            Assert.AreEqual(0, client.SupporterCount());
-//        }
+        
+        [Test]
+        public void ShouldDeleteAllCustomFields()
+        {
+            client.DeleteAllObjects("custom_column");
+            Assert.AreEqual(0, client.CustomColumnCount());
+        }
 
         private bool DoesSupporterExist(string id)
         {

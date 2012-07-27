@@ -62,13 +62,10 @@ namespace SalsaImporter
             }
         }
 
-        public void DeleteSupporter(string supporterKey)
+        public void DeleteObject(string objectType, string key)
         {
-            var key = new NameValueCollection
-                                          {
-                                              {"key", supporterKey}
-                                          };
-            SalsaPost("delete", "supporter", key);
+            var data = new NameValueCollection {{"key", key}};
+            SalsaPost("delete", objectType, data);
         }
 
 
@@ -110,30 +107,22 @@ namespace SalsaImporter
             Task.WaitAll(tasks.ToArray());
         }
 
-        public void DeleteSupporters(IEnumerable<string> keys)
+        public void DeleteObjects(string objectType, IEnumerable<string> keys)
         {
             IEnumerable<Task> tasks = keys.Select(supporterKey =>
-                                                  Task.Factory.StartNew(wk => DeleteSupporter(supporterKey),
-                                                                        null));
+                                                  Task.Factory.StartNew(wk => DeleteObject(objectType, supporterKey), null));
             Task.WaitAll(tasks.ToArray());
         }
 
-        public void DeleteAllSupporters()
+        public void DeleteAllObjects(string objectType)
         {
-            SalsaGetObjects("supporter", 500, supporters => DeleteSupporters(supporters.Select(s => s.Element("supporter_KEY").Value)));
+            SalsaGetObjects(objectType, 500, supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)));
         }
 
         public int CustomColumnCount()
         {
             return CountObjects("custom_column");
         }
-
-//
-//        public void DeleteAllCustomColumns()
-//        {
-//            SalsaGetObjects("custom_column", 500, supporters => DeleteSupporters(supporters.Select(s => s.Element("custom_column_KEY").Value)));
-//        }
-// 
 
         private int CountObjects(string objectType)
         {
