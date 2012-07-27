@@ -23,7 +23,7 @@ namespace SalsaImporterTests
         public void ShouldDeleteAllSupporters()
         {
             client.DeleteAllSupporters();
-            Assert.AreEqual(0, client.Count());
+            Assert.AreEqual(0, client.SupporterCount());
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace SalsaImporterTests
             client.DeleteAllSupporters();
             var actualTimes = 0;
             Action<List<XElement>> action = supports => actualTimes += 1;
-            client.GetSupporters(action, 500);
+            client.SalsaGetObjects("supporter", 500, action);
             Assert.AreEqual(0, actualTimes);
         }
       
@@ -65,18 +65,18 @@ namespace SalsaImporterTests
         public void ShouldGetCountOfSupporters()
         {
             client.SaveSupporter(GenerateSupporter());
-            Assert.Greater(client.Count(), 0);
+            Assert.Greater(client.SupporterCount(), 0);
         }
 
         [Test]
         public void ShouldPullSupporters()
         {
-            var total = client.Count();
+            var total = client.SupporterCount();
             var limit = 500;
             var actualTimes = 0;
             Action<List<XElement>> action =  supports => actualTimes += 1;
             var expectedTimes = Math.Ceiling(total/500.0);
-            client.GetSupporters(action, limit);
+            client.SalsaGetObjects("supporter", limit, action);
 
             Assert.AreEqual(expectedTimes, actualTimes);
         }
@@ -136,6 +136,14 @@ namespace SalsaImporterTests
             client.DeleteSupporter(id);
             Assert.IsFalse(DoesSupporterExist(id));
         }
+
+//        
+//        [Test]
+//        public void ShouldDeleteAllCustomFields()
+//        {
+//            client.DeleteAllCustomColumns();
+//            Assert.AreEqual(0, client.SupporterCount());
+//        }
 
         private bool DoesSupporterExist(string id)
         {

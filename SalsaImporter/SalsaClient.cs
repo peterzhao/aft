@@ -38,10 +38,10 @@ namespace SalsaImporter
         }
 
 
-      
-
-        public void GetSupporters(Action<List<XElement>> batchHandler, int limit)
+        public void SalsaGetObjects(string objectType, int blockSize, Action<List<XElement>> batchHandler)
         {
+            string keyFieldName = string.Format("{0}_KEY", objectType);
+                
             int start = 0;
             while (true)
             {
@@ -49,50 +49,39 @@ namespace SalsaImporter
                 var webRequest = new ExtentedWebClient(cookies, 30000);
                 string url =
                     String.Format(
-                        "{0}api/getObjects.sjs?object=supporter&condition=supporter_KEY>{1}&limit={2}&orderBy=supporter_KEY",
-                        salsaUrl, start, limit);
+                        "{0}api/getObjects.sjs?object={1}&condition={2}>{3}&limit={4}&orderBy={2}",
+                        salsaUrl, objectType, keyFieldName, start, blockSize);
                 string response = webRequest.DownloadString(url);
-                Logger.Debug("response from PulObjects: " + response);
+                Logger.Debug("response from PullObjects: " + response);
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
                 if (supporters.Count == 0) return;
-                start = Int32.Parse(supporters.Last().Element("supporter_KEY").Value);
+                start = Int32.Parse(supporters.Last().Element(keyFieldName).Value);
                 batchHandler(supporters);
-                if (supporters.Count < limit) return;
+                if (supporters.Count < blockSize) return;
                 if (start == 0) throw new ApplicationException("Wrong response from server");
             }
         }
 
         public void DeleteSupporter(string supporterKey)
         {
-            InvokeActionOnSubscriber(new NameValueCollection
-                                                           {
-                                                               {"key", supporterKey}
-                                                           }, "delete");
+            var key = new NameValueCollection
+                                          {
+                                              {"key", supporterKey}
+                                          };
+            SalsaPost("delete", "supporter", key);
         }
 
 
         public string SaveSupporter(NameValueCollection data)
         {
             string response;
-            response = InvokeActionOnSubscriber(data, "save");
+            response = SalsaPost("save", "supporter", data);
             return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
         }
 
-       
-
-        public int Count()
+        public int SupporterCount()
         {
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug("Counting Objects...");
-
-                string url = salsaUrl + "api/getCount.sjs?object=supporter&countColumn=supporter_KEY";
-                string result = client.DownloadString(url);
-                Logger.Debug("response: " + result);
-                XDocument xml = XDocument.Parse(result);
-                string value = xml.Descendants("count").First().Value;
-                return Int32.Parse(value);
-            }
+            return CountObjects("supporter");
         }
 
         public XElement GetSupporter(string key)
@@ -131,18 +120,43 @@ namespace SalsaImporter
 
         public void DeleteAllSupporters()
         {
-            GetSupporters(
-                supporters => DeleteSupporters(supporters.Select(s => s.Element("supporter_KEY").Value)), 500);
+            SalsaGetObjects("supporter", 500, supporters => DeleteSupporters(supporters.Select(s => s.Element("supporter_KEY").Value)));
         }
 
-        private string InvokeActionOnSubscriber(NameValueCollection data, string action)
+        public int CustomColumnCount()
+        {
+            return CountObjects("custom_column");
+        }
+
+//
+//        public void DeleteAllCustomColumns()
+//        {
+//            SalsaGetObjects("custom_column", 500, supporters => DeleteSupporters(supporters.Select(s => s.Element("custom_column_KEY").Value)));
+//        }
+// 
+
+        private int CountObjects(string objectType)
+        {
+            using (var client = new ExtentedWebClient(cookies, 3000))
+            {
+                Logger.Debug("Counting Objects...");
+                string url = salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={1}_KEY", objectType, objectType);
+                string result = client.DownloadString(url);
+                Logger.Debug("response: " + result);
+                XDocument xml = XDocument.Parse(result);
+                string value = xml.Descendants("count").First().Value;
+                return Int32.Parse(value);
+            }
+        }
+
+        private string SalsaPost(string action, string objectType, NameValueCollection data)
         {
             string response;
             using (var client = new ExtentedWebClient(cookies, 3000))
             {
                 Logger.Debug("Pushing Objects...");
                 data.Add("xml", "");
-                data.Add("object", "supporter");
+                data.Add("object", objectType);
 
                 string url = salsaUrl + action;
                 byte[] result = client.UploadValues(url, "POST", data);
@@ -151,5 +165,6 @@ namespace SalsaImporter
             }
             return response;
         }
+
     }
 }

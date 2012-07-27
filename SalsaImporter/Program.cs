@@ -16,7 +16,7 @@ namespace SalsaImporter
             
             var client = new SalsaClient();
             client.Authenticate();
-            var count = client.Count();
+            var count = client.SupporterCount();
             Console.WriteLine("total supporter on salsa:" + count);
             Console.ReadKey();
         }
