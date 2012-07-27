@@ -76,18 +76,18 @@ namespace SalsaImporterTests
             Assert.Greater(client.SupporterCount(), 0);
         }
 
-//        [Test]
-//        public void ShouldPullSupporters()
-//        {
-//            var total = client.SupporterCount();
-//            var limit = 500;
-//            var actualTimes = 0;
-//            Action<List<XElement>> action =  supports => actualTimes += 1;
-//            var expectedTimes = Math.Ceiling(total/500.0);
-//            client.SalsaGetObjects("supporter", limit, action);
-//
-//            Assert.AreEqual(expectedTimes, actualTimes);
-//        }
+        [Test]
+        public void ShouldPullSupporters()
+        {
+            var total = client.SupporterCount();
+            var limit = 500;
+            var actualTimes = 0;
+            Action<List<XElement>> action =  supports => actualTimes += 1;
+            var expectedTimes = Math.Ceiling(total/500.0);
+            client.SalsaGetObjects("supporter", limit, action);
+
+            Assert.AreEqual(expectedTimes, actualTimes);
+        }
 
         [Test]
         public void ShouldCreateSupporter()
