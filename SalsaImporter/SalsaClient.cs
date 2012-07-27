@@ -17,7 +17,7 @@ namespace SalsaImporter
 
         public SalsaClient()
         {
-            salsaUrl = ConfigurationManager.AppSettings["salsaApiUrl"];
+            salsaUrl = Config.SalsaApiUri;
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.Expect100Continue = false;
         }
@@ -26,8 +26,8 @@ namespace SalsaImporter
         {
             Logger.Debug("authenticating...");
             var url = salsaUrl;
-            var username = ConfigurationManager.AppSettings["salsaUserName"];
-            var password = ConfigurationManager.AppSettings["salsaPassword"];
+            var username = Config.SalsaUserName;
+            var password = Config.SalsaPassword;
             var response = ExtentedWebClient.Try(() =>
                                                      {
                                                          var webRequest = WebRequest.Create(url + "api/authenticate.sjs?email=" + username + "&password=" + password);

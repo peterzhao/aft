@@ -11,6 +11,11 @@ namespace SalsaImporterTests.PerformanceTest
     [Category("PerformanceTest")]
     public class SyncTests
     {
+        public void SycTests()
+        {
+            Config.Environment = Config.PerformanceTest;
+        }
+
         private void GetSupportersFromAft(AftDbContext db, int batchSize, int? totalLimit, Action<List<Supporter>> batchHandler)
         {
             int start = 0;

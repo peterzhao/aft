@@ -53,6 +53,7 @@
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
     <Compile Include="Aft\SupporterMapper.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -66,6 +67,11 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="environments.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

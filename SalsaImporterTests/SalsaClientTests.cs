@@ -11,6 +11,11 @@ namespace SalsaImporterTests
     [TestFixture]
     public class SalsaClientTests
     {
+        public SalsaClientTests()
+        {
+            Config.Environment = Config.UnitTest;
+        }
+
         private SalsaClient client;
         [SetUp]
         public void SetUp()
@@ -29,12 +34,12 @@ namespace SalsaImporterTests
             Assert.AreEqual(0, actualTimes);
         }
 
-//        [Test]
-//        public void ShouldDeleteAllSupporters()
-//        {
-//            client.DeleteAllSupporters();
-//            Assert.AreEqual(0, client.SupporterCount());
-//        }
+        [Test]
+        public void ShouldDeleteAllSupporters()
+        {
+            client.DeleteAllObjects("supporter");
+            Assert.AreEqual(0, client.SupporterCount());
+        }
 
       
 

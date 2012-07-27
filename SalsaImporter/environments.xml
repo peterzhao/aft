@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<environments>
+  <unitTest>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>talexand@thoughtworks.com</salsaUserName>
+    <salsaPassword>7eleven</salsaPassword>
+  </unitTest>
+  <performanceTest>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
+    <salsaPassword>notenote</salsaPassword>
+  </performanceTest>
+  <production>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
+    <salsaPassword>notenote</salsaPassword>
+  </production>
+</environments>
