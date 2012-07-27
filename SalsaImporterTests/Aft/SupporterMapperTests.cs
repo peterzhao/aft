@@ -82,7 +82,7 @@ namespace SalsaImporterTests.Aft
             //Assert.AreEqual(nameValues["Receive_Email"], "-9");
             //Assert.AreEqual(nameValues["Email_Preference"], "HTML");
             Assert.IsNull(nameValues["Last_Bounce"]);
-            Assert.AreEqual(nameValues["Receive_Phone_Blasts"], "8");
+            //Assert.AreEqual(nameValues["Receive_Phone_Blasts"], "8");
             Assert.AreEqual(nameValues["Phone"], "14168805783");
             Assert.AreEqual(nameValues["Cell_Phone"], "16473451234");
             Assert.AreEqual(nameValues["Phone_Provider"], "Bell");
