@@ -36,6 +36,7 @@ namespace SalsaImporter
                                                                                username + "&password=" + password);
                                                          ((HttpWebRequest) webRequest).CookieContainer = cookies;
                                                          webRequest.Method = "POST";
+                                                         webRequest.ContentLength = 0;
                                                          webRequest.ContentType = "application/x-www-form-urlencoded";
                                                          return (HttpWebResponse) webRequest.GetResponse();
                                                      }, 3);
