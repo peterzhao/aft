@@ -77,6 +77,7 @@
   <ItemGroup>
     <Content Include="..\SalsaImporter\environments.xml">
       <Link>environments.xml</Link>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

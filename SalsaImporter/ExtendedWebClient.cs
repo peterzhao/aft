@@ -6,12 +6,11 @@ namespace SalsaImporter
     public class ExtentedWebClient : WebClient
     {
         private readonly CookieContainer _cookieContainer;
-        private readonly int _timeout;
+        private const int Timeout = 30000;
 
-        public ExtentedWebClient(CookieContainer cookieContainer, int timeout)
+        public ExtentedWebClient(CookieContainer cookieContainer)
         {
             _cookieContainer = cookieContainer;
-            _timeout = timeout;
         }
 
         protected override WebRequest GetWebRequest(Uri address)
@@ -23,7 +22,7 @@ namespace SalsaImporter
             if (webRequest != null)
             {
                 webRequest.CookieContainer = _cookieContainer;
-                webRequest.Timeout = _timeout;
+                webRequest.Timeout = Timeout;
             }
             return request;
         }

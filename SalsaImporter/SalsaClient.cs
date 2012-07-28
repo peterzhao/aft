@@ -67,7 +67,7 @@ namespace SalsaImporter
                 Logger.Debug("Requesting: " + url);
                 string response = ExtentedWebClient.Try(() =>
                                               {
-                                                  using (var webClient = new ExtentedWebClient(cookies, 30000))
+                                                  using (var webClient = new ExtentedWebClient(cookies))
                                                   {
                                                       string result = webClient.DownloadString(url);
                                                       return result;
@@ -112,22 +112,21 @@ namespace SalsaImporter
         public void CreateSupporters(IEnumerable<NameValueCollection> supporters)
         {
             IEnumerable<Task> tasks = supporters.Select(supporter =>
-                                                        Task.Factory.StartNew(wk =>
-                                                                                  {
-                                                                                      try
-                                                                                      {
-                                                                                          var id =
-                                                                                              CreateSupporter(supporter);
-                                                                                          supporter["supporter_KEY"] =
-                                                                                              id;
-                                                                                      }
-                                                                                      catch(Exception e)
-                                                                                      {
-                                                                                          Logger.Error(String.Format("Encountered an unexpected error when try to create the supporter(id:{0}). This operation has been skipped. Error: {1} {2}",
-                                                                                              supporter.Get("uid"), e.Message, e.StackTrace));
-                                                                                      }
-                                                                                  }, null));
-            Task.WaitAll(tasks.ToArray());
+                                                        Task.Factory.StartNew(arg =>
+                                                        {
+                                                            var nameValues = (NameValueCollection)arg;
+                                                                var id = CreateSupporter(nameValues);
+                                                                nameValues["supporter_KEY"] = id;
+                                                        }, supporter));
+            try
+            {
+                Task.WaitAll(tasks.ToArray(), -1); //no timeout
+            }catch(AggregateException ex)
+            {
+                var message = "";
+                ex.InnerExceptions.ToList().ForEach(e => message += ex.ToString() + "/n");
+                throw new ApplicationException(string.Format("SalsaClient.CreateSupporters got {0} error(s): /n{1}", ex.InnerExceptions.Count, message));
+            }
         }
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
@@ -176,7 +175,7 @@ namespace SalsaImporter
         {
             return ExtentedWebClient.Try(() =>
                                       {
-                                          using (var client = new ExtentedWebClient(cookies, 3000))
+                                          using (var client = new ExtentedWebClient(cookies))
                                           {
                                               Logger.Debug("Counting Objects...");
                                               string url = salsaUrl +
@@ -198,7 +197,7 @@ namespace SalsaImporter
             return ExtentedWebClient.Try(() =>
                                              {
                                                  XElement xElement;
-                                                using (var client = new ExtentedWebClient(cookies, 3000))
+                                                using (var client = new ExtentedWebClient(cookies))
                                                 {
                                                     Logger.Debug(string.Format("Getting {0} {1}...",
                                                                                 objectType, key));
@@ -222,7 +221,7 @@ namespace SalsaImporter
             return ExtentedWebClient.Try(() =>
                                              {
                                                  string response1;
-                                                 using (var client1 = new ExtentedWebClient(cookies, 3000))
+                                                 using (var client1 = new ExtentedWebClient(cookies))
                                                  {
                                                      Logger.Debug(string.Format("POST to {0} {1} with {2}",
                                                                                 action, objectType, data));
