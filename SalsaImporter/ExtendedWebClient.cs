@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Net;
 
 namespace SalsaImporter
@@ -11,14 +10,13 @@ namespace SalsaImporter
 
         public ExtentedWebClient(CookieContainer cookieContainer, int timeout)
         {
-
-            this._cookieContainer = cookieContainer;
+            _cookieContainer = cookieContainer;
             _timeout = timeout;
         }
 
         protected override WebRequest GetWebRequest(Uri address)
         {
-            var request = base.GetWebRequest(address);
+            WebRequest request = base.GetWebRequest(address);
 
             var webRequest = request as HttpWebRequest;
 
@@ -35,7 +33,7 @@ namespace SalsaImporter
         {
             int count = 0;
 
-            while (count < tryTimes)
+            while (true)
             {
                 try
                 {
@@ -43,13 +41,14 @@ namespace SalsaImporter
                 }
                 catch (WebException exception)
                 {
-//                    if(exception.Message != "The operation has timed out")
-//                        throw exception;
                     Logger.Warn("ExtendedWebClient catched WebException and try again.");
+                    count += 1;
+                    if (count > tryTimes)
+                        throw new ApplicationException(String.Format(
+                            "Rethrow WebException after try {0} times. {1} {2}", tryTimes, exception.Message,
+                            exception.StackTrace));
                 }
-                count += 1;
             }
-            throw new WebException("Rethrow WebException after try " + tryTimes + " times.");
         }
     }
 }

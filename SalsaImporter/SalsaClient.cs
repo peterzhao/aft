@@ -54,7 +54,6 @@ namespace SalsaImporter
             int start = 0;
             for (;;) // ever
             {
-                var webClient = new ExtentedWebClient(cookies, 30000);
                 string url =
                     String.Format(
                         "{0}api/getObjects.sjs?object={1}&limit={2},{3}",
@@ -66,7 +65,15 @@ namespace SalsaImporter
                 }
 
                 Logger.Debug("Requesting: " + url);
-                string response = ExtentedWebClient.Try(() => webClient.DownloadString(url), 3);
+                string response = ExtentedWebClient.Try(() =>
+                                              {
+                                                  using (var webClient = new ExtentedWebClient(cookies, 30000))
+                                                  {
+                                                      string result = webClient.DownloadString(url);
+                                                      return result;
+                                                  }
+                                              }, 3);
+                                                
                 Logger.Debug("response from PullObjects: " + response);
 
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
@@ -157,46 +164,68 @@ namespace SalsaImporter
 
         private int CountObjects(string objectType)
         {
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug("Counting Objects...");
-                string url = salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType);
-                string result = ExtentedWebClient.Try(() => client.DownloadString(url), 3);
-                Logger.Debug("response: " + result);
-                XDocument xml = XDocument.Parse(result);
-                string value = xml.Descendants("count").First().Value;
-                return Int32.Parse(value);
-            }
+            return ExtentedWebClient.Try(() =>
+                                      {
+                                          using (var client = new ExtentedWebClient(cookies, 3000))
+                                          {
+                                              Logger.Debug("Counting Objects...");
+                                              string url = salsaUrl +
+                                                           string.Format(
+                                                               "api/getCount.sjs?object={0}&countColumn={0}_KEY",
+                                                               objectType);
+                                              string result = client.DownloadString(url);
+                                              Logger.Debug("response: " + result);
+                                              XDocument xml = XDocument.Parse(result);
+                                              string value = xml.Descendants("count").First().Value;
+                                              int countObjects = Int32.Parse(value);
+                                              return countObjects;
+                                          }
+                                      }, 3);
         }
 
         private XElement GetObject(string key, string objectType)
         {
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug(string.Format("Getting {0} {1}...", objectType, key));
-                string url = String.Format("{0}api/getObject.sjs?object={1}&key={2}", salsaUrl, objectType, key);
-                string result = ExtentedWebClient.Try(() => client.DownloadString(url), 3);
-                Logger.Debug("response: " + result);
-                XDocument xml = XDocument.Parse(result);
-                return xml.Element("data").Element(objectType).Element("item");
-            }
+            return ExtentedWebClient.Try(() =>
+                                             {
+                                                 XElement xElement;
+                                                using (var client = new ExtentedWebClient(cookies, 3000))
+                                                {
+                                                    Logger.Debug(string.Format("Getting {0} {1}...",
+                                                                                objectType, key));
+                                                    string url =
+                                                        String.Format(
+                                                            "{0}api/getObject.sjs?object={1}&key={2}",
+                                                            salsaUrl, objectType, key);
+                                                    string result = client.DownloadString(url);
+                                                    Logger.Debug("response: " + result);
+                                                    XDocument xml = XDocument.Parse(result);
+                                                    xElement =
+                                                        xml.Element("data").Element(objectType).Element(
+                                                            "item");
+                                                }
+                                                return xElement;
+                                            }, 3);
         }
 
         private string Post(string action, string objectType, NameValueCollection data)
         {
-            string response;
-            using (var client = new ExtentedWebClient(cookies, 3000))
-            {
-                Logger.Debug(string.Format("POST to {0} {1} with {2}", action, objectType, data));
-                data.Set("xml", "");
-                data.Set("object", objectType);
+            return ExtentedWebClient.Try(() =>
+                                             {
+                                                 string response1;
+                                                 using (var client1 = new ExtentedWebClient(cookies, 3000))
+                                                 {
+                                                     Logger.Debug(string.Format("POST to {0} {1} with {2}",
+                                                                                action, objectType, data));
+                                                     data.Set("xml", "");
+                                                     data.Set("object", objectType);
 
-                string url = salsaUrl + action;
-                byte[] result = ExtentedWebClient.Try(() => client.UploadValues(url, "POST", data), 3);
-                response = Encoding.UTF8.GetString(result);
-                Logger.Debug("response: " + response);
-            }
-            return response;
+                                                     string url1 = salsaUrl + action;
+                                                     byte[] result1 = client1.UploadValues(url1, "POST", data);
+                                                     response1 = Encoding.UTF8.GetString(result1);
+                                                     Logger.Debug("response: " + response1);
+                                                 }
+                                                 return response1;
+                                             }, 3);
         }
 
     }
