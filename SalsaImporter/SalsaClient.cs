@@ -113,21 +113,21 @@ namespace SalsaImporter
         {
             IEnumerable<Task> tasks = supporters.Select(supporter =>
                                                         Task.Factory.StartNew(wk =>
-                                                                                  {
-                                                                                      try
-                                                                                      {
-                                                                                          var id =
-                                                                                              CreateSupporter(supporter);
-                                                                                          supporter["supporter_KEY"] =
-                                                                                              id;
-                                                                                      }
-                                                                                      catch(Exception e)
-                                                                                      {
-                                                                                          Logger.Error(String.Format("Encountered an unexpected error when try to create the supporter(id:{0}). This operation has been skipped. Error: {1} {2}",
-                                                                                              supporter.Get("uid"), e.Message, e.StackTrace));
-                                                                                      }
-                                                                                  }, null));
-            Task.WaitAll(tasks.ToArray());
+                                                        {
+                                                                var id = CreateSupporter(supporter);
+                                                                supporter["supporter_KEY"] =id;
+                                                        }, null));
+            try
+            {
+                Task.WaitAll(tasks.ToArray(), -1); //no timeout
+            }
+            catch(AggregateException e)
+            {
+                var internalMessages = "";
+               e.InnerExceptions.ToList().ForEach(err => internalMessages += err.ToString() + "\n");
+               Logger.Error(string.Format("CreateSupporters got {0} error(s). Skip the error and continue. Details: \n{1}", 
+                   e.InnerExceptions.Count, internalMessages));
+            }
         }
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
