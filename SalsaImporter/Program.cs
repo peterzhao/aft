@@ -4,12 +4,12 @@ namespace SalsaImporter
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             if (args.Length < 1)
             {
                 ShowUsage();
-                return;
+                return 1;
             }
 
             SetEnvironment(args);
@@ -34,7 +34,9 @@ namespace SalsaImporter
             catch(Exception e)
             {
                 Logger.Fatal("Encounter unexpected error.", e);
+                return 1;
             }
+            return 0;
         }
 
         private static void DeleteAllSupporters()
