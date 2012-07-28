@@ -114,8 +114,18 @@ namespace SalsaImporter
             IEnumerable<Task> tasks = supporters.Select(supporter =>
                                                         Task.Factory.StartNew(wk =>
                                                                                   {
-                                                                                      var id = CreateSupporter(supporter);
-                                                                                      supporter["supporter_KEY"] = id;
+                                                                                      try
+                                                                                      {
+                                                                                          var id =
+                                                                                              CreateSupporter(supporter);
+                                                                                          supporter["supporter_KEY"] =
+                                                                                              id;
+                                                                                      }
+                                                                                      catch(Exception e)
+                                                                                      {
+                                                                                          Logger.Error(String.Format("Encountered an unexpected error when try to create the supporter(id:{0}). This operation has been skipped. Error: {1} {2}",
+                                                                                              supporter.Get("uid"), e.Message, e.StackTrace));
+                                                                                      }
                                                                                   }, null));
             Task.WaitAll(tasks.ToArray());
         }

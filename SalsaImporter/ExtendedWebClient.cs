@@ -41,7 +41,7 @@ namespace SalsaImporter
                 }
                 catch (WebException exception)
                 {
-                    Logger.Warn("ExtendedWebClient catched WebException and try again.");
+                    Logger.Warn("ExtendedWebClient catched WebException and try again. Error:" + exception.Message);
                     count += 1;
                     if (count > tryTimes)
                         throw new ApplicationException(String.Format(
