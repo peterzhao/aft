@@ -13,28 +13,45 @@ namespace SalsaImporter
             }
 
             SetEnvironment(args);
-            switch (args[0])
+            try
             {
-                case "push":
-                    new Sync().PushNewSupportsToSalsa();
-                    break;
-                case "count":
-                    CountSupportOnSalsa();
-                    break;
-                default:
-                    ShowUsage();
-                    break;
+                switch (args[0])
+                {
+                    case "push":
+                        new Sync().PushNewSupportsToSalsa();
+                        break;
+                    case "count":
+                        CountSupportOnSalsa();
+                        break;
+                    case "delete":
+                        DeleteAllSupporters();
+                        break;
+                    default:
+                        ShowUsage();
+                        break;
+                }
             }
+            catch(Exception e)
+            {
+                Logger.Fatal("Encounter unexpected error.", e);
+            }
+        }
+
+        private static void DeleteAllSupporters()
+        {
+            var client = new SalsaClient();
+            client.Authenticate();
+            client.DeleteAllObjects("supporter");
         }
 
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: push|count [environment]\n if no environment is specified, use production.");
+            Console.WriteLine("Usage: push|count|delete [environment]\n if no environment is specified, use dev.");
         }
 
         private static void SetEnvironment(string[] args)
         {
-            Config.Environment = args.Length > 1 ? args[1] : Config.Production;
+            Config.Environment = args.Length > 1 ? args[1] : Config.Dev;
             Logger.Info("Sync under environment:" + Config.Environment);
         }
 

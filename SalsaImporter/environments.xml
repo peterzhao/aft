@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <environments>
+  <dev>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
+    <salsaPassword>notenote</salsaPassword>
+  </dev>
   <unitTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>talexand@thoughtworks.com</salsaUserName>

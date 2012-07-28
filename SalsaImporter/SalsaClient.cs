@@ -123,10 +123,12 @@ namespace SalsaImporter
 
         public void DeleteAllObjects(string objectType)
         {
+            Logger.Info("Deleting all objects of " + objectType);
             ApplyToObjects(objectType,
                             500,
                             supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)),
                             new List<string> {objectType + "_KEY"});
+            Logger.Info("All objects of " + objectType + " deleted.");
         }
 
         public int CustomColumnCount()

@@ -7,8 +7,9 @@ namespace SalsaImporter
         public static string UnitTest = "unitTest";
         public static string PerformanceTest = "performanceTest";
         public static string Production = "production";
+        public static string Dev = "dev";
         public static string Stub = "stub";
-        public static string Environment = Config.Production;
+        public static string Environment = Config.Dev;
 
         public static string SalsaApiUri
         {

@@ -43,13 +43,13 @@ namespace SalsaImporter
                 }
                 catch (WebException exception)
                 {
-                    if(exception.Message != "The operation has timed out")
-                        throw exception;
-                    Logger.Warn("ExtendedWebClient catch timeout exception and try again.");
+//                    if(exception.Message != "The operation has timed out")
+//                        throw exception;
+                    Logger.Warn("ExtendedWebClient catched WebException and try again.");
                 }
                 count += 1;
             }
-            throw new WebException("The operation has timed out after try " + tryTimes + " times.");
+            throw new WebException("Rethrow WebException after try " + tryTimes + " times.");
         }
     }
 }
