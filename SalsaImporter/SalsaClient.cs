@@ -88,23 +88,15 @@ namespace SalsaImporter
             }
         }
 
-        public void EachBatchOfSupporters(int blockSize,
-                                   Action<List<XElement>> batchHandler,
-                                   IEnumerable<String> fieldsToReturn = null)
+        public void DeleteAllObjects(string objectType, int blockSize)
         {
             int start = 0;
+            Logger.Info(String.Format("Deleting all {0}s...", objectType));
             for (; ; ) // ever
             {
-                string url =
-                    String.Format(
-                        "{0}api/getObjects.sjs?object=supporter&limit={1}&condition=supporter_KEY>{2}",
-                        salsaUrl, blockSize, start);
-
-                if (fieldsToReturn != null)
-                {
-                    url += "&include=" + String.Join(",", fieldsToReturn);
-                }
-
+                Authenticate();
+                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
+                        salsaUrl, objectType, start, blockSize);
                 Logger.Debug("Requesting: " + url);
                 string response = ExtentedWebClient.Try(() =>
                 {
@@ -117,16 +109,14 @@ namespace SalsaImporter
 
                 Logger.Debug("response from PullObjects: " + response);
 
-                List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
+                List<XElement> items = XDocument.Parse(response).Descendants("item").ToList();
 
-                if (supporters.Count == 0)
-                    break;
+                if (items.Count == 0) break;
 
-                batchHandler(supporters);
-                start += blockSize;
-                if (supporters.Count < blockSize)
-                    break;
+                DeleteObjects(objectType, items.Select(s => s.Element("key").Value));
+                if (items.Count < blockSize) break;
             }
+            Logger.Info(String.Format("All {0}s deleted.", objectType));
         }
 
         public void DeleteObject(string objectType, string key)
@@ -176,26 +166,16 @@ namespace SalsaImporter
             IEnumerable<Task> tasks = keys.Select(supporterKey =>
                                                   Task.Factory.StartNew(wk => DeleteObject(objectType, supporterKey),
                                                                         null));
-            Task.WaitAll(tasks.ToArray());
-        }
-
-        public void DeleteAllObjects(string objectType)
-        {
-            Logger.Info("Deleting all objects of " + objectType);
-            EachBatchOfObjects(objectType,
-                            500,
-                            supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)),
-                            new List<string> {objectType + "_KEY"});
-            Logger.Info("All objects of " + objectType + " deleted.");
-        }
-
-        public void DeleteAllSupporters(int batchSize)
-        {
-            Logger.Info("Deleting all supporter");
-            EachBatchOfSupporters(batchSize,
-                            supporters => DeleteObjects("supporter", supporters.Select(s => s.Element("key").Value)),
-                            new List<string> { "supporter_KEY" });
-            Logger.Info("All supporters deleted.");
+            try
+            {
+                Task.WaitAll(tasks.ToArray(), -1); //no timeout
+            }
+            catch (AggregateException ex)
+            {
+                var message = "";
+                ex.InnerExceptions.ToList().ForEach(e => message += ex.ToString() + "/n");
+                throw new ApplicationException(string.Format("SalsaClient.DeleteObjects got {0} error(s): /n{1}", ex.InnerExceptions.Count, message));
+            }
         }
 
         public int CustomColumnCount()

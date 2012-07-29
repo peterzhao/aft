@@ -28,13 +28,13 @@ namespace SalsaImporter
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
+                _salsa.Authenticate();
                 _salsa.CreateSupporters(nameValuesList);
                 nameValuesList.ForEach(nameValues =>
                 {
                     var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
                     supporter.supporter_KEY = int.Parse(nameValues["supporter_KEY"]);
                 });
-                Logger.Debug("update aft db for supporter_key.");
             });
 
             var finished = DateTime.Now;
@@ -44,7 +44,7 @@ namespace SalsaImporter
         public void EnsureTestingCustomColumnExist()
         {
 
-            _salsa.DeleteAllObjects("custom_column");
+            _salsa.DeleteAllObjects("custom_column", 100);
             for (int i=0;i < 10;i++)
             {
                 var customColumn = new NameValueCollection
