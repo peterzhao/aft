@@ -37,7 +37,11 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldDeleteAllSupporters()
         {
-            client.DeleteAllObjects("supporter");
+            var supporters = new List<NameValueCollection>();
+            for (var i = 0; i < 10; i++)
+                supporters.Add(GenerateSupporter());
+            client.CreateSupporters(supporters);
+            client.DeleteAllSupporters(3);
             Assert.AreEqual(0, client.SupporterCount());
         }
 
@@ -75,11 +79,17 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldPullSupporters()
         {
+            var supporters = new List<NameValueCollection>();
+            for (var i = 0; i < 10; i++)
+                supporters.Add(GenerateSupporter());
+            client.CreateSupporters(supporters);
+
             var total = client.SupporterCount();
-            var limit = 500;
+            Console.WriteLine("total:" + total);
+            var limit = 3;
             var actualTimes = 0;
             Action<List<XElement>> action =  supports => actualTimes += 1;
-            var expectedTimes = Math.Ceiling(total/500.0);
+            var expectedTimes = Math.Ceiling(total/3.0);
             client.EachBatchOfObjects("supporter", limit, action);
 
             Assert.AreEqual(expectedTimes, actualTimes);

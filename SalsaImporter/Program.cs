@@ -43,7 +43,7 @@ namespace SalsaImporter
         {
             var client = new SalsaClient();
             client.Authenticate();
-            client.DeleteAllObjects("supporter");
+            client.DeleteAllSupporters(500);
         }
 
         private static void ShowUsage()

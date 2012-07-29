@@ -82,7 +82,48 @@ namespace SalsaImporter
                     break;
 
                 batchHandler(supporters);
+                start += blockSize;
+                if (supporters.Count < blockSize)
+                    break;
+            }
+        }
 
+        public void EachBatchOfSupporters(int blockSize,
+                                   Action<List<XElement>> batchHandler,
+                                   IEnumerable<String> fieldsToReturn = null)
+        {
+            int start = 0;
+            for (; ; ) // ever
+            {
+                string url =
+                    String.Format(
+                        "{0}api/getObjects.sjs?object=supporter&limit={1}&condition=supporter_KEY>{2}",
+                        salsaUrl, blockSize, start);
+
+                if (fieldsToReturn != null)
+                {
+                    url += "&include=" + String.Join(",", fieldsToReturn);
+                }
+
+                Logger.Debug("Requesting: " + url);
+                string response = ExtentedWebClient.Try(() =>
+                {
+                    using (var webClient = new ExtentedWebClient(cookies))
+                    {
+                        string result = webClient.DownloadString(url);
+                        return result;
+                    }
+                }, 3);
+
+                Logger.Debug("response from PullObjects: " + response);
+
+                List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
+
+                if (supporters.Count == 0)
+                    break;
+
+                batchHandler(supporters);
+                start += blockSize;
                 if (supporters.Count < blockSize)
                     break;
             }
@@ -146,6 +187,15 @@ namespace SalsaImporter
                             supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)),
                             new List<string> {objectType + "_KEY"});
             Logger.Info("All objects of " + objectType + " deleted.");
+        }
+
+        public void DeleteAllSupporters(int batchSize)
+        {
+            Logger.Info("Deleting all supporter");
+            EachBatchOfSupporters(batchSize,
+                            supporters => DeleteObjects("supporter", supporters.Select(s => s.Element("key").Value)),
+                            new List<string> { "supporter_KEY" });
+            Logger.Info("All supporters deleted.");
         }
 
         public int CustomColumnCount()
