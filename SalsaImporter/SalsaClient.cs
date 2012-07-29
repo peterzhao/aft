@@ -46,7 +46,7 @@ namespace SalsaImporter
         }
 
 
-        public void ApplyToObjects(string objectType,
+        public void EachBatchOfObjects(string objectType,
                                     int blockSize,
                                     Action<List<XElement>> batchHandler,
                                     IEnumerable<String> fieldsToReturn = null)
@@ -131,6 +131,7 @@ namespace SalsaImporter
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
         {
+            Logger.Info("Deleting objects");
             IEnumerable<Task> tasks = keys.Select(supporterKey =>
                                                   Task.Factory.StartNew(wk => DeleteObject(objectType, supporterKey),
                                                                         null));
@@ -140,7 +141,7 @@ namespace SalsaImporter
         public void DeleteAllObjects(string objectType)
         {
             Logger.Info("Deleting all objects of " + objectType);
-            ApplyToObjects(objectType,
+            EachBatchOfObjects(objectType,
                             500,
                             supporters => DeleteObjects(objectType, supporters.Select(s => s.Element("key").Value)),
                             new List<string> {objectType + "_KEY"});

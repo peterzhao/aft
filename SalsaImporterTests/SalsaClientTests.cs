@@ -30,7 +30,7 @@ namespace SalsaImporterTests
             client.DeleteAllObjects("supporter");
             var actualTimes = 0;
             Action<List<XElement>> action = supports => actualTimes += 1;
-            client.ApplyToObjects("supporter", 500, action);
+            client.EachBatchOfObjects("supporter", 500, action);
             Assert.AreEqual(0, actualTimes);
         }
 
@@ -80,7 +80,7 @@ namespace SalsaImporterTests
             var actualTimes = 0;
             Action<List<XElement>> action =  supports => actualTimes += 1;
             var expectedTimes = Math.Ceiling(total/500.0);
-            client.ApplyToObjects("supporter", limit, action);
+            client.EachBatchOfObjects("supporter", limit, action);
 
             Assert.AreEqual(expectedTimes, actualTimes);
         }

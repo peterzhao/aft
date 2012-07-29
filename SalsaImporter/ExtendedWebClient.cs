@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 
 namespace SalsaImporter
 {
@@ -42,6 +43,7 @@ namespace SalsaImporter
                 {
                     Logger.Warn("ExtendedWebClient catched WebException and try again. Error:" + exception.Message);
                     count += 1;
+                    Thread.Sleep(20000 * count); //wait for a while;
                     if (count > tryTimes)
                         throw new ApplicationException(String.Format(
                             "Rethrow WebException after try {0} times. {1} {2}", tryTimes, exception.Message,
