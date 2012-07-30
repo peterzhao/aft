@@ -39,7 +39,6 @@ namespace SalsaImporter
 
         public void EnsureTestingCustomColumnExist()
         {
-
             _salsa.DeleteAllObjects("custom_column", 100);
             for (int i=0;i < 10;i++)
             {
@@ -47,9 +46,7 @@ namespace SalsaImporter
                                           {
                                               {"name", String.Format("CustomString{0}", i)},
                                               {"label", String.Format("Custom String {0}", i)}, 
-                                              {"type", "varchar"}, 
-                                              {"data_column", String.Format("VARCHAR{0}", i)}
-                                          };
+                                              {"type", "varchar"}                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }
             for (int i = 0; i < 10; i++)
@@ -58,8 +55,7 @@ namespace SalsaImporter
                                           {
                                               {"name", String.Format("CustomBoolean{0}", i)},
                                               {"label", String.Format("Custom Boolean {0}", i)}, 
-                                              {"type", "bool"}, 
-                                              {"data_column", String.Format("BOOL{0}", i)}
+                                              {"type", "bool"}
                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }
@@ -69,8 +65,7 @@ namespace SalsaImporter
                                           {
                                               {"name", String.Format("CustomInteger{0}", i)},
                                               {"label", String.Format("Custom Integer {0}", i)}, 
-                                              {"type", "int"}, 
-                                              {"data_column", String.Format("BOOL{0}", i)}
+                                              {"type", "int"}
                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }

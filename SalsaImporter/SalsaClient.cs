@@ -158,11 +158,12 @@ namespace SalsaImporter
             return CountObjects("custom_column");
         }
 
-        public string CreateSupporterCustomColumn(NameValueCollection customField)
+        public void CreateSupporterCustomColumn(NameValueCollection customField)
         {
-            customField.Set("database_table_KEY", "142"); // Not sure what this is, but neccesary
-            customField.Set("data_table", "supporter_custom");  // Custom field table for supporters
-            return Create("custom_column", customField);
+            customField.Set("database_table_KEY", "142");
+            customField.Set("key", "0"); // this is to indicate creation 
+            customField.Set("required", "label,name,type"); 
+            string response = Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField);
         }
 
         private string Create(string objectType, NameValueCollection customField)
@@ -170,11 +171,6 @@ namespace SalsaImporter
             customField.Set("key", "0"); // this is to indicate creation   
             string response = Post("save", objectType, customField);
             return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
-        }
-
-        public XElement GetCustomColumn(string key)
-        {
-            return GetObject(key, "custom_column");
         }
 
         private int CountObjects(string objectType)
@@ -186,7 +182,7 @@ namespace SalsaImporter
 
         private XElement GetObject(string key, string objectType)
         {
-            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}",salsaUrl, objectType, key));
+            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", salsaUrl, objectType, key));
             XDocument xml = XDocument.Parse(result);
             return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
         }

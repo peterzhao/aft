@@ -158,30 +158,6 @@ namespace SalsaImporterTests
         }
 
         [Test]
-        public void ShouldCreateSupporterCustomField()
-        {
-            string name = "testfield";
-            string label = "Test Field";
-            string type = "varchar";
-            string column = "VARCHAR0";
-            
-            var customColumn = new NameValueCollection
-                                          {
-                                              {"name", name},
-                                              {"label", label}, 
-                                              {"type", type}, 
-                                              {"data_column", column}
-                                          };
-            string customColumnId = client.CreateSupporterCustomColumn(customColumn);
-
-            XElement customColumnFromSalsa = client.GetCustomColumn(customColumnId);
-            Assert.AreEqual(name, customColumnFromSalsa.Element("name").Value);
-            Assert.AreEqual(label, customColumnFromSalsa.Element("label").Value);
-            Assert.AreEqual(type, customColumnFromSalsa.Element("type").Value);
-            Assert.AreEqual(column, customColumnFromSalsa.Element("data_column").Value);
-        }
-
-        [Test]
         public void ShouldReadWriteCustomFieldOnSupporter()
         {
             string name = "testfield";
@@ -191,8 +167,7 @@ namespace SalsaImporterTests
                                           {
                                               {"name", name},
                                               {"label", "Test Field"}, 
-                                              {"type", "varchar"}, 
-                                              {"data_column", "VARCHAR0"}
+                                              {"type", "varchar"}
                                           };
             
             client.DeleteAllObjects("custom_column", 100);
@@ -203,11 +178,9 @@ namespace SalsaImporterTests
 
             string supporterId = client.CreateSupporter(supporter);
             XElement supporterFromSalsa = client.GetSupporter(supporterId);
-            Console.WriteLine(supporterFromSalsa);
+
             Assert.AreEqual(valueOnSupporter, supporterFromSalsa.Element(name).Value);
         }
-
-
 
         private bool DoesSupporterExist(string id)
         {
