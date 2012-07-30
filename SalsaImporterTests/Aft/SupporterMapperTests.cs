@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 
@@ -133,6 +134,27 @@ namespace SalsaImporterTests.Aft
             var nameValues = new SupporterMapper().ToNameValues(supporter);
             Assert.AreEqual(nameValues["Email"], "jim@abc.com");
             Assert.AreEqual(2, nameValues.Keys.Count);
+        }
+
+        //[Test] //working on it now
+        public void ShouldMapToSupporter()
+        {
+            var xml = @"<item>
+      <supporter_KEY>32294089</supporter_KEY>
+      <Email>peter@abc.com</Email>
+      <First_Name>peter</First_Name>
+      <Last_Name>zhao</Last_Name>
+      <key>32294089</key>
+      <object>supporter</object>
+</item>";
+            XElement element = XDocument.Parse(xml).Root;
+            Supporter supporter = new SupporterMapper().ToSupporter(element);
+
+            Assert.AreEqual("peter", supporter.First_Name);
+            Assert.AreEqual("zhao", supporter.Last_Name);
+            Assert.AreEqual("peter@abc.com", supporter.Email);
+            Assert.AreEqual("32294089", supporter.supporter_KEY);
+
         }
 
     }

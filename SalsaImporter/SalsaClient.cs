@@ -94,22 +94,22 @@ namespace SalsaImporter
             Logger.Info(String.Format("Deleting all {0}s...", objectType));
             for (; ; ) // ever
             {
-                Authenticate();
+                //Authenticate();
+
                 string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
                         salsaUrl, objectType, start, blockSize);
-                Logger.Debug("Requesting: " + url);
-                string response = ExtentedWebClient.Try(() =>
+                string response = Get(url);
+
+
+                XDocument responseXml = XDocument.Parse(response);
+                
+                if(responseXml.Descendants("error").Any())
                 {
-                    using (var webClient = new ExtentedWebClient(cookies))
-                    {
-                        string result = webClient.DownloadString(url);
-                        return result;
-                    }
-                }, 3);
-
-                Logger.Debug("response from PullObjects: " + response);
-
-                List<XElement> items = XDocument.Parse(response).Descendants("item").ToList();
+                    Logger.Warn(string.Format("SalsaClient.DeleteAllObjects got error and skipped. {0}", responseXml.Descendants("error").First().Value));
+                    Authenticate();
+                    continue;
+                }
+                List<XElement> items = responseXml.Descendants("item").ToList();
 
                 if (items.Count == 0) break;
 
@@ -117,6 +117,22 @@ namespace SalsaImporter
                 if (items.Count < blockSize) break;
             }
             Logger.Info(String.Format("All {0}s deleted.", objectType));
+        }
+
+        private string Get(string url)
+        {
+            Logger.Debug("Requesting: " + url);
+
+            string response = ExtentedWebClient.Try(() =>
+                                                    {
+                                                        using (var webClient = new ExtentedWebClient(cookies))
+                                                        {
+                                                            string result = webClient.DownloadString(url);
+                                                            return result;
+                                                        }
+                                                    }, 5);
+            Logger.Debug("response from PullObjects: " + response);
+            return response;
         }
 
         public void DeleteObject(string objectType, string key)
@@ -265,7 +281,7 @@ namespace SalsaImporter
                                                      Logger.Debug("response: " + response1);
                                                  }
                                                  return response1;
-                                             }, 3);
+                                             }, 5);
         }
 
     }

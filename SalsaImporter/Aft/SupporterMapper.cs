@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace SalsaImporter.Aft
 {
@@ -23,6 +24,11 @@ namespace SalsaImporter.Aft
             }
             result.Add("uid", supporter.Id.ToString());
             return result;
+        }
+
+        public Supporter ToSupporter(XElement element)
+        {
+            throw new NotImplementedException();
         }
     }
 }

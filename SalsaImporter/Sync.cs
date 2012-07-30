@@ -23,12 +23,12 @@ namespace SalsaImporter
         
             var begin = DateTime.Now;
             var mapper = new SupporterMapper();
-            var batchSize = 500;
+            var batchSize = 100;
             int? totalLimit = null; //100000;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                _salsa.Authenticate();
+                //_salsa.Authenticate();
                 _salsa.CreateSupporters(nameValuesList);
                 nameValuesList.ForEach(nameValues =>
                 {
