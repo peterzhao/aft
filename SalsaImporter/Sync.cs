@@ -11,10 +11,12 @@ namespace SalsaImporter
     public class Sync
     {
         private readonly SalsaClient _salsa;
+        private ImporterErrorHandler _errorHandler;
 
         public Sync()
         {
             _salsa = new SalsaClient();
+            _errorHandler = new ImporterErrorHandler(500);
         }
 
         public void PushNewSupportsToSalsa()
@@ -26,7 +28,7 @@ namespace SalsaImporter
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                _salsa.CreateSupporters(nameValuesList);
+                _salsa.CreateSupporters(nameValuesList, _errorHandler.CanContinueToCreate);
                 
                 nameValuesList.ForEach(nameValues =>
                 {

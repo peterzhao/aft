@@ -135,15 +135,23 @@ namespace SalsaImporter
             return GetObject(key, "supporter");
         }
 
-        public void CreateSupporters(IEnumerable<NameValueCollection> supporters)
+        public void CreateSupporters(IEnumerable<NameValueCollection> supporters, Func<NameValueCollection, bool> errorHandler = null)
         {
-            IEnumerable<Task> tasks = supporters.Select(supporter =>
+            IEnumerable<Task> tasks = supporters.Select(supporterNameValues =>
                                                         Task.Factory.StartNew(arg =>
                                                         {
-                                                            var nameValues = (NameValueCollection)arg;
+                                                            var nameValues = (NameValueCollection) arg;
+                                                            try
+                                                            {
                                                                 var id = CreateSupporter(nameValues);
                                                                 nameValues["supporter_KEY"] = id;
-                                                        }, supporter));
+                                                            }
+                                                            catch(Exception ex)
+                                                            {
+                                                                if(errorHandler == null || !errorHandler(nameValues))
+                                                                    throw new ApplicationException("Create supporter failed", ex);
+                                                            }
+                                                        }, supporterNameValues));
             try
             {
                 Task.WaitAll(tasks.ToArray(), -1); //no timeout
