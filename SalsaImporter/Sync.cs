@@ -14,17 +14,14 @@ namespace SalsaImporter
         public Sync()
         {
             _salsa = new SalsaClient();
-            _salsa.Authenticate();
         }
 
         public void PushNewSupportsToSalsa()
         {
-            Logger.Info("Start performance test...");
         
-            var begin = DateTime.Now;
             var mapper = new SupporterMapper();
             var batchSize = 100;
-            int? totalLimit = null; //100000;
+            int? totalLimit = 1000;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
@@ -37,8 +34,7 @@ namespace SalsaImporter
                 });
             });
 
-            var finished = DateTime.Now;
-            Logger.Info("finished:" + (finished - begin).TotalSeconds);
+           
         }
 
         public void EnsureTestingCustomColumnExist()

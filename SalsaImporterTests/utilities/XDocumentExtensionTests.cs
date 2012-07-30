@@ -15,7 +15,7 @@ namespace SalsaImporterTests.utilities
         public void ShouldStringValueOfElement()
         {
             var xml = @"<item><Last_Name>zhao</Last_Name></item>";
-            XElement element = XDocument.Parse(xml).Root;
+            XElement element = XElement.Parse(xml);
             Assert.AreEqual("zhao", element.StringValueOrNull("Last_Name"));
             Assert.IsNull(element.StringValueOrNull("SomethingNotExist"));
         }
@@ -24,7 +24,7 @@ namespace SalsaImporterTests.utilities
         public void ShouldIntValueOfElement()
         {
             var xml = @"<item><id>2345</id></item>";
-            XElement element = XDocument.Parse(xml).Root;
+            XElement element = XElement.Parse(xml);
             Assert.AreEqual(2345, element.IntValueOrNull("id"));
             Assert.IsNull(element.IntValueOrNull("SomethingNotExist"));
         }
@@ -33,7 +33,7 @@ namespace SalsaImporterTests.utilities
         public void ShouldFloatValueOfElement()
         {
             var xml = @"<item><price>23.52</price></item>";
-            XElement element = XDocument.Parse(xml).Root;
+            XElement element = XElement.Parse(xml);
             Assert.AreEqual(23.52f, element.FloatValueOrNull("price"));
             Assert.IsNull(element.FloatValueOrNull("SomethingNotExist"));
         }

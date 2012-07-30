@@ -21,7 +21,6 @@ namespace SalsaImporterTests
         public void SetUp()
         {
             client = new SalsaClient();
-            client.Authenticate();
         }
 
 

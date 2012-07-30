@@ -13,6 +13,9 @@ namespace SalsaImporter
             }
 
             SetEnvironment(args);
+            Logger.Info("Start Salsa importer...");
+            var begin = DateTime.Now;
+
             try
             {
                 switch (args[0])
@@ -36,13 +39,14 @@ namespace SalsaImporter
                 Logger.Fatal("Encounter unexpected error.", e);
                 return 1;
             }
+            var finished = DateTime.Now;
+            Logger.Info("finished:" + (finished - begin).TotalSeconds);
             return 0;
         }
 
         private static void DeleteAllSupporters()
         {
             var client = new SalsaClient();
-            client.Authenticate();
             client.DeleteAllObjects("supporter", 50);
         }
 
@@ -60,7 +64,6 @@ namespace SalsaImporter
         private static void CountSupportOnSalsa()
         {
             var client = new SalsaClient();
-            client.Authenticate();
             int count = client.SupporterCount();
             Logger.Info("total supporter on salsa:" + count);
         }

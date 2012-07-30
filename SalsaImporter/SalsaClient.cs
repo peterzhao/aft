@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter
 {
     public class SalsaClient
     {
-        private readonly CookieContainer cookies = new CookieContainer();
         private readonly string salsaUrl;
 
         public SalsaClient()
@@ -23,24 +24,25 @@ namespace SalsaImporter
             System.Net.ServicePointManager.CertificatePolicy = new TrustAllCertificatePolicy();
         }
 
-        public void Authenticate()
+        public CookieContainer Login()
         {
-            Logger.Debug("authenticating...");
-            var url = salsaUrl;
+            var cookieContainer = new CookieContainer();
             var response = ExtentedWebClient.Try(() =>
-                                                     {
-                                                         var webRequest =
-                                                             WebRequest.Create(url + "api/authenticate.sjs?email=" +
-                                                                               Config.SalsaUserName + "&password=" + Config.SalsaPassword);
-                                                         ((HttpWebRequest) webRequest).CookieContainer = cookies;
-                                                         webRequest.Method = "POST";
-                                                         webRequest.ContentLength = 0;
-                                                         webRequest.ContentType = "application/x-www-form-urlencoded";
-                                                         return (HttpWebResponse) webRequest.GetResponse();
-                                                     }, 3);
-
-
-            Logger.Debug("response: " + response);
+            {
+                var webRequest =
+                    WebRequest.Create(salsaUrl + "api/authenticate.sjs?email=" +
+                                      Config.SalsaUserName + "&password=" + Config.SalsaPassword);
+                ((HttpWebRequest)webRequest).CookieContainer = cookieContainer;
+                webRequest.Method = "POST";
+                webRequest.ContentLength = 0;
+                webRequest.ContentType = "application/x-www-form-urlencoded";
+                return (HttpWebResponse)webRequest.GetResponse();
+            }, 3);
+            string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            Logger.Debug("response: " + content);
+            if (XDocument.Parse(content).Root.StringValueOrNull("message") != "Successful Login") 
+                throw new ApplicationException("Login failed.");
+            return cookieContainer;
         }
 
 
@@ -76,21 +78,10 @@ namespace SalsaImporter
             Logger.Info(String.Format("Deleting all {0}s...", objectType));
             for (; ; ) // ever
             {
-                //Authenticate();
-
                 string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
                         salsaUrl, objectType, start, blockSize);
                 string response = Get(url);
-
-
                 XDocument responseXml = XDocument.Parse(response);
-                
-                if(responseXml.Descendants("error").Any())
-                {
-                    Logger.Warn(string.Format("SalsaClient.DeleteAllObjects got error and skipped. {0}", responseXml.Descendants("error").First().Value));
-                    Authenticate(); //todo: can we do here?
-                    continue;
-                }
                 List<XElement> items = responseXml.Descendants("item").ToList();
 
                 if (items.Count == 0) break;
@@ -202,10 +193,11 @@ namespace SalsaImporter
 
         private string Post(string action, string objectType, NameValueCollection data)
         {
+            CookieContainer cookieContainer = Login();
             return ExtentedWebClient.Try(() =>
                                              {
                                                  string response1;
-                                                 using (var client1 = new ExtentedWebClient(cookies))
+                                                 using (var client1 = new ExtentedWebClient(cookieContainer))
                                                  {
                                                      Logger.Debug(string.Format("POST to {0} {1} with {2}",
                                                                                 action, objectType, data));
@@ -224,15 +216,14 @@ namespace SalsaImporter
         private string Get(string url)
         {
             Logger.Debug("Requesting: " + url);
-
-            string response = ExtentedWebClient.Try(() =>
-            {
-                using (var webClient = new ExtentedWebClient(cookies))
+            CookieContainer cookieContainer = Login();
+            string response = ExtentedWebClient.Try(() =>{
+                using (var webClient = new ExtentedWebClient(cookieContainer))
                 {
                     string result = webClient.DownloadString(url);
                     return result;
                 }
-            }, 5);
+                                                        }, 5);
             Logger.Debug("response from PullObjects: " + response);
             return response;
         }
