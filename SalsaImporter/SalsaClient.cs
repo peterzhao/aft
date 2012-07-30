@@ -42,9 +42,21 @@ namespace SalsaImporter
             }, 3);
             string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
             Logger.Debug("response: " + content);
-            if (XDocument.Parse(content).Root.StringValueOrNull("message") != "Successful Login") 
-                throw new ApplicationException("Login failed.");
+            VerifyLoginResult(content);
             return cookieContainer;
+        }
+
+        private static void VerifyLoginResult(string content)
+        {
+            try
+            {
+                if (XDocument.Parse(content).Root.StringValueOrNull("message") != "Successful Login")
+                    throw new ApplicationException("Login failed.");
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Login failed.", ex);
+            }
         }
 
 

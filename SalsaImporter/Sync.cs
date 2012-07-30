@@ -17,6 +17,7 @@ namespace SalsaImporter
         {
             _salsa = new SalsaClient();
             _errorHandler = new ImporterErrorHandler(500);
+            _salsa.Login();
         }
 
         public void PushNewSupportsToSalsa()
@@ -24,7 +25,7 @@ namespace SalsaImporter
         
             var mapper = new SupporterMapper();
             var batchSize = 100;
-            int? totalLimit = 1000;
+            int? totalLimit = null;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
@@ -32,12 +33,27 @@ namespace SalsaImporter
                 
                 nameValuesList.ForEach(nameValues =>
                 {
-                    var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
-                    supporter.supporter_KEY = int.Parse(nameValues["supporter_KEY"]);
+                    string supporterKey = nameValues["supporter_KEY"];
+                    if (!string.IsNullOrEmpty(supporterKey))
+                    {
+                        var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
+                        supporter.supporter_KEY = int.Parse(supporterKey);
+                    }
                 });
             });
+            PrintFailedRecords();
+        }
 
-           
+        private void PrintFailedRecords()
+        {
+            var failedCreatedSupporterKeys = _errorHandler.FailedRecordsToCreate.Keys.ToList();
+            if (failedCreatedSupporterKeys.Count > 0)
+            {
+                var message = "";
+                failedCreatedSupporterKeys.ForEach(k => message += k + " ");
+                Logger.Error(String.Format("There are {0} supporters failed to push to Salsa. {1}",
+                                           failedCreatedSupporterKeys.Count, message));
+            }
         }
 
         public void EnsureTestingCustomColumnExist()
