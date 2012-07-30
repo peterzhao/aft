@@ -10,6 +10,11 @@
     <salsaUserName>talexand@thoughtworks.com</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
   </unitTest>
+  <altPerformanceTest>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
+    <salsaPassword>7eleven</salsaPassword>
+  </altPerformanceTest>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>

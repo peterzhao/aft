@@ -8,6 +8,7 @@ namespace SalsaImporter
         public static string PerformanceTest = "performanceTest";
         public static string Production = "production";
         public static string Dev = "dev";
+        public static string AltPerformanceTest = "altPerformanceTest";
         public static string Stub = "stub";
         public static string Environment = Config.Dev;
 
