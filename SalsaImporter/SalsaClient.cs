@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter
@@ -78,21 +80,39 @@ namespace SalsaImporter
             Logger.Info(String.Format("Deleting all {0}s...", objectType));
             for (; ; ) // ever
             {
-                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
-                        salsaUrl, objectType, start, blockSize);
-                string response = Get(url);
-                XDocument responseXml = XDocument.Parse(response);
-                List<XElement> items = responseXml.Descendants("item").ToList();
-
+                var items = GetBatchObjects(objectType, blockSize, start);
                 if (items.Count == 0) break;
-
                 DeleteObjects(objectType, items.Select(s => s.Element("key").Value));
                 if (items.Count < blockSize) break;
             }
             Logger.Info(String.Format("All {0}s deleted.", objectType));
         }
 
-      
+        private List<XElement> GetBatchObjects(string objectType, int blockSize, int start)
+        {
+            string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
+                                       salsaUrl, objectType, start, blockSize);
+            return Try(() =>
+                    {
+                        string response = Get(url);
+                        List<XElement> items = ParseGetObjectResponseFromServer(response, objectType);
+                        return items;
+                    }, 3);
+        }
+
+        private  List<XElement> ParseGetObjectResponseFromServer(string response, string objectType)
+        {
+            try
+            {
+                XDocument responseXml = XDocument.Parse(response);
+                List<XElement> items = responseXml.Element("data").Element(objectType).Elements("item").ToList();
+                return items;
+            }catch(Exception ex)
+            {
+                throw new InvalidSalsaResponseException(response, ex);
+            }
+        }
+
 
         public void DeleteObject(string objectType, string key)
         {
@@ -131,7 +151,7 @@ namespace SalsaImporter
             {
                 var message = "";
                 ex.InnerExceptions.ToList().ForEach(e => message += ex.ToString() + "/n");
-                throw new ApplicationException(string.Format("SalsaClient.CreateSupporters got {0} error(s): /n{1}", ex.InnerExceptions.Count, message));
+                throw new CreateSupportersException(string.Format("SalsaClient.CreateSupporters got {0} error(s): /n{1}", ex.InnerExceptions.Count, message), ex);
             }
         }
 
@@ -166,11 +186,34 @@ namespace SalsaImporter
             string response = Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField);
         }
 
-        private string Create(string objectType, NameValueCollection customField)
+        private string Create(string objectType, NameValueCollection data)
         {
-            customField.Set("key", "0"); // this is to indicate creation   
-            string response = Post("save", objectType, customField);
-            return XDocument.Parse(response).Element("data").Element("success").Attribute("key").Value;
+            data.Set("key", "0"); // this is to indicate creation  
+            return Try(() =>
+                    {
+                        string response = Post("save", objectType, data);
+                        string supporterKeyFromServerResponse = GetSupporterKeyFromServerResponse(response, data);
+                        return supporterKeyFromServerResponse;
+                    }, 3);
+          
+        }
+
+        private static string GetSupporterKeyFromServerResponse(string response, NameValueCollection data)
+        {
+            string dateDetails = "Supporter data:";
+            string key = null;
+            data.AllKeys.ToList().ForEach(k => dateDetails += string.Format("{0}:{1} ", k, data[k]));
+            try
+            {
+                var document = XDocument.Parse(response);
+                key = document.Element("data").Element("success").Attribute("key").Value;
+            }
+            catch(Exception ex)
+            {
+                throw new InvalidSalsaResponseException(string.Format("Failed to get supporter key from server response:{0}. Supporter data:{1}", response, dateDetails), ex);
+            }
+
+            return key;
         }
 
         private int CountObjects(string objectType)
@@ -223,6 +266,31 @@ namespace SalsaImporter
             Logger.Debug("response from PullObjects: " + response);
             return response;
         }
+
+        private  TResult Try<TResult>(Func<TResult> func, int tryTimes)
+        {
+            int count = 0;
+
+            while (true)
+            {
+                try
+                {
+                    return func();
+                }
+                catch (InvalidSalsaResponseException exception)
+                {
+                    Logger.Warn("SalsaClient catched InvalidSalsaResponseException and try again. Error:" + exception.Message);
+                    count += 1;
+                    Thread.Sleep(5000 * count); //wait for a while;
+                    if (count > tryTimes)
+                        throw new ApplicationException(String.Format(
+                            "Rethrow InvalidSalsaResponseException after try {0} times. {1} {2}", tryTimes, exception.Message,
+                            exception.StackTrace));
+                }
+            }
+        }
+
+        
 
     }
 }

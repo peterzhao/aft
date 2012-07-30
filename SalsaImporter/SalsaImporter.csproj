@@ -57,9 +57,11 @@
     <Compile Include="Aft\Supporter.cs" />
     <Compile Include="Aft\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Exceptions\CreateSupportersException.cs" />
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Exceptions\InvalidSalsaResponseException.cs" />
     <Compile Include="SalsaClient.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />
@@ -83,6 +85,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

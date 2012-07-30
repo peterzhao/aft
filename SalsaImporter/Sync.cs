@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
+using SalsaImporter.Exceptions;
 
 namespace SalsaImporter
 {
@@ -25,8 +26,8 @@ namespace SalsaImporter
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                //_salsa.Authenticate();
                 _salsa.CreateSupporters(nameValuesList);
+                
                 nameValuesList.ForEach(nameValues =>
                 {
                     var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
