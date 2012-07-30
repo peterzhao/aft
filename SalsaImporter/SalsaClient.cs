@@ -27,13 +27,11 @@ namespace SalsaImporter
         {
             Logger.Debug("authenticating...");
             var url = salsaUrl;
-            var username = Config.SalsaUserName;
-            var password = Config.SalsaPassword;
             var response = ExtentedWebClient.Try(() =>
                                                      {
                                                          var webRequest =
                                                              WebRequest.Create(url + "api/authenticate.sjs?email=" +
-                                                                               username + "&password=" + password);
+                                                                               Config.SalsaUserName + "&password=" + Config.SalsaPassword);
                                                          ((HttpWebRequest) webRequest).CookieContainer = cookies;
                                                          webRequest.Method = "POST";
                                                          webRequest.ContentLength = 0;
@@ -54,37 +52,21 @@ namespace SalsaImporter
             int start = 0;
             for (;;) // ever
             {
-                string url =
-                    String.Format(
-                        "{0}api/getObjects.sjs?object={1}&limit={2},{3}",
-                        salsaUrl, objectType, start, blockSize);
+                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}",salsaUrl, objectType, start, blockSize);
 
                 if (fieldsToReturn != null)
-                {
                     url += "&include=" + String.Join(",", fieldsToReturn);
-                }
 
-                Logger.Debug("Requesting: " + url);
-                string response = ExtentedWebClient.Try(() =>
-                                              {
-                                                  using (var webClient = new ExtentedWebClient(cookies))
-                                                  {
-                                                      string result = webClient.DownloadString(url);
-                                                      return result;
-                                                  }
-                                              }, 3);
+                string response = Get(url);
                                                 
-                Logger.Debug("response from PullObjects: " + response);
 
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
 
-                if (supporters.Count == 0)
-                    break;
+                if (supporters.Count == 0)break;
 
                 batchHandler(supporters);
                 start += blockSize;
-                if (supporters.Count < blockSize)
-                    break;
+                if (supporters.Count < blockSize) break;
             }
         }
 
@@ -106,7 +88,7 @@ namespace SalsaImporter
                 if(responseXml.Descendants("error").Any())
                 {
                     Logger.Warn(string.Format("SalsaClient.DeleteAllObjects got error and skipped. {0}", responseXml.Descendants("error").First().Value));
-                    Authenticate();
+                    Authenticate(); //todo: can we do here?
                     continue;
                 }
                 List<XElement> items = responseXml.Descendants("item").ToList();
@@ -119,21 +101,7 @@ namespace SalsaImporter
             Logger.Info(String.Format("All {0}s deleted.", objectType));
         }
 
-        private string Get(string url)
-        {
-            Logger.Debug("Requesting: " + url);
-
-            string response = ExtentedWebClient.Try(() =>
-                                                    {
-                                                        using (var webClient = new ExtentedWebClient(cookies))
-                                                        {
-                                                            string result = webClient.DownloadString(url);
-                                                            return result;
-                                                        }
-                                                    }, 5);
-            Logger.Debug("response from PullObjects: " + response);
-            return response;
-        }
+      
 
         public void DeleteObject(string objectType, string key)
         {
@@ -220,47 +188,16 @@ namespace SalsaImporter
 
         private int CountObjects(string objectType)
         {
-            return ExtentedWebClient.Try(() =>
-                                      {
-                                          using (var client = new ExtentedWebClient(cookies))
-                                          {
-                                              Logger.Debug("Counting Objects...");
-                                              string url = salsaUrl +
-                                                           string.Format(
-                                                               "api/getCount.sjs?object={0}&countColumn={0}_KEY",
-                                                               objectType);
-                                              string result = client.DownloadString(url);
-                                              Logger.Debug("response: " + result);
-                                              XDocument xml = XDocument.Parse(result);
-                                              string value = xml.Descendants("count").First().Value;
-                                              int countObjects = Int32.Parse(value);
-                                              return countObjects;
-                                          }
-                                      }, 3);
+            string result = Get(salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType));
+            string value = XDocument.Parse(result).Descendants("count").First().Value;
+            return Int32.Parse(value);
         }
 
         private XElement GetObject(string key, string objectType)
         {
-            return ExtentedWebClient.Try(() =>
-                                             {
-                                                 XElement xElement;
-                                                using (var client = new ExtentedWebClient(cookies))
-                                                {
-                                                    Logger.Debug(string.Format("Getting {0} {1}...",
-                                                                                objectType, key));
-                                                    string url =
-                                                        String.Format(
-                                                            "{0}api/getObject.sjs?object={1}&key={2}",
-                                                            salsaUrl, objectType, key);
-                                                    string result = client.DownloadString(url);
-                                                    Logger.Debug("response: " + result);
-                                                    XDocument xml = XDocument.Parse(result);
-                                                    xElement =
-                                                        xml.Element("data").Element(objectType).Element(
-                                                            "item");
-                                                }
-                                                return xElement;
-                                            }, 3);
+            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}",salsaUrl, objectType, key));
+            XDocument xml = XDocument.Parse(result);
+            return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
         }
 
         private string Post(string action, string objectType, NameValueCollection data)
@@ -282,6 +219,22 @@ namespace SalsaImporter
                                                  }
                                                  return response1;
                                              }, 5);
+        }
+
+        private string Get(string url)
+        {
+            Logger.Debug("Requesting: " + url);
+
+            string response = ExtentedWebClient.Try(() =>
+            {
+                using (var webClient = new ExtentedWebClient(cookies))
+                {
+                    string result = webClient.DownloadString(url);
+                    return result;
+                }
+            }, 5);
+            Logger.Debug("response from PullObjects: " + response);
+            return response;
         }
 
     }
