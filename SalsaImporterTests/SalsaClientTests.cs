@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
-using SalsaImporter.Aft;
 
 namespace SalsaImporterTests
 {
@@ -156,7 +155,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldDeleteAllCustomFields()
         {
-            client.DeleteAllObjects("custom_column", 100, true);
+            client.DeleteAllObjects("custom_column", 100, false);
             Assert.AreEqual(0, client.CustomColumnCount());
         }
 
@@ -173,7 +172,7 @@ namespace SalsaImporterTests
                                               {"type", "varchar"}
                                           };
             
-            client.DeleteAllObjects("custom_column", 100, true);
+            client.DeleteAllObjects("custom_column", 100, false);
             client.CreateSupporterCustomColumn(customColumn);
 
             NameValueCollection supporter = GenerateSupporter();

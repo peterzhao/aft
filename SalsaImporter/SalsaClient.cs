@@ -25,7 +25,7 @@ namespace SalsaImporter
             _salsaUrl = Config.SalsaApiUri;
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.Expect100Continue = false;
-            System.Net.ServicePointManager.CertificatePolicy = new TrustAllCertificatePolicy();
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return (true); };
         }
 
         public CookieContainer Login()
@@ -76,8 +76,7 @@ namespace SalsaImporter
                     url += "&include=" + String.Join(",", fieldsToReturn);
 
                 string response = Get(url);
-                                                
-
+                                           
                 List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
 
                 if (supporters.Count == 0)break;
@@ -182,14 +181,14 @@ namespace SalsaImporter
                                                       try
                                                       {
                                                           DeleteObject(objectType, key);
-                                                      }catch(Exception)
+                                                      }
+                                                      catch(Exception)
                                                       {
                                                           _errorHandler.HandleDeleteObjectFailure(key);
                                                       }
                                                   }, null));
           
-            Task.WaitAll(tasks.ToArray(), -1); //no timeout
-            
+            Task.WaitAll(tasks.ToArray(), -1); // no timeout
         }
 
         public int CustomColumnCount()

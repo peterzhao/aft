@@ -1,2 +1,0 @@
-bcp Aft.dbo.Supporters format "FiveThousandSubscribers.dat" -n -f "FiveThousandSubscribers.fmt" -S localhost -E -T -a 65535
-bcp Aft.dbo.Supporters    out "FiveThousandSubscribers.dat" -n -f "FiveThousandSubscribers.fmt" -S localhost -E -T -a 65535
