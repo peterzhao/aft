@@ -212,17 +212,15 @@ namespace SalsaImporter
             return Try(() =>
                     {
                         string response = Post("save", objectType, data);
-                        string supporterKeyFromServerResponse = GetSupporterKeyFromServerResponse(response, data);
+                        string supporterKeyFromServerResponse = GetObjectKeyFromServerResponse(response, data);
                         return supporterKeyFromServerResponse;
                     }, 3);
           
         }
 
-        private static string GetSupporterKeyFromServerResponse(string response, NameValueCollection data)
+        private static string GetObjectKeyFromServerResponse(string response, NameValueCollection data)
         {
-            string dateDetails = "Supporter data:";
             string key = null;
-            data.AllKeys.ToList().ForEach(k => dateDetails += string.Format("{0}:{1} ", k, data[k]));
             try
             {
                 var document = XDocument.Parse(response);
@@ -230,7 +228,7 @@ namespace SalsaImporter
             }
             catch(Exception ex)
             {
-                throw new InvalidSalsaResponseException(string.Format("Failed to get supporter key from server response:{0}. Supporter data:{1}", response, dateDetails), ex);
+                throw new InvalidSalsaResponseException(string.Format("Failed to get object key from server response:{0}.", response), ex);
             }
 
             return key;
@@ -269,7 +267,7 @@ namespace SalsaImporter
                                                      Logger.Debug("response: " + response1);
                                                  }
                                                  return response1;
-                                             }, 5);
+                                             }, 3);
         }
 
         private string Get(string url)
@@ -282,7 +280,7 @@ namespace SalsaImporter
                     string result = webClient.DownloadString(url);
                     return result;
                 }
-                                                        }, 5);
+                                                        }, 3);
             Logger.Debug("response from PullObjects: " + response);
             return response;
         }
@@ -301,11 +299,12 @@ namespace SalsaImporter
                 {
                     Logger.Warn("SalsaClient catched InvalidSalsaResponseException and try again. Error:" + exception.Message);
                     count += 1;
-                    Thread.Sleep(5000 * count); //wait for a while;
+                    //Thread.Sleep(5000 * count); //wait for a while but seems it cuases underlying connect closed unexpected. so comment it out.
                     if (count > tryTimes)
-                        throw new ApplicationException(String.Format(
-                            "Rethrow InvalidSalsaResponseException after try {0} times. {1} {2}", tryTimes, exception.Message,
-                            exception.StackTrace));
+                    {
+                        string message = String.Format("Rethrow InvalidSalsaResponseException after try {0} times. {1} ", tryTimes, exception.Message);
+                        throw new ApplicationException(message);
+                    }
                 }
             }
         }

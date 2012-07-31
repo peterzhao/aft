@@ -43,7 +43,7 @@ namespace SalsaImporter
                 {
                     Logger.Warn("ExtendedWebClient catched WebException and try again. Error:" + exception.Message);
                     count += 1;
-                    Thread.Sleep(30000 * count); //wait for a while;
+                    //Thread.Sleep(30000 * count); //wait for a while; it seems cause underlying connetion closed unexpected, so comment it
                     if (count > tryTimes)
                         throw new ApplicationException(String.Format(
                             "Rethrow WebException after try {0} times. {1} {2}", tryTimes, exception.Message,

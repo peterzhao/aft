@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Aft;
 
 namespace SalsaImporterTests
 {
@@ -32,6 +33,8 @@ namespace SalsaImporterTests
             client.EachBatchOfObjects("supporter", 500, action);
             Assert.AreEqual(0, actualTimes);
         }
+
+     
 
         [Test]
         public void ShouldDeleteAllSupporters()

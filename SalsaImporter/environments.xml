@@ -31,7 +31,7 @@
     <salsaPassword>1234</salsaPassword>
   </stub>
   <stub2>
-    <salsaApiUrl>http://192.168.0.102:4567/</salsaApiUrl>
+    <salsaApiUrl>http://192.168.0.101:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
   </stub2>
