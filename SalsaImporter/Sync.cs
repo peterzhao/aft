@@ -25,7 +25,7 @@ namespace SalsaImporter
         
             var mapper = new SupporterMapper();
             var batchSize = 100;
-            int? totalLimit = 1000;// null;
+            int? totalLimit =  null;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
