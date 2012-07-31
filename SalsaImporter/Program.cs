@@ -30,6 +30,9 @@ namespace SalsaImporter
                     case "delete":
                         sync.DeleteAllSupporters();
                         break;
+                    case "customcolumns":
+                        new CreateTestingCustomColumns().CreateCustomColumns();
+                        break;
                     default:
                         ShowUsage();
                         break;
@@ -48,7 +51,7 @@ namespace SalsaImporter
       
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: push|count|delete [environment]\n if no environment is specified, use dev.");
+            Console.WriteLine("Usage: push|count|delete|customcolumns [environment]\n if no environment is specified, use dev.");
         }
 
         private static void SetEnvironment(string[] args)

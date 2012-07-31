@@ -57,6 +57,7 @@
     <Compile Include="Aft\Supporter.cs" />
     <Compile Include="Aft\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="CreateTestingCustomColumns.cs" />
     <Compile Include="Exceptions\CreateSupportersException.cs" />
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>

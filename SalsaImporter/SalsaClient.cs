@@ -88,13 +88,13 @@ namespace SalsaImporter
             }
         }
 
-        public void DeleteAllObjects(string objectType, int blockSize)
+        public void DeleteAllObjects(string objectType, int blockSize, bool fetchOnlyKeys)
         {
             int start = 0;
             Logger.Info(String.Format("Deleting all {0}s...", objectType));
             for (; ; ) // ever
             {
-                var items = GetBatchObjects(objectType, blockSize, start);
+                var items = GetBatchObjects(objectType, blockSize, start, fetchOnlyKeys);
                 if (items.Count == 0) break;
                 DeleteObjects(objectType, items.Select(s => s.Element("key").Value));
                 if (items.Count < blockSize) break;
@@ -102,10 +102,16 @@ namespace SalsaImporter
             Logger.Info(String.Format("All {0}s deleted.", objectType));
         }
 
-        private List<XElement> GetBatchObjects(string objectType, int blockSize, int start)
+        private List<XElement> GetBatchObjects(string objectType, int blockSize, int start, bool fetchOnlyKeys)
         {
-            string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
+            string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}",
                                        _salsaUrl, objectType, start, blockSize);
+            
+            if (fetchOnlyKeys)
+            {
+                url += "&include=" + objectType + "_KEY";
+            }
+
             return ImporterErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
                     {
                         string response = Get(url);

@@ -37,7 +37,7 @@ namespace SalsaImporter
                     string supporterKey = nameValues["supporter_KEY"];
                     if (!string.IsNullOrEmpty(supporterKey))
                     {
-                        var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
+                    var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
                         supporter.supporter_KEY = int.Parse(supporterKey);
                     }
                 });
@@ -47,7 +47,7 @@ namespace SalsaImporter
 
         public void DeleteAllSupporters()
         {
-            _salsa.DeleteAllObjects("supporter", 100);
+            _salsa.DeleteAllObjects("supporter", 100, true);
         }
 
         public void CountSupportOnSalsa()
@@ -66,40 +66,6 @@ namespace SalsaImporter
                 failedCreatedSupporterKeys.ForEach(k => message += k + " ");
                 Logger.Error(String.Format("There are {0} supporters failed to push to Salsa. {1}",
                                            failedCreatedSupporterKeys.Count, message));
-            }
-        }
-
-        public void EnsureTestingCustomColumnExist()
-        {
-            _salsa.DeleteAllObjects("custom_column", 100);
-            for (int i=0;i < 10;i++)
-            {
-                var customColumn = new NameValueCollection
-                                          {
-                                              {"name", String.Format("CustomString{0}", i)},
-                                              {"label", String.Format("Custom String {0}", i)}, 
-                                              {"type", "varchar"}                                           };
-                _salsa.CreateSupporterCustomColumn(customColumn);
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                var customColumn = new NameValueCollection
-                                          {
-                                              {"name", String.Format("CustomBoolean{0}", i)},
-                                              {"label", String.Format("Custom Boolean {0}", i)}, 
-                                              {"type", "bool"}
-                                          };
-                _salsa.CreateSupporterCustomColumn(customColumn);
-            }
-            for (int i = 0; i < 5; i++)
-            {
-                var customColumn = new NameValueCollection
-                                          {
-                                              {"name", String.Format("CustomInteger{0}", i)},
-                                              {"label", String.Format("Custom Integer {0}", i)}, 
-                                              {"type", "int"}
-                                          };
-                _salsa.CreateSupporterCustomColumn(customColumn);
             }
         }
 

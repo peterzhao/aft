@@ -27,7 +27,7 @@ namespace SalsaImporterTests
 
         public void ShouldGetSupportersEventhoughHavingNoSupporters()
         {
-            client.DeleteAllObjects("supporter", 100);
+            client.DeleteAllObjects("supporter", 100, true);
             var actualTimes = 0;
             Action<List<XElement>> action = supports => actualTimes += 1;
             client.EachBatchOfObjects("supporter", 500, action);
@@ -43,7 +43,7 @@ namespace SalsaImporterTests
             for (var i = 0; i < 10; i++)
                 supporters.Add(GenerateSupporter());
             client.CreateSupporters(supporters);
-            client.DeleteAllObjects("supporter",3);
+            client.DeleteAllObjects("supporter",3, true);
             Assert.AreEqual(0, client.SupporterCount());
         }
 
@@ -156,7 +156,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldDeleteAllCustomFields()
         {
-            client.DeleteAllObjects("custom_column", 100);
+            client.DeleteAllObjects("custom_column", 100, true);
             Assert.AreEqual(0, client.CustomColumnCount());
         }
 
@@ -173,7 +173,7 @@ namespace SalsaImporterTests
                                               {"type", "varchar"}
                                           };
             
-            client.DeleteAllObjects("custom_column", 100);
+            client.DeleteAllObjects("custom_column", 100, true);
             client.CreateSupporterCustomColumn(customColumn);
 
             NameValueCollection supporter = GenerateSupporter();
