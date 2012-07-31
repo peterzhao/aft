@@ -16,11 +16,13 @@ namespace SalsaImporter
 {
     public class SalsaClient
     {
-        private readonly string salsaUrl;
+        private readonly string _salsaUrl;
+        private ImporterErrorHandler _errorHandler;
 
-        public SalsaClient()
+        public SalsaClient(ImporterErrorHandler errorHandler)
         {
-            salsaUrl = Config.SalsaApiUri;
+            _errorHandler = errorHandler;
+            _salsaUrl = Config.SalsaApiUri;
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.Expect100Continue = false;
             System.Net.ServicePointManager.CertificatePolicy = new TrustAllCertificatePolicy();
@@ -29,10 +31,10 @@ namespace SalsaImporter
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();
-            var response = Try<HttpWebResponse, WebException>(() =>
+            var response = ImporterErrorHandler.Try<HttpWebResponse, WebException>(() =>
             {
                 var webRequest =
-                    WebRequest.Create(salsaUrl + "api/authenticate.sjs?email=" +
+                    WebRequest.Create(_salsaUrl + "api/authenticate.sjs?email=" +
                                       Config.SalsaUserName + "&password=" + Config.SalsaPassword);
                 ((HttpWebRequest)webRequest).CookieContainer = cookieContainer;
                 webRequest.Method = "POST";
@@ -41,7 +43,7 @@ namespace SalsaImporter
                 return (HttpWebResponse)webRequest.GetResponse();
             }, 3);
             string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            Logger.Debug("response: " + content);
+            Logger.Trace("response: " + content);
             VerifyLoginResult(content);
             return cookieContainer;
         }
@@ -68,7 +70,7 @@ namespace SalsaImporter
             int start = 0;
             for (;;) // ever
             {
-                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}",salsaUrl, objectType, start, blockSize);
+                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}",_salsaUrl, objectType, start, blockSize);
 
                 if (fieldsToReturn != null)
                     url += "&include=" + String.Join(",", fieldsToReturn);
@@ -103,8 +105,8 @@ namespace SalsaImporter
         private List<XElement> GetBatchObjects(string objectType, int blockSize, int start)
         {
             string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
-                                       salsaUrl, objectType, start, blockSize);
-            return Try <List<XElement>, InvalidSalsaResponseException>(() =>
+                                       _salsaUrl, objectType, start, blockSize);
+            return ImporterErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
                     {
                         string response = Get(url);
                         List<XElement> items = ParseGetObjectResponseFromServer(response, objectType);
@@ -147,42 +149,41 @@ namespace SalsaImporter
             return GetObject(key, "supporter");
         }
 
-        public void CreateSupporters(IEnumerable<NameValueCollection> supporters, Action<NameValueCollection> errorHandler = null)
+        public void CreateSupporters(IEnumerable<NameValueCollection> supporters)
         {
             IEnumerable<Task> tasks = supporters.Select(supporterNameValues =>
                                                         Task.Factory.StartNew(arg =>
                                                         {
-                                                            var nameValues = (NameValueCollection) arg;
                                                             try
                                                             {
-                                                                var id = CreateSupporter(nameValues);
-                                                                nameValues["supporter_KEY"] = id;
+                                                                var id = CreateSupporter(supporterNameValues);
+                                                                supporterNameValues["supporter_KEY"] = id;
                                                             }
                                                             catch(Exception)
                                                             {
-                                                                if (errorHandler != null)
-                                                                    errorHandler(nameValues);
+                                                                _errorHandler.HandleCreateObjectFailure(supporterNameValues);
                                                             }
-                                                        }, supporterNameValues));
+                                                        }, null));
                 Task.WaitAll(tasks.ToArray()); 
         }
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
         {
-            Logger.Info("Deleting objects");
-            IEnumerable<Task> tasks = keys.Select(supporterKey =>
-                                                  Task.Factory.StartNew(wk => DeleteObject(objectType, supporterKey),
-                                                                        null));
-            try
-            {
-                Task.WaitAll(tasks.ToArray(), -1); //no timeout
-            }
-            catch (AggregateException ex)
-            {
-                var message = "";
-                ex.InnerExceptions.ToList().ForEach(e => message += ex.ToString() + "/n");
-                throw new ApplicationException(string.Format("SalsaClient.DeleteObjects got {0} error(s): /n{1}", ex.InnerExceptions.Count, message));
-            }
+            Logger.Debug("Deleting objects");
+            IEnumerable<Task> tasks = keys.Select(key =>
+                                                  Task.Factory.StartNew(arg =>
+                                                  {
+                                                      try
+                                                      {
+                                                          DeleteObject(objectType, key);
+                                                      }catch(Exception)
+                                                      {
+                                                          _errorHandler.HandleDeleteObjectFailure(key);
+                                                      }
+                                                  }, null));
+          
+            Task.WaitAll(tasks.ToArray(), -1); //no timeout
+            
         }
 
         public int CustomColumnCount()
@@ -201,7 +202,7 @@ namespace SalsaImporter
         private string Create(string objectType, NameValueCollection data)
         {
             data.Set("key", "0"); // this is to indicate creation  
-            return Try<string, InvalidSalsaResponseException>(() =>
+            return ImporterErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
                     {
                         string response = Post("save", objectType, data);
                         string supporterKeyFromServerResponse = GetObjectKeyFromServerResponse(response, data);
@@ -228,14 +229,14 @@ namespace SalsaImporter
 
         private int CountObjects(string objectType)
         {
-            string result = Get(salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType));
+            string result = Get(_salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType));
             string value = XDocument.Parse(result).Descendants("count").First().Value;
             return Int32.Parse(value);
         }
 
         private XElement GetObject(string key, string objectType)
         {
-            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", salsaUrl, objectType, key));
+            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
             XDocument xml = XDocument.Parse(result);
             return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
         }
@@ -243,17 +244,17 @@ namespace SalsaImporter
         private string Post(string action, string objectType, NameValueCollection data)
         {
             CookieContainer cookieContainer = Login();
-            return Try<string, WebException>(() =>
+            return ImporterErrorHandler.Try<string, WebException>(() =>
                                              {
                                                  string response;
                                                  using (var client1 = new ExtentedWebClient(cookieContainer))
                                                  {
-                                                     Logger.Debug(string.Format("POST to {0} {1} with {2}",
+                                                     Logger.Trace(string.Format("POST to {0} {1} with {2}",
                                                                                 action, objectType, data));
                                                      data.Set("xml", "");
                                                      data.Set("object", objectType);
 
-                                                     string url = salsaUrl + action;
+                                                     string url = _salsaUrl + action;
                                                      Logger.Trace("post:" + url);
                                                      byte[] result = client1.UploadValues(url, "POST", data);
                                                      response = Encoding.UTF8.GetString(result);
@@ -267,7 +268,7 @@ namespace SalsaImporter
         {
             Logger.Trace("Geting: " + url);
             CookieContainer cookieContainer = Login();
-            string response = Try<string, WebException>(() =>
+            string response = ImporterErrorHandler.Try<string, WebException>(() =>
             {
                 using (var webClient = new ExtentedWebClient(cookieContainer))
                 {
@@ -278,32 +279,5 @@ namespace SalsaImporter
             Logger.Trace("response from Get: " + response);
             return response;
         }
-
-        public  TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
-        {
-            int count = 0;
-
-            while (true)
-            {
-                try
-                {
-                    return func();
-                }
-                catch (TException exception)
-                {
-                    Logger.Warn("SalsaClient catched exception and try again. Error:" + exception.Message);
-                    count += 1;
-                    if (count > tryTimes)
-                    {
-                        string message = String.Format("Rethrow exception after try {0} times. {1} ", tryTimes, exception.Message);
-                        Logger.Error(message);
-                        throw new ApplicationException(message);
-                    }
-                }
-            }
-        }
-
-        
-
     }
 }

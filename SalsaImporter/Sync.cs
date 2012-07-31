@@ -11,12 +11,13 @@ namespace SalsaImporter
     public class Sync
     {
         private readonly SalsaClient _salsa;
-        private ImporterErrorHandler _errorHandler;
+        private readonly ImporterErrorHandler _errorHandler;
 
         public Sync()
         {
-            _salsa = new SalsaClient();
-            _errorHandler = new ImporterErrorHandler(500);
+            _errorHandler = new ImporterErrorHandler(500, 500);
+            _salsa = new SalsaClient(_errorHandler);
+
             _salsa.Login();
         }
 
@@ -25,11 +26,11 @@ namespace SalsaImporter
         
             var mapper = new SupporterMapper();
             var batchSize = 100;
-            int? totalLimit =  null;
+            int? totalLimit = null;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
                 var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
-                _salsa.CreateSupporters(nameValuesList, _errorHandler.CanContinueToCreate);
+                _salsa.CreateSupporters(nameValuesList);
                 
                 nameValuesList.ForEach(nameValues =>
                 {
@@ -43,6 +44,18 @@ namespace SalsaImporter
             });
             PrintFailedRecords();
         }
+
+        public void DeleteAllSupporters()
+        {
+            _salsa.DeleteAllObjects("supporter", 100);
+        }
+
+        public void CountSupportOnSalsa()
+        {
+            int count = _salsa.SupporterCount();
+            Logger.Info("total supporter on salsa:" + count);
+        }
+
 
         private void PrintFailedRecords()
         {
@@ -103,7 +116,7 @@ namespace SalsaImporter
                         db.Supporters.OrderBy(s => s.Id).Where(s => s.Id > start && s.supporter_KEY == null).Take(
                             batchSize).ToList();
                     if (supporters.Count == 0) return;
-                    Logger.Info(String.Format("Pulling supporter from aft... batch:{0} start: {1} Get: {2}", batchCount,
+                    Logger.Debug(String.Format("Pulling supporter from aft... batch:{0} start: {1} Get: {2}", batchCount,
                                               supporters.First().Id, supporters.Count));
                     start = supporters.Last().Id;
                     batchHandler(supporters);

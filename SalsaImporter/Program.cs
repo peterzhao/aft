@@ -18,16 +18,17 @@ namespace SalsaImporter
 
             try
             {
+                var sync = new Sync();
                 switch (args[0])
                 {
                     case "push":
-                        new Sync().PushNewSupportsToSalsa();
+                        sync.PushNewSupportsToSalsa();
                         break;
                     case "count":
-                        CountSupportOnSalsa();
+                        sync.CountSupportOnSalsa();
                         break;
                     case "delete":
-                        DeleteAllSupporters();
+                        sync.DeleteAllSupporters();
                         break;
                     default:
                         ShowUsage();
@@ -44,12 +45,7 @@ namespace SalsaImporter
             return 0;
         }
 
-        private static void DeleteAllSupporters()
-        {
-            var client = new SalsaClient();
-            client.DeleteAllObjects("supporter", 50);
-        }
-
+      
         private static void ShowUsage()
         {
             Console.WriteLine("Usage: push|count|delete [environment]\n if no environment is specified, use dev.");
@@ -61,11 +57,6 @@ namespace SalsaImporter
             Logger.Info("Sync under environment:" + Config.Environment);
         }
 
-        private static void CountSupportOnSalsa()
-        {
-            var client = new SalsaClient();
-            int count = client.SupporterCount();
-            Logger.Info("total supporter on salsa:" + count);
-        }
+        
     }
 }

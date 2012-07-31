@@ -21,7 +21,7 @@ namespace SalsaImporterTests
         [SetUp]
         public void SetUp()
         {
-            client = new SalsaClient();
+            client = new SalsaClient(new ImporterErrorHandler(100, 500));
         }
 
 
@@ -184,6 +184,8 @@ namespace SalsaImporterTests
 
             Assert.AreEqual(valueOnSupporter, supporterFromSalsa.Element(name).Value);
         }
+
+       
 
         private bool DoesSupporterExist(string id)
         {
