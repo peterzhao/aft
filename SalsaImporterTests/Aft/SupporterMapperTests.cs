@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Text;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
@@ -9,6 +10,7 @@ namespace SalsaImporterTests.Aft
     [TestFixture]
     public class SupporterMapperTests
     {
+      
         [Test]
         public void ShouldMapToNameValues()
         {
@@ -136,7 +138,7 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual(2, nameValues.Keys.Count);
         }
 
-        //[Test] //working on it now
+        [Test] 
         public void ShouldMapToSupporter()
         {
             var xml = @"<item>
@@ -144,6 +146,7 @@ namespace SalsaImporterTests.Aft
       <Email>peter@abc.com</Email>
       <First_Name>peter</First_Name>
       <Last_Name>zhao</Last_Name>
+      <Latitude>-45.234</Latitude>
       <key>32294089</key>
       <object>supporter</object>
 </item>";
@@ -153,7 +156,8 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual("peter", supporter.First_Name);
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
-            Assert.AreEqual("32294089", supporter.supporter_KEY);
+            Assert.AreEqual(32294089, supporter.supporter_KEY);
+            Assert.AreEqual(-45.234f, supporter.Latitude);
 
         }
 

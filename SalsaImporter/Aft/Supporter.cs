@@ -4,6 +4,7 @@ namespace SalsaImporter.Aft
 {
     public class Supporter
     {
+        private string _uid;
         public int Id { get; set; }
         public int? supporter_KEY { get; set; }
         public DateTime? Last_Modified { get; set; }
@@ -54,7 +55,6 @@ namespace SalsaImporter.Aft
         public string Source_Tracking_Code { get; set; }
         public string Tracking_Code { get; set; }
         public string Status { get; set; }
-        public string uid { get; set; }
         public string Timezone { get; set; }
         public string Language_Code { get; set; }
         public string CustomString0 { get; set; }
@@ -82,5 +82,18 @@ namespace SalsaImporter.Aft
         public bool? CustomBoolean7 { get; set; }
         public bool? CustomBoolean8 { get; set; }
         public bool? CustomBoolean9 { get; set; }
+
+        public string uid
+        {
+            get
+            { 
+                if(_uid == null && Id != null)
+                {
+                    _uid = Id.ToString();
+                }
+                return _uid;
+            }
+            set { _uid = value; }
+        }
     }
 }
