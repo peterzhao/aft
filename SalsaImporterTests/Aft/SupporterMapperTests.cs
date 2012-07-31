@@ -147,6 +147,7 @@ namespace SalsaImporterTests.Aft
       <First_Name>peter</First_Name>
       <Last_Name>zhao</Last_Name>
       <Latitude>-45.234</Latitude>
+      <CustomDateTime0>Wed Jul 25 2012 09:17:50 GMT-0400 (EDT)</CustomDateTime0>
       <key>32294089</key>
       <object>supporter</object>
 </item>";
@@ -157,6 +158,9 @@ namespace SalsaImporterTests.Aft
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
             Assert.AreEqual(32294089, supporter.supporter_KEY);
+
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).UtcDateTime, 
+                supporter.CustomDateTime0);
             Assert.AreEqual(-45.234f, supporter.Latitude);
 
         }

@@ -20,7 +20,7 @@ namespace SalsaImporterTests.PerformanceTest
         [Test]
         public void ShouldPushSupportersToSalsa()
         {
-           new Sync().PushNewSupportsToSalsa();
+           new Sync().PushToSalsa();
         }
 
     }

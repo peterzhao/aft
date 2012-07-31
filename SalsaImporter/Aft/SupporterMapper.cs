@@ -85,7 +85,8 @@ namespace SalsaImporter.Aft
                                                 {"CustomBoolean6","CustomBoolean6"},
                                                 {"CustomBoolean7","CustomBoolean7"},
                                                 {"CustomBoolean8","CustomBoolean8"},
-                                                {"CustomBoolean9","CustomBoolean9"}
+                                                {"CustomBoolean9","CustomBoolean9"},
+                                                {"CustomDateTime0","CustomDateTime0"},
                                              }; 
         public NameValueCollection ToNameValues(Supporter supporter)
         {
@@ -119,6 +120,8 @@ namespace SalsaImporter.Aft
                     propertyValue = element.IntValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(float?))
                     propertyValue = element.FloatValueOrNull(map[propertyName]);
+                else if (propertyType == typeof(DateTime?))
+                    propertyValue = element.DateTimeValueOrNull(map[propertyName]);
                 if (propertyValue != null)
                     property.SetValue(supporter, propertyValue, null);
             }

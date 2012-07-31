@@ -12,24 +12,25 @@ namespace SalsaImporter
     {
         private readonly SalsaClient _salsa;
         private readonly ImporterErrorHandler _errorHandler;
+        private readonly SupporterMapper _mapper;
+        
 
         public Sync()
         {
             _errorHandler = new ImporterErrorHandler(500, 500);
             _salsa = new SalsaClient(_errorHandler);
-
+            _mapper = new SupporterMapper();
             _salsa.Login();
         }
 
-        public void PushNewSupportsToSalsa()
+        public void PushToSalsa()
         {
         
-            var mapper = new SupporterMapper();
             var batchSize = 100;
             int? totalLimit = null;
             EachBatchOfSupportersFromAft(batchSize, totalLimit, supporters =>
             {
-                var nameValuesList = supporters.Select(mapper.ToNameValues).ToList();
+                var nameValuesList = supporters.Select(_mapper.ToNameValues).ToList();
                 _salsa.CreateSupporters(nameValuesList);
                 
                 nameValuesList.ForEach(nameValues =>
@@ -54,6 +55,38 @@ namespace SalsaImporter
         {
             int count = _salsa.SupporterCount();
             Logger.Info("total supporter on salsa:" + count);
+        }
+
+        public void PullFromSalsa()
+        {
+            int batchSize = 100;
+            Logger.Info("start pull changes from salsa....");
+            _salsa.EachBatchOfObjects("supporter", batchSize, nameValueCollections =>
+                                            {
+                                                using(var db = new AftDbContext())
+                                                {
+                                                    foreach (var nameValues in nameValueCollections)
+                                                    {
+                                                        var supporter = _mapper.ToSupporter(nameValues);
+                                                        if (supporter.uid != null)
+                                                        {
+                                                            var localSupporter = db.Supporters.Find(int.Parse(supporter.uid));
+                                                            localSupporter.supporter_KEY = supporter.supporter_KEY;
+                                                            Logger.Trace("one supporter updated. supporter_key:" + supporter.supporter_KEY);
+                                                        }
+                                                        else
+                                                        {
+                                                            db.Supporters.Add(supporter);
+                                                            Logger.Trace("added a supporter from salsa. supporter_key:" + supporter.supporter_KEY);
+                                                        }
+
+                                                    }
+                                                    db.SaveChanges();
+                                                }
+                                                Logger.Debug(string.Format("Finished {0} supporters.", batchSize));
+                                            }, null);
+
+            Logger.Info("Pulling from Salsa finished.");
         }
 
 

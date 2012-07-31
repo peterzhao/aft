@@ -82,6 +82,7 @@ namespace SalsaImporter.Aft
         public bool? CustomBoolean7 { get; set; }
         public bool? CustomBoolean8 { get; set; }
         public bool? CustomBoolean9 { get; set; }
+        public DateTime? CustomDateTime0 { get; set; }
 
         public string uid
         {
