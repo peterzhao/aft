@@ -62,7 +62,6 @@ namespace SalsaImporter
         public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {
             int count = 0;
-
             while (true)
             {
                 try
@@ -71,13 +70,16 @@ namespace SalsaImporter
                 }
                 catch (TException exception)
                 {
-                    Logger.Warn("Catched exception and try again. Error:" + exception.Message);
+                    string exceptionName = exception.GetType().Name;
                     count += 1;
                     if (count >= tryTimes)
                     {
-                        string message = String.Format("Rethrow exception after try {0} times. {1} ", tryTimes, exception.Message);
+                        string message = String.Format("Rethrow {0} after try {1} times. {2} ", exceptionName, tryTimes, exception.Message);
                         Logger.Error(message);
                         throw new ApplicationException(message);
+                    }else
+                    {
+                        Logger.Warn(String.Format("Catched {0} and try again. Error:{1}", exceptionName, exception.Message));
                     }
                 }
             }
