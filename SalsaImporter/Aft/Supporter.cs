@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft
 {
-    public class Supporter
+    public class Supporter: ISyncObject
     {
        
         private string _uid;
@@ -227,6 +229,18 @@ namespace SalsaImporter.Aft
         }
 
 
+        [NotMapped]
+        public int LocalKey
+        {
+            get { return Id; }
+            set { Id = value; }
+        }
 
+        [NotMapped]
+        public int? ExternalKey
+        {
+            get{return supporter_KEY;}
+            set { supporter_KEY = value; }
+        }
     }
 }

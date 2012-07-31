@@ -69,6 +69,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sync.cs" />
+    <Compile Include="Synchronization\IObjectProcess.cs" />
+    <Compile Include="Synchronization\ISyncObjectRepository.cs" />
+    <Compile Include="Synchronization\ISyncLog.cs" />
+    <Compile Include="Synchronization\BatchProcess.cs" />
+    <Compile Include="Synchronization\ISyncObject.cs" />
+    <Compile Include="Synchronization\ObjectProcess.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>
   <ItemGroup>
