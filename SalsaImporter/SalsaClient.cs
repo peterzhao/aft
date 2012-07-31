@@ -29,7 +29,7 @@ namespace SalsaImporter
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();
-            var response = ExtentedWebClient.Try(() =>
+            var response = Try<HttpWebResponse, WebException>(() =>
             {
                 var webRequest =
                     WebRequest.Create(salsaUrl + "api/authenticate.sjs?email=" +
@@ -104,7 +104,7 @@ namespace SalsaImporter
         {
             string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}&include={1}_KEY",
                                        salsaUrl, objectType, start, blockSize);
-            return Try(() =>
+            return Try <List<XElement>, InvalidSalsaResponseException>(() =>
                     {
                         string response = Get(url);
                         List<XElement> items = ParseGetObjectResponseFromServer(response, objectType);
@@ -147,7 +147,7 @@ namespace SalsaImporter
             return GetObject(key, "supporter");
         }
 
-        public void CreateSupporters(IEnumerable<NameValueCollection> supporters, Func<NameValueCollection, bool> errorHandler = null)
+        public void CreateSupporters(IEnumerable<NameValueCollection> supporters, Action<NameValueCollection> errorHandler = null)
         {
             IEnumerable<Task> tasks = supporters.Select(supporterNameValues =>
                                                         Task.Factory.StartNew(arg =>
@@ -158,21 +158,13 @@ namespace SalsaImporter
                                                                 var id = CreateSupporter(nameValues);
                                                                 nameValues["supporter_KEY"] = id;
                                                             }
-                                                            catch(Exception ex)
+                                                            catch(Exception)
                                                             {
-                                                                if(errorHandler == null || !errorHandler(nameValues))
-                                                                    throw new ApplicationException("Create supporter failed", ex);
+                                                                if (errorHandler != null)
+                                                                    errorHandler(nameValues);
                                                             }
                                                         }, supporterNameValues));
-            try
-            {
-                Task.WaitAll(tasks.ToArray(), -1); //no timeout
-            }catch(AggregateException ex)
-            {
-                var message = "";
-                ex.InnerExceptions.ToList().ForEach(e => message += ex.ToString() + "/n");
-                throw new CreateSupportersException(string.Format("SalsaClient.CreateSupporters got {0} error(s): /n{1}", ex.InnerExceptions.Count, message), ex);
-            }
+                Task.WaitAll(tasks.ToArray()); 
         }
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
@@ -209,7 +201,7 @@ namespace SalsaImporter
         private string Create(string objectType, NameValueCollection data)
         {
             data.Set("key", "0"); // this is to indicate creation  
-            return Try(() =>
+            return Try<string, InvalidSalsaResponseException>(() =>
                     {
                         string response = Post("save", objectType, data);
                         string supporterKeyFromServerResponse = GetObjectKeyFromServerResponse(response, data);
@@ -251,9 +243,9 @@ namespace SalsaImporter
         private string Post(string action, string objectType, NameValueCollection data)
         {
             CookieContainer cookieContainer = Login();
-            return ExtentedWebClient.Try(() =>
+            return Try<string, WebException>(() =>
                                              {
-                                                 string response1;
+                                                 string response;
                                                  using (var client1 = new ExtentedWebClient(cookieContainer))
                                                  {
                                                      Logger.Debug(string.Format("POST to {0} {1} with {2}",
@@ -261,31 +253,33 @@ namespace SalsaImporter
                                                      data.Set("xml", "");
                                                      data.Set("object", objectType);
 
-                                                     string url1 = salsaUrl + action;
-                                                     byte[] result1 = client1.UploadValues(url1, "POST", data);
-                                                     response1 = Encoding.UTF8.GetString(result1);
-                                                     Logger.Debug("response: " + response1);
+                                                     string url = salsaUrl + action;
+                                                     Logger.Trace("post:" + url);
+                                                     byte[] result = client1.UploadValues(url, "POST", data);
+                                                     response = Encoding.UTF8.GetString(result);
+                                                     Logger.Trace("response from post: " + response);
                                                  }
-                                                 return response1;
+                                                 return response;
                                              }, 3);
         }
 
         private string Get(string url)
         {
-            Logger.Debug("Requesting: " + url);
+            Logger.Trace("Geting: " + url);
             CookieContainer cookieContainer = Login();
-            string response = ExtentedWebClient.Try(() =>{
+            string response = Try<string, WebException>(() =>
+            {
                 using (var webClient = new ExtentedWebClient(cookieContainer))
                 {
                     string result = webClient.DownloadString(url);
                     return result;
                 }
-                                                        }, 3);
-            Logger.Debug("response from PullObjects: " + response);
+            }, 3);
+            Logger.Trace("response from Get: " + response);
             return response;
         }
 
-        private  TResult Try<TResult>(Func<TResult> func, int tryTimes)
+        public  TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {
             int count = 0;
 
@@ -295,14 +289,14 @@ namespace SalsaImporter
                 {
                     return func();
                 }
-                catch (InvalidSalsaResponseException exception)
+                catch (TException exception)
                 {
-                    Logger.Warn("SalsaClient catched InvalidSalsaResponseException and try again. Error:" + exception.Message);
+                    Logger.Warn("SalsaClient catched exception and try again. Error:" + exception.Message);
                     count += 1;
-                    //Thread.Sleep(5000 * count); //wait for a while but seems it cuases underlying connect closed unexpected. so comment it out.
                     if (count > tryTimes)
                     {
-                        string message = String.Format("Rethrow InvalidSalsaResponseException after try {0} times. {1} ", tryTimes, exception.Message);
+                        string message = String.Format("Rethrow exception after try {0} times. {1} ", tryTimes, exception.Message);
+                        Logger.Error(message);
                         throw new ApplicationException(message);
                     }
                 }

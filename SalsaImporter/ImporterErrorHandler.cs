@@ -22,11 +22,17 @@ namespace SalsaImporter
             get { return _failedRecordsToCreate; }
         }
 
-        public bool CanContinueToCreate(NameValueCollection data1)
+        public void CanContinueToCreate(NameValueCollection data)
         {
-            _failedRecordsToCreate[data1["uid"]] = data1;
-            Logger.Error(string.Format("Failed to create supporter(id:{0})", data1["uid"]));
-            return _failedRecordsToCreate.Keys.Count <= _abortCreateThreshold;
+            _failedRecordsToCreate[data["uid"]] = data;
+            Logger.Error(string.Format("Failed to create supporter(id:{0})", data["uid"]));
+            if(_abortCreateThreshold < _failedRecordsToCreate.Keys.Count)
+            {
+                string message = "Failure to create supporters exceeded the threshold. Process aborted. Threshold:" + _abortCreateThreshold;
+                Logger.Fatal(message);
+                throw new OperationCanceledException(message);
+            }
+
         }
     }
 }

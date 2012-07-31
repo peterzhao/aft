@@ -39,5 +39,10 @@ namespace SalsaImporter
             else
                 nLogger.Fatal(message);
         }
+
+        public static void Trace(string message)
+        {
+            nLogger.Trace(message);
+        }
     }
 }

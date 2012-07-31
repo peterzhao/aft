@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using NUnit.Framework;
 using SalsaImporter;
 
@@ -15,9 +16,9 @@ namespace SalsaImporterTests
             var data2 = new NameValueCollection {{"uid", "2"}};
             var data3 = new NameValueCollection {{"uid", "3"}};
 
-            Assert.IsTrue(handler.CanContinueToCreate(data1));
-            Assert.IsTrue(handler.CanContinueToCreate(data2));
-            Assert.IsFalse(handler.CanContinueToCreate(data3));
+            Assert.DoesNotThrow(() => handler.CanContinueToCreate(data1));
+            Assert.DoesNotThrow(() => handler.CanContinueToCreate(data2));
+            Assert.Throws<OperationCanceledException>(() => handler.CanContinueToCreate(data3));
 
             Assert.AreEqual(data1, handler.FailedRecordsToCreate["1"]);
             Assert.AreEqual(data2, handler.FailedRecordsToCreate["2"]);
