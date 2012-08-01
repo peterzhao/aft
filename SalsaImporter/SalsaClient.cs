@@ -29,6 +29,46 @@ namespace SalsaImporter
             ServicePointManager.ServerCertificateValidationCallback = delegate { return (true); };
         }
 
+        public string Create(string objectType, NameValueCollection data)
+        {
+            data.Set("key", "0"); // this is to indicate creation  
+            return SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
+            {
+                string response = Post("save", objectType, data);
+                return VerifySaveResponse(response, data);
+            }, 3);
+
+        }
+
+        public void Update(string objectType, NameValueCollection data, string[] fields = null)
+        {
+            var subSetData = new NameValueCollection();
+            data.AllKeys.ToList().ForEach(k =>
+                                              {
+                                                  if (fields == null || fields.Contains(k) || k == "key")
+                                                      subSetData[k] = data[k];
+                                              });
+           
+            SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
+            {
+                string response = Post("save", objectType, subSetData);
+                VerifySaveResponse(response, data);
+                return null;
+            }, 3);
+
+        }
+
+        public XElement GetObject(string key, string objectType)
+        {
+            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
+            XDocument xml = XDocument.Parse(result);
+            return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
+        }
+
+
+
+
+
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();
@@ -205,19 +245,9 @@ namespace SalsaImporter
             string response = Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField);
         }
 
-        private string Create(string objectType, NameValueCollection data)
-        {
-            data.Set("key", "0"); // this is to indicate creation  
-            return SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
-                    {
-                        string response = Post("save", objectType, data);
-                        string supporterKeyFromServerResponse = GetObjectKeyFromServerResponse(response, data);
-                        return supporterKeyFromServerResponse;
-                    }, 3);
-          
-        }
+      
 
-        private static string GetObjectKeyFromServerResponse(string response, NameValueCollection data)
+        private static string VerifySaveResponse(string response, NameValueCollection data)
         {
             string key = null;
             try
@@ -240,12 +270,7 @@ namespace SalsaImporter
             return Int32.Parse(value);
         }
 
-        private XElement GetObject(string key, string objectType)
-        {
-            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
-            XDocument xml = XDocument.Parse(result);
-            return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
-        }
+      
 
         private string Post(string action, string objectType, NameValueCollection data)
         {
@@ -284,6 +309,37 @@ namespace SalsaImporter
             }, 3);
             Logger.Trace("response from Get: " + response);
             return response;
+        }
+
+        public List<XElement> GetObjects(string objectType, int batchSize, string startKey, DateTime lastPulledDate, IEnumerable<String> fieldsToReturn = null)
+        {
+            var formats = "yyyy-MM-dd HH:mm:ss";
+            var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={1}_KEY>{2}&condition=Last_Modified>{4}&limit={3}&orderBy={1}_KEY",
+                                       _salsaUrl, objectType, startKey, batchSize, lastPulledDate.ToString(formats));
+
+            if (fieldsToReturn != null)
+                url += "&include=" + String.Join(",", fieldsToReturn);
+
+            return SyncErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
+                                                                                           {
+                                                                                               var response = Get(url);
+                                                                                               VerifyGetObjectsResponse(response, objectType);
+                                                                                               return XDocument.Parse(response).Descendants("item").ToList();
+                                                                                           }, 3);
+
+        }
+
+        private void VerifyGetObjectsResponse(string response, string objectType)
+        {
+            try
+            {
+                var document = XDocument.Parse(response);
+                document.Element("data").Element(objectType);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidSalsaResponseException(string.Format("Get invalid response from server when get objects:{0}.", response), ex);
+            }
         }
     }
 }
