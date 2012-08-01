@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SalsaImporter.Synchronization
 {
@@ -29,17 +30,16 @@ namespace SalsaImporter.Synchronization
             do
             {
                 objects = _externalRepository.GetBatchOfObjects<T>(batchSize, startKey, lastProcessedDatetime);
-                _objectProcess.ProcessPulledObjects(objects);
-                lastProcessedDatetime = _syncLog.CurrentDateTime;
-                _syncLog.LastPullDateTime = lastProcessedDatetime;
+                var tasks = objects.Select(obj => Task.Factory.StartNew(arg => _objectProcess.ProcessPulledObject(obj), null));
+                Task.WaitAll(tasks.ToArray());
                 if (objects.Any())
                     startKey = objects.Last().ExternalKey.Value;
                 else
-                    startKey = 0;
+                {
+                    _syncLog.LastPulledKey = 0;
+                    _syncLog.LastPullDateTime = DateTime.Now;
+                }
                 _syncLog.LastPulledKey = startKey;
-
-
-
             } while (objects.Any());
         }
     }

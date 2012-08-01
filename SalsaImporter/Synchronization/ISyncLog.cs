@@ -6,7 +6,6 @@ namespace SalsaImporter.Synchronization
     {
         DateTime LastPushDateTime { get; set; }
         DateTime LastPullDateTime { get; set; }
-        DateTime CurrentDateTime { get; }
         int LastPushedKey { get; set; }
         int LastPulledKey { get; set; }
     }

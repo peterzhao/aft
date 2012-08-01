@@ -13,7 +13,7 @@ namespace SalsaImporter.Synchronization
             _externalRepository = externalRepository;
         }
 
-        public void ProcessPulledObjects(IEnumerable<ISyncObject> syncObjects)
+        public void ProcessPulledObject(ISyncObject syncObject)
         {
         }
 

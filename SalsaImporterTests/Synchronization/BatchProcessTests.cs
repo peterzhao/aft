@@ -29,7 +29,8 @@ namespace SalsaImporterTests.Synchronization
                 _syncLogMock.Object,
                 _objectProcessMock.Object);
         }
-        
+
+       
         [Test]
         public void ShouldPullFromExternal()
         {
@@ -37,11 +38,9 @@ namespace SalsaImporterTests.Synchronization
 
             DateTime lastPullDateTime = new DateTime(2012,5,20);
             DateTime begin = DateTime.Now;
-            DateTime currentDateTime = DateTime.Now;
             _syncLogMock.Setup(log => log.LastPullDateTime).Returns(lastPullDateTime);
             int lastPulledKey = 4560;
             _syncLogMock.Setup(log => log.LastPulledKey).Returns(lastPulledKey);
-            _syncLogMock.Setup(log => log.CurrentDateTime).Returns(currentDateTime);
         
 
             var supporter1 = new Supporter{ExternalKey = 4561};
@@ -51,15 +50,17 @@ namespace SalsaImporterTests.Synchronization
             IEnumerable<ISyncObject> pulledObjects2 = new List<Supporter>{supporter3};
 
             _externalRepositoryMock.Setup(external => external.GetBatchOfObjects<Supporter>(batchSize, lastPulledKey, lastPullDateTime)).Returns(pulledObjects1);
-            _externalRepositoryMock.Setup(external => external.GetBatchOfObjects<Supporter>(batchSize, supporter2.ExternalKey.Value, currentDateTime)).Returns(pulledObjects2);
-
-            _objectProcessMock.Setup(objectProcess => objectProcess.ProcessPulledObjects(pulledObjects1));
-            _objectProcessMock.Setup(objectProcess => objectProcess.ProcessPulledObjects(pulledObjects2));
-
-            _syncLogMock.SetupSet(log => log.LastPullDateTime = currentDateTime);
-            _syncLogMock.SetupSet(log => log.LastPulledKey = supporter3.ExternalKey.Value);
+            _externalRepositoryMock.Setup(external => external.GetBatchOfObjects<Supporter>(batchSize, supporter2.ExternalKey.Value, lastPullDateTime)).Returns(pulledObjects2);
 
             _batchProcess.PullFromExternal<Supporter>(batchSize);
+
+            _syncLogMock.VerifySet(log => log.LastPulledKey = supporter3.ExternalKey.Value);
+            _syncLogMock.VerifySet(log => log.LastPullDateTime = It.IsInRange(begin, DateTime.Now, Range.Inclusive));
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter1));
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter2));
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter3));
+
+            
 
         }
     }
