@@ -8,6 +8,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+IF OBJECT_ID('dbo.Supporters', 'U') IS NOT NULL  
+DROP TABLE dbo.Supporters
+GO
+
 CREATE TABLE [dbo].[Supporters](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[AFT_Created] [datetime2](7) NOT NULL,
@@ -89,8 +93,7 @@ CREATE TABLE [dbo].[Supporters](
 	[CustomBoolean7] [bit] NULL,
 	[CustomBoolean8] [bit] NULL,
 	[CustomBoolean9] [bit] NULL,
-	[CustomDateTime0] [datetime2](7) NULL,
-	[localModifiedDate] [datetime2](7) NULL,
+	[CustomDateTime0] [datetime2](7) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -101,8 +104,25 @@ GO
 
 ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_Created]
 GO
-
+	
 ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_LastModified]
 GO
 
+IF OBJECT_ID('dbo.trg_UpdateSupportersLastModified', 'TR') IS NOT NULL  
+DROP TRIGGER dbo.trg_UpdateSupportersLastModified;
+GO
 
+CREATE TRIGGER dbo.trg_UpdateSupportersLastModified 
+   ON  dbo.Supporters 
+   AFTER UPDATE
+AS 
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    UPDATE dbo.Supporters
+    SET AFT_LastModified = GETDATE()
+    WHERE ID IN (SELECT DISTINCT ID FROM Inserted)
+END
+GO
