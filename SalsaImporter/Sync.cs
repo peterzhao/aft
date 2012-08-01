@@ -58,6 +58,7 @@ namespace SalsaImporter
             Logger.Info("total supporter on salsa:" + count);
         }
 
+      
         public void PullFromSalsa()
         {
             int batchSize = 100;

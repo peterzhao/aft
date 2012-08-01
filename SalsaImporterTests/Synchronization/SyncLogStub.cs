@@ -9,5 +9,12 @@ namespace SalsaImporterTests.Synchronization
         public DateTime LastPullDateTime { get; set; }
         public int LastPushedKey { get; set; }
         public int LastPulledKey { get; set; }
+
+        public bool PullingCompletedCalled;
+
+        public void PullingCompleted()
+        {
+            PullingCompletedCalled = true;
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace SalsaImporter.Synchronization
         DateTime LastPullDateTime { get; set; }
         int LastPushedKey { get; set; }
         int LastPulledKey { get; set; }
+        void PullingCompleted();
     }
 }

@@ -37,7 +37,6 @@ namespace SalsaImporterTests.Synchronization
             _localRepositoryMock.Setup(localRepository => localRepository.Add(externalObj)).Returns(newlocalId);
 
             objectProcess.ProcessPulledObject<Supporter>(externalObj);
-            _externalRepositoryMock.Verify(externalRepository => externalRepository.Update(It.IsAny<ISyncObject>(), externalObj));
         }
 
         [Test]
@@ -67,32 +66,6 @@ namespace SalsaImporterTests.Synchronization
             _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj, localObj));
         }
 
-        [Test]
-        public void ShouldUpdateExternalObjectIfExternalIsOlderThanLocal()
-        {
-            var externalObj = new Supporter
-            {
-                ExternalKey = 1234,
-                Email = "jj@abc.com",
-                LocalKey = 5678,
-                Phone = "4161234567",
-                ExternalModifiedDate = new DateTime(2012, 3, 20)
-            };
-            var localObj = new Supporter
-            {
-                ExternalKey = 1234,
-                Email = "jj@abc.com",
-                LocalKey = 5678,
-                Phone = "4161234568",
-                localModifiedDate = new DateTime(2012, 6, 23)
-            };
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
-
-            objectProcess.ProcessPulledObject<Supporter>(externalObj);
-
-            _externalRepositoryMock.Verify(externalRepository => externalRepository.Update(localObj, externalObj));
-
-        }
 
         [Test]
         public void ShouldHandleError()

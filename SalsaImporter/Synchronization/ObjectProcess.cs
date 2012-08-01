@@ -26,9 +26,7 @@ namespace SalsaImporter.Synchronization
                     AddToLocal(externalObj);
                 else if(!externalObj.Equals(localObj))
                 {
-                    if (localObj.localModifiedDate > externalObj.ExternalModifiedDate)
-                        _externalRepository.Update(localObj, externalObj);
-                    else
+                    if (localObj.localModifiedDate < externalObj.ExternalModifiedDate)
                         _localRepository.Update(externalObj, localObj);
                 }
             }catch(Exception ex)
@@ -39,9 +37,7 @@ namespace SalsaImporter.Synchronization
 
         private void AddToLocal(ISyncObject externalObj)
         {
-            ISyncObject newObj = externalObj.Clone();
-            newObj.LocalKey = _localRepository.Add(externalObj);
-            _externalRepository.Update(newObj, externalObj);
+            _localRepository.Add(externalObj);
         }
     }
 }

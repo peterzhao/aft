@@ -16,7 +16,7 @@ namespace SalsaImporterTests.Synchronization
        private BatchProcess _batchProcess;
         private Mock<ISyncObjectRepository> _localRepositoryMock;
         private Mock<ISyncObjectRepository> _externalRepositoryMock;
-        private ISyncLog _syncLog;
+        private SyncLogStub _syncLog;
         private Mock<IObjectProcess> _objectProcessMock;
         [SetUp]
         public void SetUp()
@@ -59,8 +59,7 @@ namespace SalsaImporterTests.Synchronization
             _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject<Supporter>(supporter2));
             _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject<Supporter>(supporter3));
 
-            Assert.AreEqual(0, _syncLog.LastPulledKey);
-            Assert.IsTrue(begin <= _syncLog.LastPullDateTime);
+            Assert.IsTrue(_syncLog.PullingCompletedCalled);
         }
     }
 }
