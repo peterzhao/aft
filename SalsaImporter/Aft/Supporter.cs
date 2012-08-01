@@ -90,7 +90,7 @@ namespace SalsaImporter.Aft
         {
             get
             { 
-                if(_uid == null && Id != null)
+                if(_uid == null)
                 {
                     _uid = Id.ToString();
                 }
