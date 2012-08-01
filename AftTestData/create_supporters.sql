@@ -1,85 +1,108 @@
---DROP TABLE [dbo].[Supporters]
-CREATE TABLE [dbo].[Supporters]
-(
-  [Id] INT NOT NULL PRIMARY KEY IDENTITY
-, [AFT_Created] DATETIME2 NOT NULL DEFAULT GETDATE()
-, [AFT_LastModified] DATETIME2 NOT NULL DEFAULT GETDATE()
-, [supporter_KEY] INT NULL
-, [Last_Modified] DATETIME2 NULL
-, [Date_Created] DATETIME2 NULL
-, [Title] NVARCHAR(50) NULL
-, [First_Name] NVARCHAR(50) NULL
-, [MI] NVARCHAR(50) NULL
-, [Last_Name] NVARCHAR(50) NULL
-, [Suffix] NVARCHAR(50) NULL
-, [Email] NVARCHAR(50) NULL
-, [Password] NVARCHAR(50) NULL
-, [Receive_Email] TINYINT NULL
-, [Email_Preference] NVARCHAR(50) NULL
-, [Last_Bounce] DATETIME2 NULL
-, [Receive_Phone_Blasts] TINYINT NULL
-, [Phone] NVARCHAR(50) NULL
-, [Cell_Phone] NVARCHAR(50) NULL
-, [Phone_Provider] NVARCHAR(50) NULL
-, [Work_Phone] NVARCHAR(50) NULL
-, [Pager] NVARCHAR(50) NULL
-, [Home_Fax] NVARCHAR(50) NULL
-, [Work_Fax] NVARCHAR(50) NULL
-, [Street] NVARCHAR(50) NULL
-, [Street_2] NVARCHAR(50) NULL
-, [Street_3] NVARCHAR(50) NULL
-, [City] NVARCHAR(50) NULL
-, [State] NVARCHAR(50) NULL
-, [Zip] NVARCHAR(50) NULL
-, [PRIVATE_Zip_Plus_4] NVARCHAR(50) NULL
-, [County] NVARCHAR(50) NULL
-, [District] NVARCHAR(50) NULL
-, [Country] NVARCHAR(50) NULL
-, [Latitude] FLOAT NULL
-, [Longitude] FLOAT NULL
-, [Organization] NVARCHAR(50) NULL
-, [Department] NVARCHAR(50) NULL
-, [Occupation] NVARCHAR(50) NULL
-, [Instant_Messenger_Service] NVARCHAR(50) NULL
-, [Instant_Messenger_Name] NVARCHAR(50) NULL
-, [Web_Page] NVARCHAR(50) NULL
-, [Alternative_Email] NVARCHAR(50) NULL
-, [Other_Data_1] NVARCHAR(50) NULL
-, [Other_Data_2] NVARCHAR(50) NULL
-, [Other_Data_3] NVARCHAR(50) NULL
-, [Notes] NVARCHAR(255) NULL
-, [Source] NVARCHAR(50) NULL
-, [Source_Details] NVARCHAR(50) NULL
-, [Source_Tracking_Code] NVARCHAR(50) NULL
-, [Tracking_Code] NVARCHAR(50) NULL
-, [Status] NVARCHAR(50) NULL
-, [uid] NVARCHAR(50) NULL
-, [Timezone] NVARCHAR(50) NULL
-, [Language_Code] NVARCHAR(50) NULL
-, [CustomString0] NVARCHAR(50) NULL
-, [CustomString1] NVARCHAR(50) NULL
-, [CustomString2] NVARCHAR(50) NULL
-, [CustomString3] NVARCHAR(50) NULL
-, [CustomString4] NVARCHAR(50) NULL
-, [CustomString5] NVARCHAR(50) NULL
-, [CustomString6] NVARCHAR(50) NULL
-, [CustomString7] NVARCHAR(50) NULL
-, [CustomString8] NVARCHAR(50) NULL
-, [CustomString9] NVARCHAR(50) NULL
-, [CustomInteger0] INT NULL
-, [CustomInteger1] INT NULL
-, [CustomInteger2] INT NULL
-, [CustomInteger3] INT NULL
-, [CustomInteger4] INT NULL
-, [CustomBoolean0] BIT NULL
-, [CustomBoolean1] BIT NULL
-, [CustomBoolean2] BIT NULL
-, [CustomBoolean3] BIT NULL
-, [CustomBoolean4] BIT NULL
-, [CustomBoolean5] BIT NULL
-, [CustomBoolean6] BIT NULL
-, [CustomBoolean7] BIT NULL
-, [CustomBoolean8] BIT NULL
-, [CustomBoolean9] BIT NULL
-)
+USE [AFT]
 GO
+
+/****** Object:  Table [dbo].[Supporters]    Script Date: 08/01/2012 10:45:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Supporters](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AFT_Created] [datetime2](7) NOT NULL,
+	[AFT_LastModified] [datetime2](7) NOT NULL,
+	[supporter_KEY] [int] NULL,
+	[Last_Modified] [datetime2](7) NULL,
+	[Date_Created] [datetime2](7) NULL,
+	[Title] [nvarchar](50) NULL,
+	[First_Name] [nvarchar](50) NULL,
+	[MI] [nvarchar](50) NULL,
+	[Last_Name] [nvarchar](50) NULL,
+	[Suffix] [nvarchar](50) NULL,
+	[Email] [nvarchar](50) NULL,
+	[Password] [nvarchar](50) NULL,
+	[Receive_Email] [tinyint] NULL,
+	[Email_Preference] [nvarchar](50) NULL,
+	[Last_Bounce] [datetime2](7) NULL,
+	[Receive_Phone_Blasts] [tinyint] NULL,
+	[Phone] [nvarchar](50) NULL,
+	[Cell_Phone] [nvarchar](50) NULL,
+	[Phone_Provider] [nvarchar](50) NULL,
+	[Work_Phone] [nvarchar](50) NULL,
+	[Pager] [nvarchar](50) NULL,
+	[Home_Fax] [nvarchar](50) NULL,
+	[Work_Fax] [nvarchar](50) NULL,
+	[Street] [nvarchar](50) NULL,
+	[Street_2] [nvarchar](50) NULL,
+	[Street_3] [nvarchar](50) NULL,
+	[City] [nvarchar](50) NULL,
+	[State] [nvarchar](50) NULL,
+	[Zip] [nvarchar](50) NULL,
+	[PRIVATE_Zip_Plus_4] [nvarchar](50) NULL,
+	[County] [nvarchar](50) NULL,
+	[District] [nvarchar](50) NULL,
+	[Country] [nvarchar](50) NULL,
+	[Latitude] [float] NULL,
+	[Longitude] [float] NULL,
+	[Organization] [nvarchar](50) NULL,
+	[Department] [nvarchar](50) NULL,
+	[Occupation] [nvarchar](50) NULL,
+	[Instant_Messenger_Service] [nvarchar](50) NULL,
+	[Instant_Messenger_Name] [nvarchar](50) NULL,
+	[Web_Page] [nvarchar](50) NULL,
+	[Alternative_Email] [nvarchar](50) NULL,
+	[Other_Data_1] [nvarchar](50) NULL,
+	[Other_Data_2] [nvarchar](50) NULL,
+	[Other_Data_3] [nvarchar](50) NULL,
+	[Notes] [nvarchar](255) NULL,
+	[Source] [nvarchar](50) NULL,
+	[Source_Details] [nvarchar](50) NULL,
+	[Source_Tracking_Code] [nvarchar](50) NULL,
+	[Tracking_Code] [nvarchar](50) NULL,
+	[Status] [nvarchar](50) NULL,
+	[uid] [nvarchar](50) NULL,
+	[Timezone] [nvarchar](50) NULL,
+	[Language_Code] [nvarchar](50) NULL,
+	[CustomString0] [nvarchar](50) NULL,
+	[CustomString1] [nvarchar](50) NULL,
+	[CustomString2] [nvarchar](50) NULL,
+	[CustomString3] [nvarchar](50) NULL,
+	[CustomString4] [nvarchar](50) NULL,
+	[CustomString5] [nvarchar](50) NULL,
+	[CustomString6] [nvarchar](50) NULL,
+	[CustomString7] [nvarchar](50) NULL,
+	[CustomString8] [nvarchar](50) NULL,
+	[CustomString9] [nvarchar](50) NULL,
+	[CustomInteger0] [int] NULL,
+	[CustomInteger1] [int] NULL,
+	[CustomInteger2] [int] NULL,
+	[CustomInteger3] [int] NULL,
+	[CustomInteger4] [int] NULL,
+	[CustomBoolean0] [bit] NULL,
+	[CustomBoolean1] [bit] NULL,
+	[CustomBoolean2] [bit] NULL,
+	[CustomBoolean3] [bit] NULL,
+	[CustomBoolean4] [bit] NULL,
+	[CustomBoolean5] [bit] NULL,
+	[CustomBoolean6] [bit] NULL,
+	[CustomBoolean7] [bit] NULL,
+	[CustomBoolean8] [bit] NULL,
+	[CustomBoolean9] [bit] NULL,
+	[CustomDateTime0] [datetime2](7) NULL,
+	[localModifiedDate] [datetime2](7) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_Created]
+GO
+
+ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_LastModified]
+GO
+
+
