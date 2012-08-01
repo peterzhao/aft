@@ -6,7 +6,6 @@ namespace SalsaImporter.Aft
 {
     public class Supporter: ISyncObject
     {
-       
         private string _uid;
         public int Id { get; set; }
         public int? supporter_KEY { get; set; }
@@ -241,6 +240,28 @@ namespace SalsaImporter.Aft
         {
             get{return supporter_KEY;}
             set { supporter_KEY = value; }
+        }
+
+        //Todo: define colunms in local db
+        public DateTime? localModifiedDate { get; set; }
+
+        [NotMapped]
+        public DateTime? ExternalModifiedDate
+        {
+            get { return Last_Modified; }
+            set { Last_Modified = value; }
+        }
+
+        public ISyncObject Clone()
+        {
+            var cloned = new Supporter();
+             foreach (var property in this.GetType().GetProperties())
+             {
+                 if(!property.CanWrite || !property.CanRead) continue;
+                 var value = property.GetValue(this, null);
+                 property.SetValue(cloned, value, null);
+             }
+            return cloned;
         }
     }
 }

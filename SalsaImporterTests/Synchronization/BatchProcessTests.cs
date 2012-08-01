@@ -54,14 +54,11 @@ namespace SalsaImporterTests.Synchronization
 
             _batchProcess.PullFromExternal<Supporter>(batchSize);
 
-            _syncLogMock.VerifySet(log => log.LastPulledKey = supporter3.ExternalKey.Value);
+            _syncLogMock.VerifySet(log => log.LastPulledKey = 0);
             _syncLogMock.VerifySet(log => log.LastPullDateTime = It.IsInRange(begin, DateTime.Now, Range.Inclusive));
             _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter1));
             _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter2));
             _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPulledObject(supporter3));
-
-            
-
         }
     }
 }

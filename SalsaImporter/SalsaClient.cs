@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter
@@ -17,9 +18,9 @@ namespace SalsaImporter
     public class SalsaClient
     {
         private readonly string _salsaUrl;
-        private ImporterErrorHandler _errorHandler;
+        private SyncErrorHandler _errorHandler;
 
-        public SalsaClient(ImporterErrorHandler errorHandler)
+        public SalsaClient(SyncErrorHandler errorHandler)
         {
             _errorHandler = errorHandler;
             _salsaUrl = Config.SalsaApiUri;
@@ -31,7 +32,7 @@ namespace SalsaImporter
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();
-            var response = ImporterErrorHandler.Try<HttpWebResponse, WebException>(() =>
+            var response = SyncErrorHandler.Try<HttpWebResponse, WebException>(() =>
             {
                 var webRequest =
                     WebRequest.Create(_salsaUrl + "api/authenticate.sjs?email=" +
@@ -111,7 +112,7 @@ namespace SalsaImporter
                 url += "&include=" + objectType + "_KEY";
             }
 
-            return ImporterErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
+            return SyncErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
                     {
                         string response = Get(url);
                         List<XElement> items = ParseGetObjectResponseFromServer(response, objectType);
@@ -166,7 +167,7 @@ namespace SalsaImporter
                                                             }
                                                             catch(Exception)
                                                             {
-                                                                _errorHandler.HandleCreateObjectFailure(supporterNameValues);
+                                                                _errorHandler.HandlePushObjectFailure(supporterNameValues);
                                                             }
                                                         }, null));
                 Task.WaitAll(tasks.ToArray()); 
@@ -207,7 +208,7 @@ namespace SalsaImporter
         private string Create(string objectType, NameValueCollection data)
         {
             data.Set("key", "0"); // this is to indicate creation  
-            return ImporterErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
+            return SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
                     {
                         string response = Post("save", objectType, data);
                         string supporterKeyFromServerResponse = GetObjectKeyFromServerResponse(response, data);
@@ -249,7 +250,7 @@ namespace SalsaImporter
         private string Post(string action, string objectType, NameValueCollection data)
         {
             CookieContainer cookieContainer = Login();
-            return ImporterErrorHandler.Try<string, WebException>(() =>
+            return SyncErrorHandler.Try<string, WebException>(() =>
                                              {
                                                  string response;
                                                  using (var client1 = new ExtentedWebClient(cookieContainer))
@@ -273,7 +274,7 @@ namespace SalsaImporter
         {
             Logger.Trace("Geting: " + url);
             CookieContainer cookieContainer = Login();
-            string response = ImporterErrorHandler.Try<string, WebException>(() =>
+            string response = SyncErrorHandler.Try<string, WebException>(() =>
             {
                 using (var webClient = new ExtentedWebClient(cookieContainer))
                 {

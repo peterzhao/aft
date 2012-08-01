@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
 
-namespace SalsaImporter
+namespace SalsaImporter.Synchronization
 {
-    public class ImporterErrorHandler
+    public class SyncErrorHandler : ISyncErrorHandler
     {
         private readonly ConcurrentDictionary<string, NameValueCollection> _failedRecordsToCreate 
             = new ConcurrentDictionary<string, NameValueCollection>();
@@ -16,7 +13,7 @@ namespace SalsaImporter
         private readonly int _abortCreateThreshold;
         private readonly int _abortDeleteThreshold;
 
-        public ImporterErrorHandler(int abortCreateThreshold, int abortDeleteThreshold)
+        public SyncErrorHandler(int abortCreateThreshold, int abortDeleteThreshold)
         {
             _abortCreateThreshold = abortCreateThreshold;
             _abortDeleteThreshold = abortDeleteThreshold;
@@ -33,7 +30,7 @@ namespace SalsaImporter
         }
 
 
-        public void HandleCreateObjectFailure(NameValueCollection data)
+        public void HandlePushObjectFailure(NameValueCollection data)
         {
             _failedRecordsToCreate[data["uid"]] = data;
             Logger.Error(String.Format("Failed to create supporter(id:{0})", data["uid"]));
@@ -44,6 +41,11 @@ namespace SalsaImporter
                 throw new OperationCanceledException(message);
             }
 
+        }
+
+        public void HandlePullObjectFailure(ISyncObject obj, Exception ex)
+        {
+            
         }
 
         public void HandleDeleteObjectFailure(string suppoertKey)

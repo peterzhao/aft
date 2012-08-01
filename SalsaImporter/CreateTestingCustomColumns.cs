@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Specialized;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
 {
     public class CreateTestingCustomColumns
     {
         private readonly SalsaClient _salsa;
-        private readonly ImporterErrorHandler _errorHandler;
+        private readonly SyncErrorHandler _errorHandler;
 
         public CreateTestingCustomColumns()
         {
-            _errorHandler = new ImporterErrorHandler(500, 500);
+            _errorHandler = new SyncErrorHandler(500, 500);
             _salsa = new SalsaClient(_errorHandler);
 
             _salsa.Login();

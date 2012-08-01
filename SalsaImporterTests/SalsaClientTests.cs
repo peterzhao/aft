@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests
 {
@@ -20,7 +21,7 @@ namespace SalsaImporterTests
         [SetUp]
         public void SetUp()
         {
-            client = new SalsaClient(new ImporterErrorHandler(100, 500));
+            client = new SalsaClient(new SyncErrorHandler(100, 500));
         }
 
 

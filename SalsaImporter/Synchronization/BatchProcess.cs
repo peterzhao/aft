@@ -8,9 +8,9 @@ namespace SalsaImporter.Synchronization
     public class BatchProcess
     {
         private ISyncObjectRepository _localRepository;
-        private ISyncObjectRepository _externalRepository;
-        private ISyncLog _syncLog;
-        private IObjectProcess _objectProcess;
+        private readonly ISyncObjectRepository _externalRepository;
+        private readonly ISyncLog _syncLog;
+        private readonly IObjectProcess _objectProcess;
 
         public BatchProcess(ISyncObjectRepository localRepository, 
             ISyncObjectRepository externalRepository,
@@ -36,8 +36,8 @@ namespace SalsaImporter.Synchronization
                     startKey = objects.Last().ExternalKey.Value;
                 else
                 {
-                    _syncLog.LastPulledKey = 0;
-                    _syncLog.LastPullDateTime = DateTime.Now;
+                   _syncLog.LastPulledKey = 0;
+                   _syncLog.LastPullDateTime = DateTime.Now;
                 }
                 _syncLog.LastPulledKey = startKey;
             } while (objects.Any());

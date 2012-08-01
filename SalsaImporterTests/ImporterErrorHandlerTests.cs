@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.IO;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests
 {
@@ -12,14 +13,14 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldAllowContinueToCreateUntilFailureTimesExceedThreshold()
         {
-            var handler = new ImporterErrorHandler(2, 1);
+            var handler = new SyncErrorHandler(2, 1);
             var data1 = new NameValueCollection {{"uid", "1"}};
             var data2 = new NameValueCollection {{"uid", "2"}};
             var data3 = new NameValueCollection {{"uid", "3"}};
 
-            Assert.DoesNotThrow(() => handler.HandleCreateObjectFailure(data1));
-            Assert.DoesNotThrow(() => handler.HandleCreateObjectFailure(data2));
-            Assert.Throws<OperationCanceledException>(() => handler.HandleCreateObjectFailure(data3));
+            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data1));
+            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data2));
+            Assert.Throws<OperationCanceledException>(() => handler.HandlePushObjectFailure(data3));
 
             Assert.AreEqual(data1, handler.FailedRecordsToCreate["1"]);
             Assert.AreEqual(data2, handler.FailedRecordsToCreate["2"]);
@@ -29,7 +30,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldAllowContinueToDeleteUntilFailureTimesExceedThreshold()
         {
-            var handler = new ImporterErrorHandler(1, 2);
+            var handler = new SyncErrorHandler(1, 2);
             var key1 = "key1";
             var key2 = "key2";
             var key3 = "key3";
@@ -57,7 +58,7 @@ namespace SalsaImporterTests
                                
                                return "OK";
                            };
-            Assert.DoesNotThrow(() => ImporterErrorHandler.Try<string, InvalidDataException>(func, 3));
+            Assert.DoesNotThrow(() => SyncErrorHandler.Try<string, InvalidDataException>(func, 3));
         }
 
         [Test]
@@ -74,7 +75,7 @@ namespace SalsaImporterTests
 
                 return "OK";
             };
-            Assert.Throws<InvalidDataException>(() => ImporterErrorHandler.Try<string, InvalidOperationException>(func, 3));
+            Assert.Throws<InvalidDataException>(() => SyncErrorHandler.Try<string, InvalidOperationException>(func, 3));
         }
 
         [Test]
@@ -91,7 +92,7 @@ namespace SalsaImporterTests
 
                 return "OK";
             };
-            Assert.Throws<ApplicationException>(() => ImporterErrorHandler.Try<string, InvalidDataException>(func, 3));
+            Assert.Throws<ApplicationException>(() => SyncErrorHandler.Try<string, InvalidDataException>(func, 3));
         }
     }
 }

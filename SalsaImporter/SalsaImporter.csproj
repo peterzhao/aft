@@ -63,7 +63,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Exceptions\InvalidSalsaResponseException.cs" />
-    <Compile Include="ImporterErrorHandler.cs" />
+    <Compile Include="Synchronization\ISyncErrorHandler.cs" />
+    <Compile Include="Synchronization\SyncErrorHandler.cs" />
     <Compile Include="SalsaClient.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Program.cs" />

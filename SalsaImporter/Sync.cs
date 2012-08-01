@@ -5,19 +5,20 @@ using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
 {
     public class Sync
     {
         private readonly SalsaClient _salsa;
-        private readonly ImporterErrorHandler _errorHandler;
+        private readonly SyncErrorHandler _errorHandler;
         private readonly SupporterMapper _mapper;
         
 
         public Sync()
         {
-            _errorHandler = new ImporterErrorHandler(500, 500);
+            _errorHandler = new SyncErrorHandler(500, 500);
             _salsa = new SalsaClient(_errorHandler);
             _mapper = new SupporterMapper();
             _salsa.Login();
