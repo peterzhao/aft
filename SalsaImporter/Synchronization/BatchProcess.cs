@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
@@ -24,23 +25,24 @@ namespace SalsaImporter.Synchronization
 
         public void PullFromExternal<T>(int batchSize) where T:ISyncObject
         {
-            IEnumerable<ISyncObject> objects = null;
+            IEnumerable<T> objects = null;
             int startKey = _syncLog.LastPulledKey;
             var lastProcessedDatetime = _syncLog.LastPullDateTime;
             do
             {
                 objects = _externalRepository.GetBatchOfObjects<T>(batchSize, startKey, lastProcessedDatetime);
-                var tasks = objects.Select(obj => Task.Factory.StartNew(arg => _objectProcess.ProcessPulledObject(obj), null));
+                var tasks = objects.Select(obj => Task.Factory.StartNew(arg => _objectProcess.ProcessPulledObject<T>(obj), null));
                 Task.WaitAll(tasks.ToArray());
-                if (objects.Any())
-                    startKey = objects.Last().ExternalKey.Value;
-                else
+                if (!objects.Any())
                 {
                    _syncLog.LastPulledKey = 0;
                    _syncLog.LastPullDateTime = DateTime.Now;
+                   break;
                 }
+                startKey = objects.Last().ExternalKey.Value;
                 _syncLog.LastPulledKey = startKey;
-            } while (objects.Any());
+
+            } while (true);
         }
     }
 }

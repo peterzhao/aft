@@ -5,6 +5,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
+using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Synchronization
@@ -32,21 +33,21 @@ namespace SalsaImporterTests.Synchronization
         {
             var externalObj = new Supporter {ExternalKey = 1234};
             int newlocalId = 3456;
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey(externalObj.ExternalKey.Value)).Returns(()=> null);
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(()=> null);
             _localRepositoryMock.Setup(localRepository => localRepository.Add(externalObj)).Returns(newlocalId);
 
-            objectProcess.ProcessPulledObject(externalObj);
+            objectProcess.ProcessPulledObject<Supporter>(externalObj);
             _externalRepositoryMock.Verify(externalRepository => externalRepository.Update(It.IsAny<ISyncObject>(), externalObj));
         }
 
         [Test]
         public void ShouldDoNothingIfExternalIsSameAsLocal()
         {
-            var externalObj = new Supporter { ExternalKey = 1234 , Email = "jj@abc.com", LocalKey = 5678};
-            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678 };
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey(externalObj.ExternalKey.Value)).Returns(localObj);
+            var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, ExternalModifiedDate = new DateTime(2012, 7, 20)};
+            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, localModifiedDate = new DateTime(2012, 7, 21)};
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
 
-            objectProcess.ProcessPulledObject(externalObj);
+            objectProcess.ProcessPulledObject<Supporter>(externalObj);
 
             _externalRepositoryMock.Verify(externalRepository => externalRepository.Update(externalObj, localObj), Times.Never());
             _localRepositoryMock.Verify(localRepository => localRepository.Add(externalObj), Times.Never());
@@ -59,9 +60,9 @@ namespace SalsaImporterTests.Synchronization
                 Phone = "4161234567", ExternalModifiedDate = new DateTime(2012, 7, 20)};
             var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678,
                 Phone = "4161234568", localModifiedDate = new DateTime(2012, 6, 23)};
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey(externalObj.ExternalKey.Value)).Returns(localObj);
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
 
-            objectProcess.ProcessPulledObject(externalObj);
+            objectProcess.ProcessPulledObject<Supporter>(externalObj);
 
             _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj, localObj));
         }
@@ -85,9 +86,9 @@ namespace SalsaImporterTests.Synchronization
                 Phone = "4161234568",
                 localModifiedDate = new DateTime(2012, 6, 23)
             };
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey(externalObj.ExternalKey.Value)).Returns(localObj);
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
 
-            objectProcess.ProcessPulledObject(externalObj);
+            objectProcess.ProcessPulledObject<Supporter>(externalObj);
 
             _externalRepositoryMock.Verify(externalRepository => externalRepository.Update(localObj, externalObj));
 
@@ -97,10 +98,10 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldHandleError()
         {
             var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678 };
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey(externalObj.ExternalKey.Value))
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value))
                 .Throws<Exception>();
 
-            objectProcess.ProcessPulledObject(externalObj);
+            objectProcess.ProcessPulledObject<Supporter>(externalObj);
 
             _errorHandlerMock.Verify(errorHandler => errorHandler.HandlePullObjectFailure(externalObj, It.IsAny<Exception>()));
         }

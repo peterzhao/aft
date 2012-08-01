@@ -4,6 +4,6 @@ namespace SalsaImporter.Synchronization
 {
     public interface IObjectProcess
     {
-         void ProcessPulledObject(ISyncObject externalObj);
+        void ProcessPulledObject<T>(T externalObj) where T : ISyncObject;
     }
 }

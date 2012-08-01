@@ -63,6 +63,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Exceptions\InvalidSalsaResponseException.cs" />
+    <Compile Include="Repositories\SalsaRepository.cs" />
     <Compile Include="Synchronization\ISyncErrorHandler.cs" />
     <Compile Include="Synchronization\SyncErrorHandler.cs" />
     <Compile Include="SalsaClient.cs" />
@@ -71,7 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sync.cs" />
     <Compile Include="Synchronization\IObjectProcess.cs" />
-    <Compile Include="Synchronization\ISyncObjectRepository.cs" />
+    <Compile Include="Repositories\ISyncObjectRepository.cs" />
     <Compile Include="Synchronization\ISyncLog.cs" />
     <Compile Include="Synchronization\BatchProcess.cs" />
     <Compile Include="Synchronization\ISyncObject.cs" />

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
@@ -16,14 +17,14 @@ namespace SalsaImporter.Synchronization
             _errorHandler = errorHandler;
         }
 
-        public void ProcessPulledObject(ISyncObject externalObj)
+        public void ProcessPulledObject<T>(T externalObj) where T:ISyncObject
         {
             try
             {
-                var localObj = _localRepository.GetByExternalKey(externalObj.ExternalKey.Value);
+                var localObj = _localRepository.GetByExternalKey<T> (externalObj.ExternalKey.Value);
                 if (localObj == null)
                     AddToLocal(externalObj);
-                else
+                else if(!externalObj.Equals(localObj))
                 {
                     if (localObj.localModifiedDate > externalObj.ExternalModifiedDate)
                         _externalRepository.Update(localObj, externalObj);
