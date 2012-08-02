@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Text;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 
-namespace SalsaImporterTests.Aft
+namespace SalsaImporterTests.Mappers
 {
     [TestFixture]
     public class SupporterMapperTests

@@ -56,6 +56,7 @@
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
     <Compile Include="Aft\SyncRun.cs" />
+    <Compile Include="Mappers\MapperFactory.cs" />
     <Compile Include="Mappers\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CreateTestingCustomColumns.cs" />

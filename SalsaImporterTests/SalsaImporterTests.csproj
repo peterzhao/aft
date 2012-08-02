@@ -56,7 +56,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aft\AftDbContextTests.cs" />
-    <Compile Include="Aft\SupporterMapperTests.cs" />
+    <Compile Include="Mappers\MapperFactoryTests.cs" />
+    <Compile Include="Mappers\SupporterMapperTests.cs" />
     <Compile Include="Aft\SupporterTests.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="ImporterErrorHandlerTests.cs" />
