@@ -14,7 +14,6 @@ namespace SalsaImporterTests.PerformanceTest
         public SyncTests()
         {
             Config.Environment = Config.PerformanceTest;
-            //Config.Environment = Config.Stub;
         }
 
         [Test]

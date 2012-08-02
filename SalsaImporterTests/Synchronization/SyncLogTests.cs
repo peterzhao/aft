@@ -13,15 +13,17 @@ namespace SalsaImporterTests.Synchronization
         [SetUp]
         public void SetUp()
         {
-            db = new AftDbContext();
-            db.SyncRuns.ToList().ForEach(s => db.SyncRuns.Remove(s));
-            db.SaveChanges();
+            using (db = new AftDbContext())
+            {
+                db.SyncRuns.ToList().ForEach(s => db.SyncRuns.Remove(s));
+                db.SaveChanges();
+            }
         }
-
+       
         [Test]
         public void ShouldGiveMinimumTimeWhenNoPriorSynchronizations()
         {
-            var syncLog = new SyncLog(db, DateTime.Now);
+            var syncLog = new SyncLog(DateTime.Now);
             Assert.AreEqual(DateTime.MinValue, syncLog.LastPullDateTime);
         }
 
@@ -29,11 +31,11 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGiveLastStartTimeWhenPriorCompletedSynchronization()
         {
             DateTime firstStartTime = DateTime.Now;
-            var firstSyncLog = new SyncLog(db, firstStartTime);
+            var firstSyncLog = new SyncLog(firstStartTime);
             
             firstSyncLog.PullingCompleted();
 
-            var secondSyncLog = new SyncLog(db, DateTime.Now);
+            var secondSyncLog = new SyncLog(DateTime.Now);
 
             Assert.AreEqual(firstStartTime, secondSyncLog.LastPullDateTime);
         }
@@ -41,14 +43,14 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldGiveLastKeyZeroAsStartKeyWhenNoPriorSynchronizations()
         {
-            var syncLog = new SyncLog(db, DateTime.Now);
+            var syncLog = new SyncLog(DateTime.Now);
             Assert.AreEqual(0, syncLog.LastPulledKey);
         }
 
         [Test]
         public void ShouldRetainLastKey()
         {
-            var syncLog = new SyncLog(db, DateTime.Now);
+            var syncLog = new SyncLog(DateTime.Now);
             syncLog.LastPulledKey = 100;
             Assert.AreEqual(100, syncLog.LastPulledKey);
         }
@@ -57,29 +59,22 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldResumeToLastKey()
         {
-            var firstSyncLog = new SyncLog(db, DateTime.Now);
+            var firstSyncLog = new SyncLog(DateTime.Now);
             firstSyncLog.LastPulledKey = 100;
-            db.SaveChanges();
-
-            var secondSyncLog = new SyncLog(db, DateTime.Now);
+            
+            var secondSyncLog = new SyncLog(DateTime.Now);
             Assert.AreEqual(100, secondSyncLog.LastPulledKey);
         }
 
         [Test]
         public void ShouldStartAtKeyZeroWhenPriorRunComplete()
         {
-            var firstSyncLog = new SyncLog(db, DateTime.Now);
+            var firstSyncLog = new SyncLog(DateTime.Now);
             firstSyncLog.LastPulledKey = 100;
             firstSyncLog.PullingCompleted();
 
-            var secondSyncLog = new SyncLog(db, DateTime.Now);
+            var secondSyncLog = new SyncLog(DateTime.Now);
             Assert.AreEqual(0, secondSyncLog.LastPulledKey);
-        }
-        
-        [TearDown]
-        public void TearDown()
-        {
-            db.Dispose();
         }
     }
 }

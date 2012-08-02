@@ -1,8 +1,8 @@
 11.0
 80
 1       SQLINT              0       4       ""   1     Id                                                     ""
-2       SQLDATETIME2        0       8       ""   2     AFT_Created                                            ""
-3       SQLDATETIME2        0       8       ""   3     AFT_LastModified                                       ""
+2       SQLDATETIME2        0       8       ""   2     LocalCreatedDate                                       ""
+3       SQLDATETIME2        0       8       ""   3     LocalModifiedDate                                      ""
 4       SQLINT              1       4       ""   4     supporter_KEY                                          ""
 5       SQLDATETIME2        1       8       ""   5     Last_Modified                                          ""
 6       SQLDATETIME2        1       8       ""   6     Date_Created                                           ""

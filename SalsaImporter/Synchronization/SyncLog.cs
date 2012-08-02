@@ -6,51 +6,62 @@ namespace SalsaImporter.Synchronization
 {
     public class SyncLog: ISyncLog
     {
-        private readonly AftDbContext _db;
         private readonly SyncRun _currentSyncRun;
 
-        public SyncLog(AftDbContext db, DateTime startTime)
+        public SyncLog(DateTime now)
         {
-            _db = db;
-            _currentSyncRun = _db.SyncRuns.Any(s => !s.Complete) 
-                ? _db.SyncRuns.First(s => !s.Complete) 
-                : NewSyncRun(startTime);
+            using (var db = new AftDbContext())
+            {
+                var incompleteRuns = db.SyncRuns.Where(s => !s.Complete);
+                if (incompleteRuns.Any())
+                {
+                    _currentSyncRun = incompleteRuns.First();
+                }
+                else
+                {
+                    var completedRuns = db.SyncRuns.Where(s => s.Complete);
+                    _currentSyncRun = new SyncRun
+                                      {
+                                          StartTime = now,
+                                          CurrentRecord = 0,
+                                          LastUpdatedMinimum =
+                                              completedRuns.Any()
+                                                  ? completedRuns.Max(s => s.StartTime)
+                                                  : DateTime.MinValue
+                                      };
+
+                    db.SyncRuns.Add(_currentSyncRun);
+                    db.SaveChanges();
+                }
+            }
         }
 
         public DateTime LastPullDateTime
         {
-            get { return _currentSyncRun.LastUpdatedMinimum; } 
-            
+            get {return _currentSyncRun.LastUpdatedMinimum;} 
         }
         public int LastPulledKey
         {
             get { return _currentSyncRun.CurrentRecord; }
-            set { _currentSyncRun.CurrentRecord = value; }
+            set
+            {
+                using (var db = new AftDbContext())
+                {
+                    db.SyncRuns.Attach(_currentSyncRun);
+                    _currentSyncRun.CurrentRecord = value;
+                    db.SaveChanges();
+                }
+            }
         }
 
         public void PullingCompleted()
         {
-            _currentSyncRun.Complete = true;
-            _db.SaveChanges();
-        }
-
-        private SyncRun NewSyncRun(DateTime startTime)
-        {
-            var completedSyncRuns = _db.SyncRuns.Where(s => s.Complete);
-            
-            SyncRun syncRun = new SyncRun
-                                  {
-                                      StartTime = startTime,
-                                      CurrentRecord = 0,
-                                      LastUpdatedMinimum =
-                                        completedSyncRuns.Any()
-                                              ? completedSyncRuns.Max(s => s.StartTime)
-                                              : DateTime.MinValue
-                                  };
-
-            _db.SyncRuns.Add(syncRun);
-
-            return syncRun;
+            using (var db = new AftDbContext())
+            {
+                db.SyncRuns.Attach(_currentSyncRun);
+                _currentSyncRun.Complete = true;
+                db.SaveChanges();
+            }
         }
 
         public DateTime LastPushDateTime 
