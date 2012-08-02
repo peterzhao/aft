@@ -12,9 +12,10 @@ namespace SalsaImporter.Synchronization
         public SyncLog(AftDbContext db, DateTime startTime)
         {
             _db = db;
-            _currentSyncRun = _db.SyncRuns.Any(s => !s.Complete) ? _db.SyncRuns.First(s => !s.Complete) : NewSyncRun(startTime);
+            _currentSyncRun = _db.SyncRuns.Any(s => !s.Complete) 
+                ? _db.SyncRuns.First(s => !s.Complete) 
+                : NewSyncRun(startTime);
         }
-
 
         public DateTime LastPullDateTime
         {
