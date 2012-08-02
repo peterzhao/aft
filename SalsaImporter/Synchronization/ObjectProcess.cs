@@ -6,9 +6,9 @@ namespace SalsaImporter.Synchronization
 {
     public class ObjectProcess : IObjectProcess
     {
-        private ISyncObjectRepository _externalRepository;
-        private ISyncObjectRepository _localRepository;
-        private ISyncErrorHandler _errorHandler;
+        private readonly ISyncObjectRepository _externalRepository;
+        private readonly ISyncObjectRepository _localRepository;
+        private readonly ISyncErrorHandler _errorHandler;
 
         public ObjectProcess(ISyncObjectRepository localRepository, ISyncObjectRepository externalRepository, ISyncErrorHandler errorHandler)
         {
@@ -33,6 +33,39 @@ namespace SalsaImporter.Synchronization
             {
                 _errorHandler.HandlePullObjectFailure(externalObj, ex);
             }
+        }
+
+      
+
+        public void ProcessPushingObject<T>(T localObj) where T:ISyncObject
+        {
+            try
+            {
+                T externalObj = default(T);
+                if(localObj.ExternalKey.HasValue) externalObj  = _externalRepository.Get<T>(localObj.ExternalKey.Value);
+                if (externalObj == null) 
+                    AddToExternal(localObj);
+                else if (!externalObj.Equals(localObj))
+                {
+                    if (localObj.LocalModifiedDate >= externalObj.ExternalModifiedDate)
+                    {
+                        _externalRepository.Update<T>(localObj, externalObj);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorHandler.HandlePullObjectFailure(localObj, ex);
+            }
+
+        }
+
+        private void AddToExternal(ISyncObject localObj)
+        {
+            var newObject = localObj.Clone();
+            newObject.ExternalKey = _externalRepository.Add(localObj);
+            _localRepository.Update(newObject, localObj);
+
         }
 
         private void AddToLocal(ISyncObject externalObj)
