@@ -24,8 +24,10 @@ namespace SalsaImporter.Synchronization
                 var externalKey = externalObj.ExternalKey;
                 var localObj = _localRepository.GetByExternalKey<T> (externalKey.Value);
                 if (localObj == null)
+                {
                     AddToLocal(externalObj);
-                else if(!externalObj.Equals(localObj))
+                }
+                else if (!externalObj.Equals(localObj))
                 {
                     if (localObj.LocalModifiedDate < externalObj.ExternalModifiedDate)
                         _localRepository.Update(externalObj, localObj);

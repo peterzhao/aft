@@ -7,7 +7,7 @@ namespace SalsaImporter.Aft
     {
         public DbSet<Supporter> Supporters { get; set; }
         public DbSet<SyncRun> SyncRuns { get; set; }
-        public DbSet<T> Records<T>() where T : class, ISyncObject
+        public DbSet<T> Records<T>() where T : class
         {
             return Set<T>();
         }

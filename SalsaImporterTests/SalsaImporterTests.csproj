@@ -72,6 +72,7 @@
     <Compile Include="Synchronization\SyncLogTests.cs" />
     <Compile Include="Synchronization\ObjectProcessTests.cs" />
     <Compile Include="Synchronization\SyncLogStub.cs" />
+    <Compile Include="utilities\TestUtils.cs" />
     <Compile Include="utilities\XDocumentExtensionTests.cs" />
   </ItemGroup>
   <ItemGroup>
