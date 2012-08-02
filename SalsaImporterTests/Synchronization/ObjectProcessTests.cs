@@ -136,7 +136,7 @@ namespace SalsaImporterTests.Synchronization
             _externalRepositoryMock.Setup(externalRepository => externalRepository.Get<Supporter>(localObj.ExternalKey.Value)).Throws<Exception>();
 
             _objectProcess.ProcessPushingObject<Supporter>(localObj);
-            _errorHandlerMock.Verify(errorHandler => errorHandler.HandlePullObjectFailure(localObj, It.IsAny<Exception>()));
+            _errorHandlerMock.Verify(errorHandler => errorHandler.HandlePushObjectFailure(localObj, It.IsAny<Exception>()));
         }
       
     }

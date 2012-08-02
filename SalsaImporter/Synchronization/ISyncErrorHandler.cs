@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Specialized;
+using SalsaImporter.Aft;
 
 namespace SalsaImporter.Synchronization
 {
@@ -8,5 +9,6 @@ namespace SalsaImporter.Synchronization
         void HandlePushObjectFailure(NameValueCollection data);
         void HandlePullObjectFailure(ISyncObject obj, Exception ex);
         void HandleDeleteObjectFailure(string suppoertKey);
+        void HandlePushObjectFailure(ISyncObject obj, Exception ex);
     }
 }

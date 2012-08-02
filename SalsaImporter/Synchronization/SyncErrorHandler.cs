@@ -61,6 +61,11 @@ namespace SalsaImporter.Synchronization
 
         }
 
+        public void HandlePushObjectFailure(ISyncObject obj, Exception ex)
+        {
+            
+        }
+
         public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {
             int count = 0;

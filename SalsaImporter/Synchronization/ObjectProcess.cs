@@ -55,7 +55,7 @@ namespace SalsaImporter.Synchronization
             }
             catch (Exception ex)
             {
-                _errorHandler.HandlePullObjectFailure(localObj, ex);
+                _errorHandler.HandlePushObjectFailure(localObj, ex);
             }
 
         }
