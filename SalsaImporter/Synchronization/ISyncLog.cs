@@ -4,10 +4,11 @@ namespace SalsaImporter.Synchronization
 {
     public interface ISyncLog
     {
-        DateTime LastPushDateTime { get; set; }
-        DateTime LastPullDateTime { get; set; }
-        int LastPushedKey { get; set; }
+        DateTime LastPullDateTime { get; }
         int LastPulledKey { get; set; }
         void PullingCompleted();
+
+        DateTime LastPushDateTime { get; set; }
+        int LastPushedKey { get; set; }
     }
 }

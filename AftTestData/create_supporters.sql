@@ -14,8 +14,8 @@ GO
 
 CREATE TABLE [dbo].[Supporters](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[AFT_Created] [datetime2](7) NOT NULL,
-	[AFT_LastModified] [datetime2](7) NOT NULL,
+	[localCreatedDate] [datetime2](7) NOT NULL,
+	[localModifiedDate] [datetime2](7) NOT NULL,
 	[supporter_KEY] [int] NULL,
 	[Last_Modified] [datetime2](7) NULL,
 	[Date_Created] [datetime2](7) NULL,
@@ -102,10 +102,10 @@ PRIMARY KEY CLUSTERED
 
 GO
 
-ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_Created]
+ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [localCreatedDate]
 GO
 	
-ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [AFT_LastModified]
+ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [localModifiedDate]
 GO
 
 IF OBJECT_ID('dbo.trg_UpdateSupportersLastModified', 'TR') IS NOT NULL  
@@ -122,7 +122,7 @@ BEGIN
 	SET NOCOUNT ON;
 
     UPDATE dbo.Supporters
-    SET AFT_LastModified = GETDATE()
+    SET localModifiedDate = GETDATE()
     WHERE ID IN (SELECT DISTINCT ID FROM Inserted)
 END
 GO

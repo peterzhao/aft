@@ -20,10 +20,19 @@ namespace SalsaImporterTests
         public void ShouldCreateSupporterInAftDb()
         {
             var name = Guid.NewGuid().ToString().Substring(0, 6);
-            var supporter = new Supporter {Email = name + "@abc.com", First_Name = name, Last_Name = "UnitTest"};
+            var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "UnitTest", LocalModifiedDate = DateTime.Now};
             db.Supporters.Add(supporter);
             db.SaveChanges();
             Assert.Greater(supporter.Id, 0);
+        }
+
+        [Test]
+        public void ShouldCreateSyncRunInAftDb()
+        {
+            var syncrun = new SyncRun { Complete = false, CurrentRecord = 0, LastUpdatedMinimum = DateTime.MinValue, StartTime = DateTime.Now};
+            db.SyncRuns.Add(syncrun);
+            db.SaveChanges();
+            Assert.Greater(syncrun.Id, 0);
         }
 
         [TearDown]

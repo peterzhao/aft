@@ -6,7 +6,7 @@ namespace SalsaImporter.Synchronization
     {
          int LocalKey { get; set; }
          int? ExternalKey { get; set; }
-         DateTime? localModifiedDate { get; set; }
+         DateTime? LocalModifiedDate { get; set; }
          DateTime? ExternalModifiedDate { get; set; }
         ISyncObject Clone();
     }

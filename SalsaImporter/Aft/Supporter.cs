@@ -9,6 +9,7 @@ namespace SalsaImporter.Aft
         private string _uid;
         public int Id { get; set; }
         public int? supporter_KEY { get; set; }
+        public DateTime? LocalModifiedDate { get; set; }
         public DateTime? Last_Modified { get; set; }
         public DateTime? Date_Created { get; set; }
         public string Title { get; set; }
@@ -242,9 +243,7 @@ namespace SalsaImporter.Aft
             set { supporter_KEY = value; }
         }
 
-        //Todo: define colunms in local db
-        public DateTime? localModifiedDate { get; set; }
-
+        
         [NotMapped]
         public DateTime? ExternalModifiedDate
         {

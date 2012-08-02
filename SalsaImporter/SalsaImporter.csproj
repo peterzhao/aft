@@ -56,6 +56,7 @@
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
     <Compile Include="Aft\SupporterMapper.cs" />
+    <Compile Include="Aft\SyncRun.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CreateTestingCustomColumns.cs" />
     <Compile Include="Exceptions\CreateSupportersException.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Synchronization\BatchProcess.cs" />
     <Compile Include="Synchronization\ISyncObject.cs" />
     <Compile Include="Synchronization\ObjectProcess.cs" />
+    <Compile Include="Synchronization\SyncLog.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>
   <ItemGroup>

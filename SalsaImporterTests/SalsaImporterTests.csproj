@@ -58,6 +58,7 @@
     <Compile Include="Aft\AftDbContextTests.cs" />
     <Compile Include="Aft\SupporterMapperTests.cs" />
     <Compile Include="Aft\SupporterTests.cs" />
+    <Compile Include="AsyncTest.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="ImporterErrorHandlerTests.cs" />
     <Compile Include="CreateTestingCustomColumnsTests.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Repositories\SalsaRepositoryTests.cs" />
     <Compile Include="SalsaClientTests.cs" />
     <Compile Include="Synchronization\BatchProcessTests.cs" />
+    <Compile Include="Synchronization\SyncLogTests.cs" />
     <Compile Include="Synchronization\ObjectProcessTests.cs" />
     <Compile Include="Synchronization\SyncLogStub.cs" />
     <Compile Include="utilities\XDocumentExtensionTests.cs" />
