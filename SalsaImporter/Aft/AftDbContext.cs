@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft
 {
@@ -6,5 +7,9 @@ namespace SalsaImporter.Aft
     {
         public DbSet<Supporter> Supporters { get; set; }
         public DbSet<SyncRun> SyncRuns { get; set; }
+        public DbSet<T> Records<T>() where T : class, ISyncObject
+        {
+            return Set<T>();
+        }
     }
 }

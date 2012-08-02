@@ -13,7 +13,7 @@ namespace SalsaImporter.Mappers
     {
         Dictionary<string, string> map = new Dictionary<string, string>
                                              {
-                                                {"supporter_KEY","supporter_KEY"},
+                                                {"ExternalKey","supporter_KEY"},
                                                 //{"Last_Modified","Last_Modified"},
                                                 //{"Date_Created","Date_Created"},
                                                 {"Title","Title"},

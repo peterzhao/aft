@@ -31,7 +31,6 @@ namespace SalsaImporterTests.Synchronization
                 _objectProcessMock.Object);
         }
 
-       
         [Test]
         public void ShouldPullFromExternal()
         {

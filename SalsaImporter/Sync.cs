@@ -41,7 +41,7 @@ namespace SalsaImporter
                     if (!string.IsNullOrEmpty(supporterKey))
                     {
                     var supporter = supporters.Find(s => s.Id == int.Parse(nameValues["uid"]));
-                        supporter.supporter_KEY = int.Parse(supporterKey);
+                        supporter.ExternalKey = int.Parse(supporterKey);
                     }
                 });
             });
@@ -74,13 +74,13 @@ namespace SalsaImporter
                                                         if (supporter.uid != null)
                                                         {
                                                             var localSupporter = db.Supporters.Find(int.Parse(supporter.uid));
-                                                            localSupporter.supporter_KEY = supporter.supporter_KEY;
-                                                            Logger.Trace("one supporter updated. supporter_key:" + supporter.supporter_KEY);
+                                                            localSupporter.ExternalKey = supporter.ExternalKey;
+                                                            Logger.Trace("one supporter updated. supporter_key:" + supporter.ExternalKey);
                                                         }
                                                         else
                                                         {
                                                             db.Supporters.Add(supporter);
-                                                            Logger.Trace("added a supporter from salsa. supporter_key:" + supporter.supporter_KEY);
+                                                            Logger.Trace("added a supporter from salsa. supporter_key:" + supporter.ExternalKey);
                                                         }
 
                                                     }
@@ -115,7 +115,7 @@ namespace SalsaImporter
                 using (var db = new AftDbContext())
                 {
                     var supporters =
-                        db.Supporters.OrderBy(s => s.Id).Where(s => s.Id > start && s.supporter_KEY == null).Take(
+                        db.Supporters.OrderBy(s => s.Id).Where(s => s.Id > start && s.ExternalKey == null).Take(
                             batchSize).ToList();
                     if (supporters.Count == 0) return;
                     Logger.Debug(String.Format("Pulling supporter from aft... batch:{0} start: {1} Get: {2}", batchCount,

@@ -16,7 +16,7 @@ namespace SalsaImporterTests.Mappers
             var supporter = new Supporter
                                 {
                                     Id = 456,
-                                    supporter_KEY = 123456,
+                                    ExternalKey = 123456,
                                     Last_Modified = new DateTime(2012, 3, 15),
                                     Date_Created = new DateTime(2012, 3, 16),
                                     Title = "myTitle",
@@ -156,7 +156,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("peter", supporter.First_Name);
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
-            Assert.AreEqual(32294089, supporter.supporter_KEY);
+            Assert.AreEqual(32294089, supporter.ExternalKey);
 
             Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).UtcDateTime, 
                 supporter.CustomDateTime0);

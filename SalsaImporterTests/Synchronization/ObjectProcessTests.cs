@@ -43,7 +43,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldDoNothingIfExternalIsSameAsLocal()
         {
             var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, ExternalModifiedDate = new DateTime(2012, 7, 20)};
-            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, LocalModifiedDate = new DateTime(2012, 7, 21)};
+            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678};
             _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
 
             _objectProcess.ProcessPulledObject<Supporter>(externalObj);

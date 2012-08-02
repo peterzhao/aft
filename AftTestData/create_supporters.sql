@@ -102,6 +102,15 @@ PRIMARY KEY CLUSTERED
 
 GO
 
+IF OBJECT_ID('dbo.UQ_Supporters_supporter_KEY', 'UQ') IS NOT NULL  
+DROP INDEX dbo.UQ_Supporters_supporter_KEY
+GO
+
+CREATE UNIQUE  NONCLUSTERED  INDEX UQ_Supporters_supporter_KEY
+    ON dbo.Supporters ( supporter_KEY ASC )
+    WHERE supporter_KEY is not null
+GO
+
 ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [localCreatedDate]
 GO
 	

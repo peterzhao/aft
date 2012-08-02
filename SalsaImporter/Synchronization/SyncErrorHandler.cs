@@ -45,7 +45,7 @@ namespace SalsaImporter.Synchronization
 
         public void HandlePullObjectFailure(ISyncObject obj, Exception ex)
         {
-            
+            Logger.Fatal(ex.StackTrace);
         }
 
         public void HandleDeleteObjectFailure(string suppoertKey)

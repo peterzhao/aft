@@ -23,7 +23,7 @@ namespace SalsaImporter.Synchronization
             _objectProcess = objectProcess;
         }
 
-        public void PullFromExternal<T>(int batchSize) where T:ISyncObject
+        public void PullFromExternal<T>(int batchSize) where T:class, ISyncObject 
         {
             IEnumerable<T> objects = null;
             int startKey = _syncLog.LastPulledKey;
@@ -44,7 +44,7 @@ namespace SalsaImporter.Synchronization
             } while (true);
         }
 
-        public void PushToExternal<T>(int batchSize) where T : ISyncObject
+        public void PushToExternal<T>(int batchSize) where T : class, ISyncObject
         {
             IEnumerable<T> objects = null;
             int startKey = _syncLog.LastPushedKey;

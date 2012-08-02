@@ -20,7 +20,7 @@ namespace SalsaImporterTests
         public void ShouldCreateSupporterInAftDb()
         {
             var name = Guid.NewGuid().ToString().Substring(0, 6);
-            var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "UnitTest", LocalModifiedDate = DateTime.Now};
+            var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "UnitTest"};
             db.Supporters.Add(supporter);
             db.SaveChanges();
             Assert.Greater(supporter.Id, 0);

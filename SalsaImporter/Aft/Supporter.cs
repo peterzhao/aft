@@ -8,7 +8,11 @@ namespace SalsaImporter.Aft
     {
         private string _uid;
         public int Id { get; set; }
-        public int? supporter_KEY { get; set; }
+        
+        [ColumnAttribute("supporter_KEY")]
+        public int? ExternalKey { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime? LocalModifiedDate { get; set; }
         public DateTime? Last_Modified { get; set; }
         public DateTime? Date_Created { get; set; }
@@ -110,7 +114,7 @@ namespace SalsaImporter.Aft
 
         protected bool Equals(Supporter other)
         {
-            return string.Equals(_uid, other._uid) && supporter_KEY == other.supporter_KEY && string.Equals(Title, other.Title)
+            return string.Equals(_uid, other._uid) && ExternalKey == other.ExternalKey && string.Equals(Title, other.Title)
                 && string.Equals(First_Name, other.First_Name) && string.Equals(MI, other.MI) && string.Equals(Last_Name, other.Last_Name)
                 && string.Equals(Suffix, other.Suffix) && string.Equals(Email, other.Email)
                 && string.Equals(Email_Preference, other.Email_Preference) && string.Equals(Phone, other.Phone)
@@ -153,7 +157,7 @@ namespace SalsaImporter.Aft
             unchecked
             {
                 int hashCode = (_uid != null ? _uid.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ supporter_KEY.GetHashCode();
+                hashCode = (hashCode * 397) ^ ExternalKey.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (First_Name != null ? First_Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MI != null ? MI.GetHashCode() : 0);
@@ -236,13 +240,14 @@ namespace SalsaImporter.Aft
             set { Id = value; }
         }
 
+        /*
         [NotMapped]
         public int? ExternalKey
         {
             get{return supporter_KEY;}
             set { supporter_KEY = value; }
         }
-
+        */
         
         [NotMapped]
         public DateTime? ExternalModifiedDate

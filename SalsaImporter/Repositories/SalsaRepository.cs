@@ -26,7 +26,7 @@ namespace SalsaImporter.Repositories
             return xElements.Select(element => (T) mapper.ToObject(element));
         }
 
-        public int Add<T>(T syncObject) where T : ISyncObject
+        public int Add<T>(T syncObject) where T : class, ISyncObject
         {
             return int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
         }
@@ -36,7 +36,7 @@ namespace SalsaImporter.Repositories
             _salsa.Update(GetObjectType<T>(), GetMapper<T>().ToNameValues(newData));
         }
 
-        public T GetByExternalKey<T>(int key) where T:ISyncObject
+        public T GetByExternalKey<T>(int key) where T: class, ISyncObject
         {
             throw new NotImplementedException();
         }
