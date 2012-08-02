@@ -10,6 +10,6 @@ namespace SalsaImporter.Repositories
         int Add<T>(T syncObject) where T: ISyncObject;
         void Update<T>(T newData, T oldData) where T: ISyncObject;
         T GetByExternalKey<T>(int key) where T: ISyncObject;
-        T GetByLocallKey<T>(int key) where T: ISyncObject;
+        T Get<T>(int key) where T: ISyncObject;
     }
 }

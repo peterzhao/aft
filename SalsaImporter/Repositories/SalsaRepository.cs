@@ -38,17 +38,17 @@ namespace SalsaImporter.Repositories
 
         public T GetByExternalKey<T>(int key) where T:ISyncObject
         {
-            var objectType = GetObjectType<T>();
-            var xElement = _salsa.GetObject(key.ToString(), objectType);
-            var mapper = _mapperFactory.GetMapper<T>();
-            return (T)mapper.ToObject(xElement);
+            throw new NotImplementedException();
         }
 
        
 
-        public T GetByLocallKey<T>(int key) where T:ISyncObject
+        public T Get<T>(int key) where T:ISyncObject
         {
-            throw new NotImplementedException();
+            var objectType = GetObjectType<T>();
+            var xElement = _salsa.GetObject(key.ToString(), objectType);
+            var mapper = _mapperFactory.GetMapper<T>();
+            return (T)mapper.ToObject(xElement);
         }
 
         private IMapper GetMapper<T>() where T : ISyncObject

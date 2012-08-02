@@ -33,16 +33,16 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        public void ShouldGetObjectBeExternalKey()
+        public void ShouldGetObject()
         {
-            var externalKey = 1234;
+            var key = 1234;
             var supporter = new Supporter{Email = "boo@abc.com"};
             var xElement = XElement.Parse("<item/>");
 
-            _salsaMock.Setup(s => s.GetObject(externalKey.ToString(), "supporter")).Returns(xElement);
+            _salsaMock.Setup(s => s.GetObject(key.ToString(), "supporter")).Returns(xElement);
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
 
-            Assert.AreEqual(supporter, _repository.GetByExternalKey<Supporter>(externalKey));
+            Assert.AreEqual(supporter, _repository.Get<Supporter>(key));
         }
 
         [Test]
@@ -62,14 +62,14 @@ namespace SalsaImporterTests.Repositories
         [Test]
         public void ShouldCreateObject()
         {
-            var externalKey = 1234;
+            var key = 1234;
             var supporter = new Supporter { Email = "boo@abc.com" };
             var nameValues = new NameValueCollection();
 
-            _salsaMock.Setup(s => s.Create("supporter", nameValues)).Returns(externalKey.ToString);
+            _salsaMock.Setup(s => s.Create("supporter", nameValues)).Returns(key.ToString);
             _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
 
-            Assert.AreEqual(externalKey, _repository.Add(supporter));
+            Assert.AreEqual(key, _repository.Add(supporter));
         }
 
         [Test]
