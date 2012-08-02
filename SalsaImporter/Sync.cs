@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Mappers;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
@@ -69,7 +70,7 @@ namespace SalsaImporter
                                                 {
                                                     foreach (var nameValues in nameValueCollections)
                                                     {
-                                                        var supporter = _mapper.ToSupporter(nameValues);
+                                                        var supporter = (Supporter)_mapper.ToObject(nameValues);
                                                         if (supporter.uid != null)
                                                         {
                                                             var localSupporter = db.Supporters.Find(int.Parse(supporter.uid));

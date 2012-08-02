@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
+using SalsaImporter.Mappers;
 
 namespace SalsaImporterTests.Aft
 {
@@ -152,7 +153,7 @@ namespace SalsaImporterTests.Aft
       <object>supporter</object>
 </item>";
             XElement element = XDocument.Parse(xml).Root;
-            Supporter supporter = new SupporterMapper().ToSupporter(element);
+            Supporter supporter = (Supporter)new SupporterMapper().ToObject(element);
 
             Assert.AreEqual("peter", supporter.First_Name);
             Assert.AreEqual("zhao", supporter.Last_Name);

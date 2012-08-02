@@ -55,8 +55,8 @@
   <ItemGroup>
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
-    <Compile Include="Aft\SupporterMapper.cs" />
     <Compile Include="Aft\SyncRun.cs" />
+    <Compile Include="Mappers\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="CreateTestingCustomColumns.cs" />
     <Compile Include="Exceptions\CreateSupportersException.cs" />
@@ -64,6 +64,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Exceptions\InvalidSalsaResponseException.cs" />
+    <Compile Include="Mappers\IMapper.cs" />
+    <Compile Include="Mappers\IMapperFactory.cs" />
+    <Compile Include="ISalsaClient.cs" />
     <Compile Include="Repositories\SalsaRepository.cs" />
     <Compile Include="Synchronization\ISyncErrorHandler.cs" />
     <Compile Include="Synchronization\SyncErrorHandler.cs" />

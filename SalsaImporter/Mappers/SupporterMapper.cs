@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
+using SalsaImporter.Aft;
+using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
-namespace SalsaImporter.Aft
+namespace SalsaImporter.Mappers
 {
-    public class SupporterMapper
+    public class SupporterMapper : IMapper
     {
         Dictionary<string, string> map = new Dictionary<string, string>
                                              {
@@ -88,7 +89,7 @@ namespace SalsaImporter.Aft
                                                 {"CustomBoolean9","CustomBoolean9"},
                                                 {"CustomDateTime0","CustomDateTime0"},
                                              }; 
-        public NameValueCollection ToNameValues(Supporter supporter)
+        public NameValueCollection ToNameValues(ISyncObject supporter)
         {
 
             var result = new NameValueCollection();
@@ -105,7 +106,7 @@ namespace SalsaImporter.Aft
             return result;
         }
 
-        public Supporter ToSupporter(XElement element)
+        public ISyncObject ToObject(XElement element) 
         {
             var supporter = new Supporter();
             foreach (var property in supporter.GetType().GetProperties())

@@ -15,7 +15,7 @@ using SalsaImporter.Utilities;
 
 namespace SalsaImporter
 {
-    public class SalsaClient
+    public class SalsaClient : ISalsaClient
     {
         private readonly string _salsaUrl;
         private SyncErrorHandler _errorHandler;
