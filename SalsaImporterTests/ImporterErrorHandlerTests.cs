@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.IO;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Aft;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests
@@ -10,38 +12,62 @@ namespace SalsaImporterTests
     [TestFixture]
     public class ImporterErrorHandlerTests
     {
+
         [Test]
-        public void ShouldAllowContinueToCreateUntilFailureTimesExceedThreshold()
+        public void ShouldAllowContinueToPullUntilFailureTimesExceedThreshold()
         {
-            var handler = new SyncErrorHandler(2, 1);
-            var data1 = new NameValueCollection {{"uid", "1"}};
-            var data2 = new NameValueCollection {{"uid", "2"}};
-            var data3 = new NameValueCollection {{"uid", "3"}};
+            var handler = new SyncErrorHandler(2, 500, 1);
+            var exception1 = new ApplicationException("testing");
+            var exception2 = new ApplicationException("testing");
+            var exception3 = new ApplicationException("testing");
+            var data1 = new Supporter {Email = "foo1@abc.com"};
+            var data2 = new Supporter {Email = "foo2@abc.com"};
+            var data3 = new Supporter {Email = "foo3@abc.com"};
 
-            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data1));
-            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data2));
-            Assert.Throws<OperationCanceledException>(() => handler.HandlePushObjectFailure(data3));
+            Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data1, exception1));
+            Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data2, exception2));
+            Assert.Throws<SyncCallendException>(() => handler.HandlePullObjectFailure(data3, exception3));
 
-            Assert.AreEqual(data1, handler.FailedRecordsToCreate["1"]);
-            Assert.AreEqual(data2, handler.FailedRecordsToCreate["2"]);
-            Assert.AreEqual(data3, handler.FailedRecordsToCreate["3"]);
+            Assert.AreEqual(exception1, handler.PullingFailure[data1]);
+            Assert.AreEqual(exception2, handler.PullingFailure[data2]);
+            Assert.AreEqual(exception3, handler.PullingFailure[data3]);
+        }
+
+        [Test]
+        public void ShouldAllowContinueToPushUntilFailureTimesExceedThreshold()
+        {
+            var handler = new SyncErrorHandler(200, 2, 1);
+            var exception1 = new ApplicationException("testing");
+            var exception2 = new ApplicationException("testing");
+            var exception3 = new ApplicationException("testing");
+            var data1 = new Supporter { Email = "foo1@abc.com" };
+            var data2 = new Supporter { Email = "foo2@abc.com" };
+            var data3 = new Supporter { Email = "foo3@abc.com" };
+
+            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data1, exception1));
+            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data2, exception2));
+            Assert.Throws<SyncCallendException>(() => handler.HandlePushObjectFailure(data3, exception3));
+
+            Assert.AreEqual(exception1, handler.PushingFailure[data1]);
+            Assert.AreEqual(exception2, handler.PushingFailure[data2]);
+            Assert.AreEqual(exception3, handler.PushingFailure[data3]);
         }
 
         [Test]
         public void ShouldAllowContinueToDeleteUntilFailureTimesExceedThreshold()
         {
-            var handler = new SyncErrorHandler(1, 2);
+            var handler = new SyncErrorHandler(1, 500, 2);
             var key1 = "key1";
             var key2 = "key2";
             var key3 = "key3";
 
             Assert.DoesNotThrow(() => handler.HandleDeleteObjectFailure(key1));
             Assert.DoesNotThrow(() => handler.HandleDeleteObjectFailure(key2));
-            Assert.Throws<OperationCanceledException>(() => handler.HandleDeleteObjectFailure(key3));
+            Assert.Throws<SyncCallendException>(() => handler.HandleDeleteObjectFailure(key3));
 
-            Assert.AreEqual(key1, handler.FailedRecordsToDelete["key1"]);
-            Assert.AreEqual(key2, handler.FailedRecordsToDelete["key2"]);
-            Assert.AreEqual(key3, handler.FailedRecordsToDelete["key3"]);
+            Assert.AreEqual(key1, handler.DeletionFailure["key1"]);
+            Assert.AreEqual(key2, handler.DeletionFailure["key2"]);
+            Assert.AreEqual(key3, handler.DeletionFailure["key3"]);
         }
 
         [Test]

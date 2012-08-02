@@ -1,71 +1,86 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
+using SalsaImporter.Exceptions;
 
 namespace SalsaImporter.Synchronization
 {
     public class SyncErrorHandler : ISyncErrorHandler
     {
-        private readonly ConcurrentDictionary<string, NameValueCollection> _failedRecordsToCreate 
-            = new ConcurrentDictionary<string, NameValueCollection>();
-        private readonly ConcurrentDictionary<string, string> _failedRecordsToDelete
+        private readonly ConcurrentDictionary<ISyncObject, Exception> _pullingFailure
+            = new ConcurrentDictionary<ISyncObject, Exception>();
+        private readonly ConcurrentDictionary<string, string> _deletionFailure
            = new ConcurrentDictionary<string, string>();
-        private readonly int _abortCreateThreshold;
-        private readonly int _abortDeleteThreshold;
+        private readonly ConcurrentDictionary<ISyncObject, Exception> _pushingFailure
+           = new ConcurrentDictionary<ISyncObject, Exception>();
+        private readonly int _abortPullingThreshold;
+        private readonly int _abortDeletionThreshold;
+        private readonly int _abortPushingThreshold;
 
-        public SyncErrorHandler(int abortCreateThreshold, int abortDeleteThreshold)
+        public SyncErrorHandler(int abortPullingThreshold, int abortPushingThreshold, int abortDeletionThreshold)
         {
-            _abortCreateThreshold = abortCreateThreshold;
-            _abortDeleteThreshold = abortDeleteThreshold;
+            _abortPullingThreshold = abortPullingThreshold;
+            _abortPushingThreshold = abortPushingThreshold;
+            _abortDeletionThreshold = abortDeletionThreshold;
         }
 
-        public ConcurrentDictionary<string, NameValueCollection> FailedRecordsToCreate
+        public ConcurrentDictionary<ISyncObject, Exception> PullingFailure
         {
-            get { return _failedRecordsToCreate; }
+            get { return _pullingFailure; }
         }
 
-        public ConcurrentDictionary<string, string> FailedRecordsToDelete
+        public ConcurrentDictionary<ISyncObject, Exception> PushingFailure
         {
-            get { return _failedRecordsToDelete; }
+            get { return _pushingFailure; }
         }
 
-
-        public void HandlePushObjectFailure(NameValueCollection data)
+        public ConcurrentDictionary<string, string> DeletionFailure
         {
-            _failedRecordsToCreate[data["uid"]] = data;
-            Logger.Error(String.Format("Failed to create supporter(id:{0})", data["uid"]));
-            if(_abortCreateThreshold < _failedRecordsToCreate.Keys.Count)
-            {
-                string message = "Failure to create supporters exceeded the threshold. Process aborted. Threshold:" + _abortCreateThreshold;
-                Logger.Fatal(message);
-                throw new OperationCanceledException(message);
-            }
-
+            get { return _deletionFailure; }
         }
 
         public void HandlePullObjectFailure(ISyncObject obj, Exception ex)
         {
-            Logger.Fatal(ex.StackTrace);
-        }
-
-        public void HandleDeleteObjectFailure(string suppoertKey)
-        {
-            FailedRecordsToDelete[suppoertKey] = suppoertKey;
-            Logger.Error(String.Format("Failed to delete supporter(key:{0})", suppoertKey));
-            if (_abortDeleteThreshold < FailedRecordsToDelete.Keys.Count)
+            PullingFailure[obj] = ex;
+            Logger.Error(String.Format("Failed to pull object:" + obj, ex));
+            if (_abortPullingThreshold < PullingFailure.Keys.Count)
             {
-                string message = "Failure to delete supporters exceeded the threshold. Process aborted. Threshold:" + _abortDeleteThreshold;
+                string message = "Failure to pull objects exceeded the threshold. Process aborted. Threshold:" + _abortPullingThreshold;
                 Logger.Fatal(message);
-                throw new OperationCanceledException(message);
+                throw new SyncCallendException(message);
             }
-
+            
         }
 
         public void HandlePushObjectFailure(ISyncObject obj, Exception ex)
         {
-            
+
+            PushingFailure[obj] = ex;
+            Logger.Error(String.Format("Failed to push object:" + obj, ex));
+            if (_abortPushingThreshold < PushingFailure.Keys.Count)
+            {
+                string message = "Failure to push objects exceeded the threshold. Process aborted. Threshold:" + _abortPushingThreshold;
+                Logger.Fatal(message);
+                throw new SyncCallendException(message);
+            }
+
         }
 
+
+        public void HandleDeleteObjectFailure(string suppoertKey)
+        {
+            DeletionFailure[suppoertKey] = suppoertKey;
+            Logger.Error(String.Format("Failed to delete supporter(key:{0})", suppoertKey));
+            if (_abortDeletionThreshold < DeletionFailure.Keys.Count)
+            {
+                string message = "Failure to delete supporters exceeded the threshold. Process aborted. Threshold:" + _abortDeletionThreshold;
+                Logger.Fatal(message);
+                throw new SyncCallendException(message);
+            }
+
+        }
+
+      
         public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {
             int count = 0;

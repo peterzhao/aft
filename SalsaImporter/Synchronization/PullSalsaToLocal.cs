@@ -13,7 +13,7 @@ namespace SalsaImporter.Synchronization
         public void run()
         {
             
-            var syncErrorHandler = new SyncErrorHandler(10, 10);
+            var syncErrorHandler = new SyncErrorHandler(10, 10, 10);
 
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());

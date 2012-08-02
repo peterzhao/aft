@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SalsaImporter.Exceptions
 {
-    public class CreateSupportersException: ApplicationException
+    public class SyncCallendException: ApplicationException
     {
-        public CreateSupportersException(string message, Exception internalException)
+        public SyncCallendException(string message, Exception internalException = null)
             :base(message, internalException){}
     }
 }

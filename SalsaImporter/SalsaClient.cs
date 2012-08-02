@@ -103,30 +103,7 @@ namespace SalsaImporter
         }
 
 
-        public void EachBatchOfObjects(string objectType,
-                                    int blockSize,
-                                    Action<List<XElement>> batchHandler,
-                                    IEnumerable<String> fieldsToReturn = null)
-        {
-            int start = 0;
-            for (;;) // ever
-            {
-                string url = String.Format("{0}api/getObjects.sjs?object={1}&limit={2},{3}",_salsaUrl, objectType, start, blockSize);
-
-                if (fieldsToReturn != null)
-                    url += "&include=" + String.Join(",", fieldsToReturn);
-
-                string response = Get(url);
-                                           
-                List<XElement> supporters = XDocument.Parse(response).Descendants("item").ToList();
-
-                if (supporters.Count == 0)break;
-
-                batchHandler(supporters);
-                start += blockSize;
-                if (supporters.Count < blockSize) break;
-            }
-        }
+      
 
         public void DeleteAllObjects(string objectType, int blockSize, bool fetchOnlyKeys)
         {
@@ -195,23 +172,7 @@ namespace SalsaImporter
             return GetObject(key, "supporter");
         }
 
-        public void CreateSupporters(IEnumerable<NameValueCollection> supporters)
-        {
-            IEnumerable<Task> tasks = supporters.Select(supporterNameValues =>
-                                                        Task.Factory.StartNew(arg =>
-                                                        {
-                                                            try
-                                                            {
-                                                                var id = CreateSupporter(supporterNameValues);
-                                                                supporterNameValues["supporter_KEY"] = id;
-                                                            }
-                                                            catch(Exception)
-                                                            {
-                                                                _errorHandler.HandlePushObjectFailure(supporterNameValues);
-                                                            }
-                                                        }, null));
-                Task.WaitAll(tasks.ToArray()); 
-        }
+       
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
         {
