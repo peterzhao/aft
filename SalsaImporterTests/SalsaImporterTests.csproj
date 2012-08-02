@@ -58,7 +58,6 @@
     <Compile Include="Aft\AftDbContextTests.cs" />
     <Compile Include="Aft\SupporterMapperTests.cs" />
     <Compile Include="Aft\SupporterTests.cs" />
-    <Compile Include="AsyncTest.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="ImporterErrorHandlerTests.cs" />
     <Compile Include="CreateTestingCustomColumnsTests.cs" />
