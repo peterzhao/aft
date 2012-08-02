@@ -61,5 +61,34 @@ namespace SalsaImporterTests.Synchronization
 
             Assert.IsTrue(_syncLog.PullingCompletedCalled);
         }
+
+        [Test]
+        public void ShouldPushToExternal()
+        {
+            int batchSize = 100;
+
+            DateTime lastPushDatetime = new DateTime(2012, 5, 20);
+            int lastPushKey = 1230;
+
+            _syncLog.LastPushDateTime = lastPushDatetime;
+            _syncLog.LastPushedKey = lastPushKey;
+
+            var supporter1 = new Supporter { ExternalKey = 4561, LocalKey = 1234};
+            var supporter2 = new Supporter { ExternalKey = 4562, LocalKey = 1235};
+            var supporter3 = new Supporter { ExternalKey = 4563 , LocalKey = 1236};
+            IEnumerable<Supporter> batch1 = new List<Supporter> { supporter1, supporter2 };
+            IEnumerable<Supporter> batch2 = new List<Supporter> { supporter3 };
+
+            _localRepositoryMock.Setup(local => local.GetBatchOfObjects<Supporter>(batchSize, lastPushKey, lastPushDatetime)).Returns(batch1);
+            _localRepositoryMock.Setup(local => local.GetBatchOfObjects<Supporter>(batchSize, supporter2.LocalKey, lastPushDatetime)).Returns(batch2);
+
+            _batchProcess.PushToExternal<Supporter>(batchSize);
+
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPushingObject<Supporter>(supporter1));
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPushingObject<Supporter>(supporter2));
+            _objectProcessMock.Verify(objectProcess => objectProcess.ProcessPushingObject<Supporter>(supporter3));
+
+            Assert.IsTrue(_syncLog.PushingCompletedCalled);
+        }
     }
 }

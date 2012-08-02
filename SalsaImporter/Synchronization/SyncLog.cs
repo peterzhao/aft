@@ -64,6 +64,11 @@ namespace SalsaImporter.Synchronization
             }
         }
 
+        public void PushingCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
         public DateTime LastPushDateTime 
         { 
             get
@@ -87,5 +92,6 @@ namespace SalsaImporter.Synchronization
                 throw new NotImplementedException();
             }
         }
+
     }
 }

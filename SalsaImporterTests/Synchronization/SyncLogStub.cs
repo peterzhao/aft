@@ -10,11 +10,18 @@ namespace SalsaImporterTests.Synchronization
         public int LastPushedKey { get; set; }
         public int LastPulledKey { get; set; }
 
+        public bool PushingCompletedCalled;
+
         public bool PullingCompletedCalled;
 
         public void PullingCompleted()
         {
             PullingCompletedCalled = true;
+        }
+
+        public void PushingCompleted()
+        {
+            PushingCompletedCalled = true;
         }
     }
 }

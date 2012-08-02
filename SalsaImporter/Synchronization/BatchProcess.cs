@@ -25,7 +25,6 @@ namespace SalsaImporter.Synchronization
 
         public void PullFromExternal<T>(int batchSize) where T:ISyncObject
         {
-            DateTime start = DateTime.Now; //todo: = SyncObject.StartPullTime reset when status is finished
             IEnumerable<T> objects = null;
             int startKey = _syncLog.LastPulledKey;
             var lastProcessedDatetime = _syncLog.LastPullDateTime;
@@ -47,7 +46,23 @@ namespace SalsaImporter.Synchronization
 
         public void PushToExternal<T>(int batchSize) where T : ISyncObject
         {
-           throw new NotImplementedException();
+            IEnumerable<T> objects = null;
+            int startKey = _syncLog.LastPushedKey;
+            var lastProcessedDatetime = _syncLog.LastPushDateTime;
+            do
+            {
+                objects = _localRepository.GetBatchOfObjects<T>(batchSize, startKey, lastProcessedDatetime);
+                var tasks = objects.Select(obj => Task.Factory.StartNew(arg => _objectProcess.ProcessPushingObject<T>(obj), null));
+                Task.WaitAll(tasks.ToArray());
+                if (!objects.Any())
+                {
+                    _syncLog.PushingCompleted();
+                    break;
+                }
+                startKey = objects.Last().LocalKey;
+                _syncLog.LastPushedKey = startKey;
+
+            } while (true);
         }
     }
 }
