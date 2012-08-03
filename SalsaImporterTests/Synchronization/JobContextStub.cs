@@ -5,23 +5,11 @@ namespace SalsaImporterTests.Synchronization
 {
     public class JobContextStub: IJobContext
     {
-        public DateTime LastPushDateTime { get; set; }
         public DateTime MinimumModificationDate { get; set; }
-        public int LastPushedKey { get; set; }
-        public int CurrentRecord { get; set; }
-
-        public bool PushingCompletedCalled;
-
-        public bool PullingCompletedCalled;
-
-        public void MarkComplete()
+        public int CurrentRecord { get; private set; }
+        public void SetCurrentRecord(int newValue)
         {
-            PullingCompletedCalled = true;
-        }
-
-        public void PushingCompleted()
-        {
-            PushingCompletedCalled = true;
+            CurrentRecord = newValue;
         }
     }
 }

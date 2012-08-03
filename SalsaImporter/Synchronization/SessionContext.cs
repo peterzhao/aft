@@ -11,5 +11,7 @@ namespace SalsaImporter.Synchronization
         public DateTime? FinishedTime { get; set; }
         public DateTime MinimumModifiedDate { get; set; }
         public virtual ICollection<JobContext> JobContexts { get; set; }
+
+       
     }
 }

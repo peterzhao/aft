@@ -101,26 +101,24 @@ namespace SalsaImporterTests.Synchronization
             var session = new SyncSession();
             var job1Called = false;
             var job2Called = false;
-            var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true;});
+            var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; jobContext.SetCurrentRecord(200);});
             var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
             session.AddJob(job31).AddJob(job32);
 
-            try
-            {
-                session.Start();
-            }catch(Exception){}
+            session.Start();
 
             Assert.IsTrue(job1Called);
          
             Assert.IsTrue(job2Called);
-            Assert.AreEqual(SessionState.Finished, session.CurrentContext.State);
-            Assert.IsTrue(session.CurrentContext.FinishedTime >= start);
-            Assert.IsTrue(session.CurrentContext.StartTime >= start);
-            Assert.IsTrue(session.CurrentContext.JobContexts.First().StartTime >= start);
-            Assert.IsTrue(session.CurrentContext.JobContexts.Last().StartTime >= start);
-            Assert.IsTrue(session.CurrentContext.JobContexts.First().FinishedTime >= start);
-            Assert.IsTrue(session.CurrentContext.JobContexts.Last().FinishedTime >= start);
-
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id ==session.CurrentContext.Id));
+            Assert.AreEqual(SessionState.Finished, currentContext.State);
+            Assert.IsTrue(currentContext.FinishedTime >= start);
+            Assert.IsTrue(currentContext.StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.First().StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.Last().StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.First().FinishedTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.Last().FinishedTime >= start);
+            Assert.AreEqual(200, currentContext.JobContexts.First().CurrentRecord);
         }
 
         [Test]

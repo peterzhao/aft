@@ -33,7 +33,7 @@ namespace SalsaImporterTests.Synchronization
             const int currentRecord = 4560;
 
             _jobContext.MinimumModificationDate = minimumModificationDate;
-            _jobContext.CurrentRecord = currentRecord;
+            _jobContext.SetCurrentRecord(currentRecord);
 
             var supporter1 = new Supporter{Id = 4561};
             var supporter2 = new Supporter{Id = 4562};

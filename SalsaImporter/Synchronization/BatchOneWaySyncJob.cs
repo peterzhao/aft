@@ -36,7 +36,7 @@ namespace SalsaImporter.Synchronization
 
                 if (currentBatch.Any())
                 {
-                    jobContext.CurrentRecord = currentBatch.Last().Id;
+                    jobContext.SetCurrentRecord(currentBatch.Last().Id);
                 }
 
             } while (currentBatch.Count() >= _batchSize);

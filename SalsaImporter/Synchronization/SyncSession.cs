@@ -85,6 +85,7 @@ namespace SalsaImporter.Synchronization
                 foreach (var job in _jobs)
                 {
                     var jobContext = CurrentContext.JobContexts.First(j => j.JobName == job.Name);
+                    jobContext.JobContextChanged += (obj, arg) => _db.SaveChanges();
                     jobContext.StartTime = DateTime.Now;
                     Logger.Info("Start job " + job.Name);
                     _db.SaveChanges();
