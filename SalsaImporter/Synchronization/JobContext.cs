@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace SalsaImporter.Synchronization
 {
-    public class SyncState: ISyncState
+    public class JobContext: IJobContext
     {
         private readonly SyncRun _currentSyncRun;
 
-        public SyncState(DateTime now)
+        public JobContext(DateTime now)
         {
             using (var db = new AftDbContext())
             {

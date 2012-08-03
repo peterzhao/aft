@@ -3,7 +3,7 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Synchronization
 {
-    public class SyncStateStub: ISyncState
+    public class JobContextStub: IJobContext
     {
         public DateTime LastPushDateTime { get; set; }
         public DateTime MinimumModificationDate { get; set; }

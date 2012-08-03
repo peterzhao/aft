@@ -71,7 +71,7 @@
     <Compile Include="Synchronization\PullSalsaToLocalTests.cs" />
     <Compile Include="Synchronization\SyncStateTests.cs" />
     <Compile Include="Synchronization\ConditionalUpdaterTests.cs" />
-    <Compile Include="Synchronization\SyncStateStub.cs" />
+    <Compile Include="Synchronization\JobContextStub.cs" />
     <Compile Include="utilities\TestUtils.cs" />
     <Compile Include="utilities\XDocumentExtensionTests.cs" />
   </ItemGroup>

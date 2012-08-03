@@ -2,7 +2,7 @@ using System;
 
 namespace SalsaImporter.Synchronization
 {
-    public interface ISyncState
+    public interface IJobContext
     {
         DateTime MinimumModificationDate { get; }
         int CurrentRecord { get; set; }

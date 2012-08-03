@@ -23,7 +23,7 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldGiveMinimumTimeWhenNoPriorSynchronizations()
         {
-            var syncState = new SyncState(DateTime.Now);
+            var syncState = new JobContext(DateTime.Now);
             Assert.AreEqual(DateTime.MinValue, syncState.MinimumModificationDate);
         }
 
@@ -31,11 +31,11 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGiveLastStartTimeWhenPriorCompletedSynchronization()
         {
             DateTime firstStartTime = DateTime.Now;
-            var firstSyncState = new SyncState(firstStartTime);
+            var firstSyncState = new JobContext(firstStartTime);
             
             firstSyncState.MarkComplete();
 
-            var secondSyncState = new SyncState(DateTime.Now);
+            var secondSyncState = new JobContext(DateTime.Now);
 
             Assert.AreEqual(firstStartTime, secondSyncState.MinimumModificationDate);
         }
@@ -43,14 +43,14 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldGiveLastKeyZeroAsStartKeyWhenNoPriorSynchronizations()
         {
-            var syncState = new SyncState(DateTime.Now);
+            var syncState = new JobContext(DateTime.Now);
             Assert.AreEqual(0, syncState.CurrentRecord);
         }
 
         [Test]
         public void ShouldRetainLastKey()
         {
-            var syncState = new SyncState(DateTime.Now);
+            var syncState = new JobContext(DateTime.Now);
             syncState.CurrentRecord = 100;
             Assert.AreEqual(100, syncState.CurrentRecord);
         }
@@ -59,21 +59,21 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldResumeToLastKey()
         {
-            var firstSyncState = new SyncState(DateTime.Now);
+            var firstSyncState = new JobContext(DateTime.Now);
             firstSyncState.CurrentRecord = 100;
             
-            var secondSyncState = new SyncState(DateTime.Now);
+            var secondSyncState = new JobContext(DateTime.Now);
             Assert.AreEqual(100, secondSyncState.CurrentRecord);
         }
 
         [Test]
         public void ShouldStartAtKeyZeroWhenPriorRunComplete()
         {
-            var firstSyncState = new SyncState(DateTime.Now);
+            var firstSyncState = new JobContext(DateTime.Now);
             firstSyncState.CurrentRecord = 100;
             firstSyncState.MarkComplete();
 
-            var secondSyncState = new SyncState(DateTime.Now);
+            var secondSyncState = new JobContext(DateTime.Now);
             Assert.AreEqual(0, secondSyncState.CurrentRecord);
         }
     }
