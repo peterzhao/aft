@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
+using System.Threading;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
@@ -16,7 +15,7 @@ namespace SalsaImporterTests.Repositories
         [SetUp]
         public void SetUp()
         {
-            TestUtils.Remove<Supporter>(s => s.Last_Name == MarkerLastName);
+            TestUtils.RemoveLocal<Supporter>(s => s.Last_Name == MarkerLastName);
         }
 
         [Test]
@@ -33,19 +32,54 @@ namespace SalsaImporterTests.Repositories
         public void ShouldAddSupporterAndRetrieveSupporterByExternalId()
         {
             var localRepository = new LocalRepository();
-            int externalKey = 100;
+            int externalId = 100;
             var expectedEmailAddress = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com";
 
             localRepository.Add(new Supporter
                                     {
-                                        ExternalId = externalKey, 
+                                        ExternalId = externalId, 
                                         Email = expectedEmailAddress, 
                                         Last_Name = MarkerLastName
                                     });
 
-            var retrieved = localRepository.GetByExternalKey<Supporter>(externalKey);
+            var retrieved = localRepository.GetByExternalKey<Supporter>(externalId);
 
             Assert.AreEqual(expectedEmailAddress, retrieved.Email);
+        }
+
+        [Test]
+        public void ShouldUpdateSupporterAndGetByLocalId()
+        {
+            var localRepository = new LocalRepository();
+            int externalId = 100;
+            var expectedCustomStringValue = Guid.NewGuid().ToString();
+            var supporter = new Supporter
+                                 {
+                                     ExternalId = externalId, 
+                                     Email = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com",
+                                     CustomString0 = "BeforeChange", Last_Name = MarkerLastName
+                                 };
+
+            // Setup...
+            supporter.Id = localRepository.Add(supporter);
+
+            // Test...
+            supporter.CustomString0 = expectedCustomStringValue;
+            localRepository.Update(supporter);
+
+            // Verify...
+            var retrieved = localRepository.Get<Supporter>(supporter.Id);
+            Assert.AreEqual(expectedCustomStringValue, retrieved.CustomString0);
+        }
+
+        [Test]
+        public void ShouldHaveAnIncrementingCurrentTime()
+        {
+            var localRepository = new LocalRepository();
+            DateTime firstCurrentTime = localRepository.CurrentTime;
+            Thread.Sleep(1000);
+            DateTime secondCurrentTime = localRepository.CurrentTime;
+            Assert.Greater(secondCurrentTime, firstCurrentTime);
         }
 
     }

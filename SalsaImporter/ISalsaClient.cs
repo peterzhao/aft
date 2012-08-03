@@ -12,7 +12,10 @@ namespace SalsaImporter
         void Update(string objectType, NameValueCollection data, string[] fields = null);
         XElement GetObject(string key, string objectType);
         CookieContainer Login();
+
         List<XElement> GetObjects(string objectType, int batchSize, string startKey, DateTime lastPulledDate,
                                   IEnumerable<String> fieldsToReturn = null);
+
+        DateTime CurrentTime { get; }
     }
 }

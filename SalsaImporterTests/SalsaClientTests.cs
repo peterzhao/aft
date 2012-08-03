@@ -191,7 +191,7 @@ namespace SalsaImporterTests
         }
 
         [Test]
-        public void ShouldUpdateObjectWithSpificFields()
+        public void ShouldUpdateObjectWithSpecificFields()
         {
             string objectType = "supporter";
             NameValueCollection supporter = GenerateSupporter();
@@ -212,6 +212,15 @@ namespace SalsaImporterTests
             Assert.AreEqual(oldLastName, xml.Element("Last_Name").Value);
         }
 
+        [Test]
+        public void ShouldHaveAnIncrementingCurrentTime()
+        {
+            DateTime firstCurrentTime = client.CurrentTime;
+            Thread.Sleep(1000);
+            DateTime secondCurrentTime = client.CurrentTime;
+            Assert.Greater(secondCurrentTime, firstCurrentTime);
+        }
+     
         private bool DoesSupporterExist(string id)
         {
             return client.GetSupporter(id).HasElements;

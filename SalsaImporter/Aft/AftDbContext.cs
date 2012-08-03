@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft

@@ -153,7 +153,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("peter@abc.com", supporter.Email);
             Assert.AreEqual(32294089, supporter.Id);
 
-            Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).UtcDateTime, 
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).LocalDateTime, 
                 supporter.CustomDateTime0);
             Assert.AreEqual(-45.234f, supporter.Latitude);
 

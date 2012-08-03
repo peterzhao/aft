@@ -17,7 +17,8 @@ namespace SalsaImporter.Synchronization
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
 
-            var syncLog = new JobContext(DateTime.Now);
+            var currentTime = salsaRepository.CurrentTime;
+            var syncLog = new JobContext(currentTime);
 
             var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
 

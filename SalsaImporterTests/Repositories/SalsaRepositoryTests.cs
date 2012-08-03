@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 using Moq;
 using NUnit.Framework;
@@ -81,9 +82,18 @@ namespace SalsaImporterTests.Repositories
 
             _mapperMock.Setup(m => m.ToNameValues(newObject)).Returns(nameValues);
 
-           _repository.Update(newObject, oldObject);
+           _repository.Update(newObject);
            _salsaMock.Verify(s => s.Update("supporter", nameValues, null));
 
         }
+
+        [Test]
+        public void ShouldReturnSalsaClientCurrentTime()
+        {
+            DateTime expectedDateTime = DateTime.Now;
+            _salsaMock.SetupGet(s => s.CurrentTime).Returns(expectedDateTime);
+            Assert.AreEqual(expectedDateTime, _repository.CurrentTime);
+        }
+
     }
 }

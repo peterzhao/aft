@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -28,9 +29,14 @@ namespace SalsaImporter.Repositories
             }
         }
 
-        public void Update<T>(T newData, T oldData) where T : ISyncObject
+        public void Update<T>(T syncObject) where T : class, ISyncObject
         {
-            throw new NotImplementedException("Update");
+            using (var db = new AftDbContext())
+            {
+                db.Records<T>().Attach(syncObject);
+                db.Entry(syncObject).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
 
         public T GetByExternalKey<T>(int key) where T : class, ISyncObject
@@ -41,9 +47,24 @@ namespace SalsaImporter.Repositories
             }
         }
 
-        public T Get<T>(int key) where T : ISyncObject
+        public T Get<T>(int key) where T : class, ISyncObject
         {
-            throw new NotImplementedException("Get");
+            using (var db = new AftDbContext())
+            {
+                return db.Records<T>().SingleOrDefault(s => s.Id == key);
+            }
+        }
+
+        public DateTime CurrentTime
+        {
+            get
+            {
+                using (var db = new AftDbContext())
+                {
+                    return db.Database.SqlQuery<DateTime>("select GETDATE()").First();
+                }
+            }
+
         }
     }
 }

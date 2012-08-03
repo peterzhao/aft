@@ -38,7 +38,7 @@ namespace SalsaImporter.Utilities
             if( xElement != null && !string.IsNullOrWhiteSpace(xElement.Value) )
             {
                 string value = xElement.Value;
-                result = DateTime.ParseExact(value.Remove(value.Length - 6, 6), formats, null).ToUniversalTime();
+                result = DateTime.ParseExact(value.Remove(value.Length - 6, 6), formats, null);
             }
             return result;
         }

@@ -27,7 +27,8 @@ namespace SalsaImporter.Synchronization
                 }
                 else if (!sourceObject.Equals(existingDestinationObject))
                 {
-                    _destination.Update(sourceObject, existingDestinationObject);
+                    sourceObject.Id = existingDestinationObject.Id;
+                    _destination.Update(sourceObject);
                 }
             }
             catch(Exception ex)

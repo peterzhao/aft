@@ -21,23 +21,25 @@ namespace SalsaImporter.Synchronization
             _batchSize = batchSize;
         }
 
-        public void Synchronize<T>() where T:class, ISyncObject 
+        public void Synchronize<T>() where T:class, ISyncObject
         {
+            IEnumerable<T> currentBatch;
             do
             {
-                IEnumerable<T> currentBatch = _source.GetBatchOfObjects<T>(_batchSize, 
+                currentBatch = _source.GetBatchOfObjects<T>(_batchSize, 
                     _jobContext.CurrentRecord, 
                     _jobContext.MinimumModificationDate);
                 var tasks = currentBatch.Select(obj => Task.Factory.StartNew(arg => _destination.MaybeUpdate<T>(obj), null));
                 Task.WaitAll(tasks.ToArray());
-                if (!currentBatch.Any())
-                {
-                   _jobContext.MarkComplete(); 
-                   break;
-                }
-                _jobContext.CurrentRecord = currentBatch.Last().Id;
 
-            } while (true);
+                if (currentBatch.Any())
+                {
+                    _jobContext.CurrentRecord = currentBatch.Last().Id;
+                }
+
+            } while (currentBatch.Count() >= _batchSize);
+           
+            _jobContext.MarkComplete();
         }
 
         public string Name { get; private set; }

@@ -29,7 +29,7 @@ namespace SalsaImporter.Repositories
             return int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
         }
 
-        public void Update<T>(T newData, T oldData) where T : ISyncObject
+        public void Update<T>(T newData) where T : class, ISyncObject
         {
             _salsa.Update(GetObjectType<T>(), GetMapper<T>().ToNameValues(newData));
         }
@@ -39,12 +39,17 @@ namespace SalsaImporter.Repositories
             throw new NotImplementedException();
         }
 
-        public T Get<T>(int key) where T:ISyncObject
+        public T Get<T>(int key) where T: class, ISyncObject
         {
             var objectType = GetObjectType<T>();
             var xElement = _salsa.GetObject(key.ToString(), objectType);
             var mapper = _mapperFactory.GetMapper<T>();
             return (T)mapper.ToObject(xElement);
+        }
+
+        public DateTime CurrentTime
+        {
+            get { return _salsa.CurrentTime; }
         }
 
         private IMapper GetMapper<T>() where T : ISyncObject

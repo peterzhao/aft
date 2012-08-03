@@ -8,8 +8,10 @@ namespace SalsaImporter.Repositories
     {
         IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime lastProcessedDateTime) where T:ISyncObject;
         int Add<T>(T syncObject) where T: class, ISyncObject;
-        void Update<T>(T newData, T oldData) where T: ISyncObject;
+        void Update<T>(T newData) where T: class, ISyncObject;
         T GetByExternalKey<T>(int key) where T: class, ISyncObject;
-        T Get<T>(int key) where T: ISyncObject;
+        T Get<T>(int key) where T: class, ISyncObject;
+
+        DateTime CurrentTime { get; }
     }
 }

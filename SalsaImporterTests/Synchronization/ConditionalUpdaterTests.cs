@@ -46,7 +46,7 @@ namespace SalsaImporterTests.Synchronization
             _conditionalUpdater.MaybeUpdate<Supporter>(externalObj);
 
             _localRepositoryMock.Verify(localRepository => localRepository.Add(It.IsAny<Supporter>()), Times.Never());
-            _localRepositoryMock.Verify(localRepository => localRepository.Update(It.IsAny<Supporter>(), It.IsAny<Supporter>()), Times.Never());
+            _localRepositoryMock.Verify(localRepository => localRepository.Update(It.IsAny<Supporter>()), Times.Never());
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace SalsaImporterTests.Synchronization
 
             _conditionalUpdater.MaybeUpdate<Supporter>(externalObj);
 
-            _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj, localObj));
+            _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj));
         }
 
         [Test]
