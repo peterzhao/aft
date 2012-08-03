@@ -26,7 +26,7 @@ namespace SalsaImporterTests
 
             Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data1, exception1));
             Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data2, exception2));
-            Assert.Throws<SyncCallendException>(() => handler.HandlePullObjectFailure(data3, exception3));
+            Assert.Throws<SyncAbortedException>(() => handler.HandlePullObjectFailure(data3, exception3));
 
             Assert.AreEqual(exception1, handler.PullingFailure[data1]);
             Assert.AreEqual(exception2, handler.PullingFailure[data2]);
@@ -46,7 +46,7 @@ namespace SalsaImporterTests
 
             Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data1, exception1));
             Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data2, exception2));
-            Assert.Throws<SyncCallendException>(() => handler.HandlePushObjectFailure(data3, exception3));
+            Assert.Throws<SyncAbortedException>(() => handler.HandlePushObjectFailure(data3, exception3));
 
             Assert.AreEqual(exception1, handler.PushingFailure[data1]);
             Assert.AreEqual(exception2, handler.PushingFailure[data2]);
@@ -63,7 +63,7 @@ namespace SalsaImporterTests
 
             Assert.DoesNotThrow(() => handler.HandleDeleteObjectFailure(key1));
             Assert.DoesNotThrow(() => handler.HandleDeleteObjectFailure(key2));
-            Assert.Throws<SyncCallendException>(() => handler.HandleDeleteObjectFailure(key3));
+            Assert.Throws<SyncAbortedException>(() => handler.HandleDeleteObjectFailure(key3));
 
             Assert.AreEqual(key1, handler.DeletionFailure["key1"]);
             Assert.AreEqual(key2, handler.DeletionFailure["key2"]);

@@ -21,7 +21,7 @@ namespace SalsaImporterTests.Synchronization
             Config.Environment = Config.UnitTest;
 
             TestUtils.RemoveAllLocal<Supporter>();
-            TestUtils.RemoveAllLocal<SyncRun>();
+
 
             TestUtils.RemoveAllSalsa("supporter");
         }

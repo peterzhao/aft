@@ -6,64 +6,31 @@ namespace SalsaImporter.Synchronization
 {
     public class JobContext: IJobContext
     {
-        private readonly SyncRun _currentSyncRun;
+      
 
-        public JobContext(DateTime now)
-        {
-            using (var db = new AftDbContext())
-            {
-                var incompleteRuns = db.SyncRuns.Where(s => !s.Complete);
-                if (incompleteRuns.Any())
-                {
-                    _currentSyncRun = incompleteRuns.First();
-                }
-                else
-                {
-                    var completedRuns = db.SyncRuns.Where(s => s.Complete);
-                    _currentSyncRun = new SyncRun
-                                      {
-                                          StartTime = now,
-                                          CurrentRecord = 0,
-                                          MinimumModificationDate =
-                                              completedRuns.Any()
-                                                  ? completedRuns.Max(s => s.StartTime)
-                                                  : DateTime.MinValue
-                                      };
+        public int Id { get; set; }
+        public int CurrentRecord { get; set; }
+        public string JobName { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? FinishedTime { get; set; }
 
-                    db.SyncRuns.Add(_currentSyncRun);
-                    db.SaveChanges();
-                }
-            }
-        }
+        public DateTime MinimumModificationDate { get { return SessionContext.MinimumModifiedDate; } }
 
-        public DateTime MinimumModificationDate
-        {
-            get {return _currentSyncRun.MinimumModificationDate;} 
-        }
-
-        public int CurrentRecord
-        {
-            get { return _currentSyncRun.CurrentRecord; }
-            set
-            {
-                using (var db = new AftDbContext())
-                {
-                    db.SyncRuns.Attach(_currentSyncRun);
-                    _currentSyncRun.CurrentRecord = value;
-                    db.SaveChanges();
-                }
-            }
-        }
+        public virtual SessionContext SessionContext { get; set; }
 
         public void MarkComplete()
         {
-            using (var db = new AftDbContext())
-            {
-                db.SyncRuns.Attach(_currentSyncRun);
-                _currentSyncRun.Complete = true;
-                db.SaveChanges();
-            }
+            throw new NotImplementedException();
         }
 
+        public bool IsJobStarted
+        {
+            get { return StartTime != null; }
+        }
+
+        public bool IsJobFinished
+        {
+            get { return FinishedTime != null; }
+        }
     }
 }

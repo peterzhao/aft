@@ -73,6 +73,7 @@
     <Compile Include="Synchronization\ISyncJob.cs" />
     <Compile Include="Synchronization\PullSalsaToLocal.cs" />
     <Compile Include="Synchronization\ISyncErrorHandler.cs" />
+    <Compile Include="Synchronization\SessionContext.cs" />
     <Compile Include="Synchronization\SyncErrorHandler.cs" />
     <Compile Include="SalsaClient.cs" />
     <Compile Include="Logger.cs" />
@@ -82,10 +83,11 @@
     <Compile Include="Synchronization\IConditonalUpdater.cs" />
     <Compile Include="Repositories\ISyncObjectRepository.cs" />
     <Compile Include="Synchronization\IJobContext.cs" />
-    <Compile Include="Synchronization\BatchOneWaySynchronizer.cs" />
+    <Compile Include="Synchronization\BatchOneWaySyncJob.cs" />
     <Compile Include="Synchronization\ISyncObject.cs" />
     <Compile Include="Synchronization\ConditionalUpdater.cs" />
     <Compile Include="Synchronization\JobContext.cs" />
+    <Compile Include="Synchronization\SyncSession.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>
   <ItemGroup>

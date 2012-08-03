@@ -26,14 +26,7 @@ namespace SalsaImporterTests
             Assert.Greater(supporter.Id, 0);
         }
 
-        [Test]
-        public void ShouldCreateSyncRunInAftDb()
-        {
-            var syncrun = new SyncRun { Complete = false, CurrentRecord = 0, MinimumModificationDate = DateTime.MinValue, StartTime = DateTime.Now};
-            db.SyncRuns.Add(syncrun);
-            db.SaveChanges();
-            Assert.Greater(syncrun.Id, 0);
-        }
+       
 
         [TearDown]
         public void TearDown()

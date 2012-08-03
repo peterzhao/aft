@@ -11,7 +11,7 @@ namespace SalsaImporterTests.Synchronization
     [TestFixture]
     public class BatchOneWaySynchronizeTests
     {
-        private BatchOneWaySynchronizer _batchOneWaySynchronizer;
+        private BatchOneWaySyncJob<Supporter> _batchOneWaySyncJob;
         private Mock<ISyncObjectRepository> _sourceMock;
         private Mock<IConditonalUpdater> _destinationMock;
         private JobContextStub _jobContext;
@@ -23,7 +23,7 @@ namespace SalsaImporterTests.Synchronization
             _sourceMock = new Mock<ISyncObjectRepository>();
             _destinationMock = new Mock<IConditonalUpdater>();
             _jobContext = new JobContextStub();
-            _batchOneWaySynchronizer = new BatchOneWaySynchronizer(_sourceMock.Object, _destinationMock.Object, _jobContext, BatchSize);
+            _batchOneWaySyncJob = new BatchOneWaySyncJob<Supporter>(_sourceMock.Object, _destinationMock.Object, BatchSize);
         }
 
         [Test]
@@ -44,13 +44,11 @@ namespace SalsaImporterTests.Synchronization
             _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(BatchSize, currentRecord, minimumModificationDate)).Returns(pulledObjects1);
             _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(BatchSize, supporter2.Id, minimumModificationDate)).Returns(pulledObjects2);
 
-            _batchOneWaySynchronizer.Synchronize<Supporter>();
+            _batchOneWaySyncJob.Start(_jobContext);
 
             _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter1));
             _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter2));
             _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter3));
-
-            Assert.IsTrue(_jobContext.PullingCompletedCalled);
         }
     }
 }

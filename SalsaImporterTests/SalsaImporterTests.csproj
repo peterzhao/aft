@@ -69,7 +69,8 @@
     <Compile Include="SalsaClientTests.cs" />
     <Compile Include="Synchronization\BatchOneWaySynchronizeTests.cs" />
     <Compile Include="Synchronization\PullSalsaToLocalTests.cs" />
-    <Compile Include="Synchronization\SyncStateTests.cs" />
+    <Compile Include="Synchronization\SyncJobStub.cs" />
+    <Compile Include="Synchronization\SyncSessionTests.cs" />
     <Compile Include="Synchronization\ConditionalUpdaterTests.cs" />
     <Compile Include="Synchronization\JobContextStub.cs" />
     <Compile Include="utilities\TestUtils.cs" />

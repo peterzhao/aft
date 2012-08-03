@@ -17,14 +17,13 @@ namespace SalsaImporter.Synchronization
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
 
-            var currentTime = salsaRepository.CurrentTime;
-            var syncLog = new JobContext(currentTime);
+            var jobContext = new JobContext();
 
             var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
 
-            var batchProcess = new BatchOneWaySynchronizer(salsaRepository, localConditionalUpdater, syncLog, 100);
+            var batchProcess = new BatchOneWaySyncJob<Supporter>(salsaRepository, localConditionalUpdater, 100);
 
-            batchProcess.Synchronize<Supporter>();
+            batchProcess.Start(jobContext);
         }
     }
 }

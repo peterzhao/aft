@@ -6,6 +6,6 @@ namespace SalsaImporter.Synchronization
     {
         DateTime MinimumModificationDate { get; }
         int CurrentRecord { get; set; }
-        void MarkComplete();
+        void MarkComplete(); //todo: remove it
     }
 }

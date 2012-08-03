@@ -47,7 +47,7 @@ namespace SalsaImporter.Synchronization
             {
                 string message = "Failure to pull objects exceeded the threshold. Process aborted. Threshold:" + _abortPullingThreshold;
                 Logger.Fatal(message);
-                throw new SyncCallendException(message);
+                throw new SyncAbortedException(message);
             }
             
         }
@@ -61,7 +61,7 @@ namespace SalsaImporter.Synchronization
             {
                 string message = "Failure to push objects exceeded the threshold. Process aborted. Threshold:" + _abortPushingThreshold;
                 Logger.Fatal(message);
-                throw new SyncCallendException(message);
+                throw new SyncAbortedException(message);
             }
 
         }
@@ -75,7 +75,7 @@ namespace SalsaImporter.Synchronization
             {
                 string message = "Failure to delete supporters exceeded the threshold. Process aborted. Threshold:" + _abortDeletionThreshold;
                 Logger.Fatal(message);
-                throw new SyncCallendException(message);
+                throw new SyncAbortedException(message);
             }
 
         }

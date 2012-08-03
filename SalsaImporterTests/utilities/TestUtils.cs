@@ -48,6 +48,14 @@ namespace SalsaImporterTests.utilities
             var salsaRepository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10, 10, 10)), new MapperFactory());
             objects.ToList().ForEach(salsaRepository.Update);
         }
-    
+
+        public static void ClearAllSessions()
+        {
+            using(var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("delete  from JobContexts");
+                db.Database.ExecuteSqlCommand("delete  from SessionContexts");
+            }
+        }
     }
 }

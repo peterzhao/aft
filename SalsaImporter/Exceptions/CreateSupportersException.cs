@@ -2,9 +2,9 @@
 
 namespace SalsaImporter.Exceptions
 {
-    public class SyncCallendException: ApplicationException
+    public class SyncAbortedException: ApplicationException
     {
-        public SyncCallendException(string message, Exception internalException = null)
+        public SyncAbortedException(string message, Exception internalException = null)
             :base(message, internalException){}
     }
 }
