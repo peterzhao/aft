@@ -21,7 +21,7 @@ namespace SalsaImporter.Synchronization
 
             var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
 
-            var batchProcess = new BatchOneWaySynchronize(salsaRepository, localConditionalUpdater, syncLog, 100);
+            var batchProcess = new BatchOneWaySynchronizer(salsaRepository, localConditionalUpdater, syncLog, 100);
 
             batchProcess.Synchronize<Supporter>();
         }

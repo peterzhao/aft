@@ -16,9 +16,7 @@ namespace SalsaImporterTests.Mappers
             var supporter = new Supporter
                                 {
                                     Id = 456,
-                                    ExternalKey = 123456,
-                                    Last_Modified = new DateTime(2012, 3, 15),
-                                    Date_Created = new DateTime(2012, 3, 16),
+                                    ExternalId = 123456,
                                     Title = "myTitle",
                                     First_Name = "Tom",
                                     MI = "MI",
@@ -71,10 +69,7 @@ namespace SalsaImporterTests.Mappers
                                 };
             var nameValues = new SupporterMapper().ToNameValues(supporter);
 
-            Assert.AreEqual(nameValues["supporter_KEY"], "123456");
-            Assert.IsNull(nameValues["Id"]);
-            Assert.IsNull(nameValues["Last_Modified"]);
-            Assert.IsNull(nameValues["Date_Created"]);
+            Assert.AreEqual(nameValues["supporter_KEY"], "456");
             Assert.AreEqual(nameValues["Title"], "myTitle");
             Assert.AreEqual(nameValues["First_Name"], "Tom");
             Assert.AreEqual(nameValues["MI"], "MI");
@@ -120,7 +115,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(nameValues["Source_Tracking_Code"], "03");
             Assert.AreEqual(nameValues["Tracking_Code"], "001");
             Assert.AreEqual(nameValues["Status"], "Active");
-            Assert.AreEqual(nameValues["uid"], "456");
+            Assert.AreEqual(nameValues["uid"], "123456");
             Assert.AreEqual(nameValues["Timezone"], "");
             Assert.AreEqual(nameValues["Language_Code"], "en");
             Assert.AreEqual(nameValues["CustomBoolean0"], "True");
@@ -156,7 +151,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("peter", supporter.First_Name);
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
-            Assert.AreEqual(32294089, supporter.ExternalKey);
+            Assert.AreEqual(32294089, supporter.Id);
 
             Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).UtcDateTime, 
                 supporter.CustomDateTime0);

@@ -38,7 +38,7 @@ namespace SalsaImporterTests.Repositories
 
             localRepository.Add(new Supporter
                                     {
-                                        ExternalKey = externalKey, 
+                                        ExternalId = externalKey, 
                                         Email = expectedEmailAddress, 
                                         Last_Name = MarkerLastName
                                     });

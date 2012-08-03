@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using SalsaImporter.Mappers;
 using SalsaImporter.Synchronization;
 
@@ -40,8 +38,6 @@ namespace SalsaImporter.Repositories
         {
             throw new NotImplementedException();
         }
-
-       
 
         public T Get<T>(int key) where T:ISyncObject
         {

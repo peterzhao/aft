@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
@@ -15,26 +14,34 @@ namespace SalsaImporter.Synchronization
             _errorHandler = errorHandler;
         }
 
-        public void MaybeUpdate<T>(T sourceObject) where T:class, ISyncObject
+        public void MaybeUpdate<T>(T incomingSourceObject) where T:class, ISyncObject
         {
+            var externalKey = incomingSourceObject.Id;
+            var sourceObject = ForDestinationRepository(incomingSourceObject);
             try
             {
-                var externalKey = sourceObject.ExternalKey;
-                var localObj = _destination.GetByExternalKey<T> (externalKey.Value);
-                if (localObj == null)
+                var existingDestinationObject = _destination.GetByExternalKey<T>(externalKey);
+                if (existingDestinationObject == null)
                 {
-                    _destination.Add<T>(sourceObject);
+                    _destination.Add(sourceObject);
                 }
-                else if (!sourceObject.Equals(localObj))
+                else if (!sourceObject.Equals(existingDestinationObject))
                 {
-                    if (localObj.LocalModifiedDate < sourceObject.ExternalModifiedDate)
-                        _destination.Update(sourceObject, localObj);
+                    _destination.Update(sourceObject, existingDestinationObject);
                 }
             }
             catch(Exception ex)
             {       
                _errorHandler.HandlePullObjectFailure(sourceObject, ex);
             }
+        }
+
+        private T ForDestinationRepository<T>(T incomingSourceObject) where T : class, ISyncObject
+        {
+            var sourceObject = incomingSourceObject.Clone();
+            sourceObject.Id = 0;
+            sourceObject.ExternalId = incomingSourceObject.Id;
+            return (T)sourceObject;
         }
     }
 }

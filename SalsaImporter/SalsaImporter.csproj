@@ -81,7 +81,7 @@
     <Compile Include="Synchronization\IConditonalUpdater.cs" />
     <Compile Include="Repositories\ISyncObjectRepository.cs" />
     <Compile Include="Synchronization\ISyncState.cs" />
-    <Compile Include="Synchronization\BatchOneWaySynchronize.cs" />
+    <Compile Include="Synchronization\BatchOneWaySynchronizer.cs" />
     <Compile Include="Synchronization\ISyncObject.cs" />
     <Compile Include="Synchronization\ConditionalUpdater.cs" />
     <Compile Include="Synchronization\SyncState.cs" />

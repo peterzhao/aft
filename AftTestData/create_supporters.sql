@@ -14,11 +14,9 @@ GO
 
 CREATE TABLE [dbo].[Supporters](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[LocalCreatedDate] [datetime2](7) NOT NULL,
-	[LocalModifiedDate] [datetime2](7) NOT NULL,
-	[supporter_KEY] [int] NULL,
-	[Last_Modified] [datetime2](7) NULL,
-	[Date_Created] [datetime2](7) NULL,
+	[ExternalId] [int] NULL,
+	[CreationDate] [datetime2](7) NOT NULL DEFAULT (getdate()),
+	[ModifiedDate] [datetime2](7) NOT NULL DEFAULT (getdate()),
 	[Title] [nvarchar](50) NULL,
 	[First_Name] [nvarchar](50) NULL,
 	[MI] [nvarchar](50) NULL,
@@ -65,7 +63,6 @@ CREATE TABLE [dbo].[Supporters](
 	[Source_Tracking_Code] [nvarchar](50) NULL,
 	[Tracking_Code] [nvarchar](50) NULL,
 	[Status] [nvarchar](50) NULL,
-	[uid] [nvarchar](50) NULL,
 	[Timezone] [nvarchar](50) NULL,
 	[Language_Code] [nvarchar](50) NULL,
 	[CustomString0] [nvarchar](50) NULL,
@@ -103,25 +100,20 @@ PRIMARY KEY CLUSTERED
 GO
 
 IF OBJECT_ID('dbo.UQ_Supporters_supporter_KEY', 'UQ') IS NOT NULL  
-DROP INDEX dbo.UQ_Supporters_supporter_KEY
+DROP INDEX dbo.UQ_Supporters_ExternalId
 GO
 
-CREATE UNIQUE  NONCLUSTERED  INDEX UQ_Supporters_supporter_KEY
-    ON dbo.Supporters ( supporter_KEY ASC )
-    WHERE supporter_KEY is not null
+CREATE UNIQUE  NONCLUSTERED  INDEX UQ_Supporters_ExternalId
+    ON dbo.Supporters ( ExternalId ASC )
+    WHERE ExternalId is not null
 GO
 
-ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [localCreatedDate]
-GO
-	
-ALTER TABLE [dbo].[Supporters] ADD  DEFAULT (getdate()) FOR [localModifiedDate]
+
+IF OBJECT_ID('dbo.trg_UpdateSupportersModifiedDate', 'TR') IS NOT NULL  
+DROP TRIGGER dbo.trg_UpdateSupportersModifiedDate 
 GO
 
-IF OBJECT_ID('dbo.trg_UpdateSupportersLastModified', 'TR') IS NOT NULL  
-DROP TRIGGER dbo.trg_UpdateSupportersLastModified;
-GO
-
-CREATE TRIGGER dbo.trg_UpdateSupportersLastModified 
+CREATE TRIGGER dbo.trg_UpdateSupportersModifiedDate 
    ON  dbo.Supporters 
    AFTER UPDATE
 AS 
@@ -131,7 +123,7 @@ BEGIN
 	SET NOCOUNT ON;
 
     UPDATE dbo.Supporters
-    SET localModifiedDate = GETDATE()
+    SET ModifiedDate = GETDATE()
     WHERE ID IN (SELECT DISTINCT ID FROM Inserted)
 END
 GO

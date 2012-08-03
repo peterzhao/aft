@@ -11,41 +11,40 @@ namespace SalsaImporterTests.Synchronization
     [TestFixture]
     public class BatchOneWaySynchronizeTests
     {
-        private BatchOneWaySynchronize _batchOneWaySynchronize;
+        private BatchOneWaySynchronizer _batchOneWaySynchronizer;
         private Mock<ISyncObjectRepository> _sourceMock;
         private Mock<IConditonalUpdater> _destinationMock;
         private SyncStateStub _syncState;
-        private int _batchSize = 100;
+        private const int BatchSize = 100;
 
         [SetUp]
         public void SetUp()
         {
-            new Mock<ISyncObjectRepository>();
             _sourceMock = new Mock<ISyncObjectRepository>();
             _destinationMock = new Mock<IConditonalUpdater>();
             _syncState = new SyncStateStub();
-            _batchOneWaySynchronize = new BatchOneWaySynchronize(_sourceMock.Object, _destinationMock.Object, _syncState, _batchSize);
+            _batchOneWaySynchronizer = new BatchOneWaySynchronizer(_sourceMock.Object, _destinationMock.Object, _syncState, BatchSize);
         }
 
         [Test]
         public void ShouldSynchronize()
         {
-            DateTime lastPullDateTime = new DateTime(2012,5,20);
-            int lastPulledKey = 4560;
+            var minimumModificationDate = new DateTime(2012,5,20);
+            const int currentRecord = 4560;
 
-            _syncState.MinimumModificationDate = lastPullDateTime;
-            _syncState.CurrentRecord = lastPulledKey;
+            _syncState.MinimumModificationDate = minimumModificationDate;
+            _syncState.CurrentRecord = currentRecord;
 
-            var supporter1 = new Supporter{ExternalKey = 4561};
-            var supporter2 = new Supporter{ExternalKey = 4562};
-            var supporter3 = new Supporter{ExternalKey = 4563};
+            var supporter1 = new Supporter{Id = 4561};
+            var supporter2 = new Supporter{Id = 4562};
+            var supporter3 = new Supporter{Id = 4563};
             IEnumerable<Supporter> pulledObjects1 = new List<Supporter> { supporter1, supporter2 };
             IEnumerable<Supporter> pulledObjects2 = new List<Supporter> { supporter3 };
 
-            _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(_batchSize, lastPulledKey, lastPullDateTime)).Returns(pulledObjects1);
-            _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(_batchSize, supporter2.ExternalKey.Value, lastPullDateTime)).Returns(pulledObjects2);
+            _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(BatchSize, currentRecord, minimumModificationDate)).Returns(pulledObjects1);
+            _sourceMock.Setup(source => source.GetBatchOfObjects<Supporter>(BatchSize, supporter2.Id, minimumModificationDate)).Returns(pulledObjects2);
 
-            _batchOneWaySynchronize.Synchronize<Supporter>();
+            _batchOneWaySynchronizer.Synchronize<Supporter>();
 
             _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter1));
             _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter2));

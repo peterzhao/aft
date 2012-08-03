@@ -24,7 +24,7 @@ namespace SalsaImporter.Repositories
             {
                 db.Records<T>().Add(syncObject);
                 db.SaveChanges();
-                return syncObject.LocalKey;
+                return syncObject.Id;
             }
         }
 
@@ -37,7 +37,7 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Records<T>().SingleOrDefault(s => s.ExternalKey == key);
+                return db.Records<T>().SingleOrDefault(s => s.ExternalId == key);
             }
         }
 

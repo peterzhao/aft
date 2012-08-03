@@ -6,16 +6,12 @@ namespace SalsaImporter.Aft
 {
     public class Supporter: ISyncObject
     {
-        private string _uid;
         public int Id { get; set; }
-        
-        [ColumnAttribute("supporter_KEY")]
-        public int? ExternalKey { get; set; }
+        public int? ExternalId { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime? LocalModifiedDate { get; set; }
-        public DateTime? Last_Modified { get; set; }
-        public DateTime? Date_Created { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+
         public string Title { get; set; }
         public string First_Name { get; set; }
         public string MI { get; set; }
@@ -91,19 +87,6 @@ namespace SalsaImporter.Aft
         public bool? CustomBoolean9 { get; set; }
         public DateTime? CustomDateTime0 { get; set; }
 
-        public string uid
-        {
-            get
-            { 
-                if(_uid == null)
-                {
-                    _uid = Id.ToString();
-                }
-                return _uid;
-            }
-            set { _uid = value; }
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -114,7 +97,7 @@ namespace SalsaImporter.Aft
 
         protected bool Equals(Supporter other)
         {
-            return string.Equals(_uid, other._uid) && ExternalKey == other.ExternalKey && string.Equals(Title, other.Title)
+            return string.Equals(Title, other.Title)
                 && string.Equals(First_Name, other.First_Name) && string.Equals(MI, other.MI) && string.Equals(Last_Name, other.Last_Name)
                 && string.Equals(Suffix, other.Suffix) && string.Equals(Email, other.Email)
                 && string.Equals(Email_Preference, other.Email_Preference) && string.Equals(Phone, other.Phone)
@@ -156,8 +139,7 @@ namespace SalsaImporter.Aft
         {
             unchecked
             {
-                int hashCode = (_uid != null ? _uid.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ ExternalKey.GetHashCode();
+                int hashCode = (ExternalId != null ? ExternalId.GetHashCode() : 0); ;
                 hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (First_Name != null ? First_Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MI != null ? MI.GetHashCode() : 0);
@@ -230,21 +212,6 @@ namespace SalsaImporter.Aft
                 hashCode = (hashCode * 397) ^ CustomDateTime0.GetHashCode();
                 return hashCode;
             }
-        }
-
-
-        [NotMapped]
-        public int LocalKey
-        {
-            get { return Id; }
-            set { Id = value; }
-        }
-        
-        [NotMapped]
-        public DateTime? ExternalModifiedDate
-        {
-            get { return Last_Modified; }
-            set { Last_Modified = value; }
         }
 
         public ISyncObject Clone()

@@ -26,9 +26,9 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldAddIfSourceObjectDoesNotExistDestination()
         {
-            var sourceObject = new Supporter {ExternalKey = 1234};
+            var sourceObject = new Supporter {ExternalId = 1234};
             int newlocalId = 3456;
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(sourceObject.ExternalKey.Value)).Returns(()=> null);
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(sourceObject.Id)).Returns(()=> null);
             _localRepositoryMock.Setup(localRepository => localRepository.Add(sourceObject)).Returns(newlocalId);
 
             _conditionalUpdater.MaybeUpdate<Supporter>(sourceObject);
@@ -39,24 +39,22 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldDoNothingIfExternalIsSameAsLocal()
         {
-            var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, ExternalModifiedDate = new DateTime(2012, 7, 20)};
-            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678};
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
+            var externalObj = new Supporter { Id = 1234, Email = "jj@abc.com", ExternalId = 5678};
+            var localObj = new Supporter { ExternalId = 1234, Email = "jj@abc.com", Id = 5678};
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id)).Returns(localObj);
 
             _conditionalUpdater.MaybeUpdate<Supporter>(externalObj);
 
-            _localRepositoryMock.Verify(localRepository => localRepository.Add(externalObj), Times.Never());
-            _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj, localObj), Times.Never());
+            _localRepositoryMock.Verify(localRepository => localRepository.Add(It.IsAny<Supporter>()), Times.Never());
+            _localRepositoryMock.Verify(localRepository => localRepository.Update(It.IsAny<Supporter>(), It.IsAny<Supporter>()), Times.Never());
         }
 
         [Test]
-        public void ShouldUpdateLocalObjectIfExternalIsNewerThanLocal()
+        public void ShouldUpdateLocalObjectIfExternalIsDifferentThanLocal()
         {
-            var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678, 
-                Phone = "4161234567", ExternalModifiedDate = new DateTime(2012, 7, 20)};
-            var localObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678,
-                Phone = "4161234568", LocalModifiedDate = new DateTime(2012, 6, 23)};
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value)).Returns(localObj);
+            var externalObj = new Supporter { Id = 1234, Email = "jj@abc.com", ExternalId = 5678, Phone = "4161234567"};
+            var localObj = new Supporter { ExternalId = 1234, Email = "jj@abc.com", Id = 5678, Phone = "4161234568"};
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id)).Returns(localObj);
 
             _conditionalUpdater.MaybeUpdate<Supporter>(externalObj);
 
@@ -66,8 +64,8 @@ namespace SalsaImporterTests.Synchronization
         [Test]
         public void ShouldHandleError()
         {
-            var externalObj = new Supporter { ExternalKey = 1234, Email = "jj@abc.com", LocalKey = 5678 };
-            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.ExternalKey.Value))
+            var externalObj = new Supporter { ExternalId = 1234, Email = "jj@abc.com", Id = 5678 };
+            _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id))
                 .Throws<Exception>();
 
             _conditionalUpdater.MaybeUpdate<Supporter>(externalObj);

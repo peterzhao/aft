@@ -13,8 +13,9 @@ namespace SalsaImporter.Mappers
     {
         Dictionary<string, string> map = new Dictionary<string, string>
                                              {
-                                                {"ExternalKey","supporter_KEY"},
-                                                //{"Last_Modified","Last_Modified"},
+                                                {"Id","supporter_KEY"},
+                                                {"ExternalId","uid"},
+                                                //{"ModifiedDate","Last_Modified"},
                                                 //{"Date_Created","Date_Created"},
                                                 {"Title","Title"},
                                                 {"First_Name","First_Name"},
@@ -59,7 +60,6 @@ namespace SalsaImporter.Mappers
                                                 {"Source_Tracking_Code","Source_Tracking_Code"},
                                                 {"Tracking_Code","Tracking_Code"},
                                                 {"Status","Status"},
-                                                {"uid","uid"},
                                                 {"Timezone","Timezone"},
                                                 {"Language_Code","Language_Code"},
                                                 {"CustomString0","CustomString0"},
@@ -118,6 +118,8 @@ namespace SalsaImporter.Mappers
                 if (propertyType == typeof(String))
                     propertyValue = element.StringValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(int?))
+                    propertyValue = element.IntValueOrNull(map[propertyName]);
+                else if (propertyType == typeof(int))
                     propertyValue = element.IntValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(float?))
                     propertyValue = element.FloatValueOrNull(map[propertyName]);

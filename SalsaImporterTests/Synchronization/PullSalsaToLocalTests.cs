@@ -26,7 +26,7 @@ namespace SalsaImporterTests.Synchronization
         {
             AssertLocalSubscriberCount(0);
 
-            var salsaClient = new SalsaClient(new SyncErrorHandler(10,10, 10));
+            var salsaClient = new SalsaClient(new SyncErrorHandler(10, 10, 10));
             var salsaSupporterCount = salsaClient.SupporterCount();
 
             var pullSalsaToLocal = new PullSalsaToLocal();
