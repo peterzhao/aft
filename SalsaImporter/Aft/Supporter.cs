@@ -239,15 +239,6 @@ namespace SalsaImporter.Aft
             get { return Id; }
             set { Id = value; }
         }
-
-        /*
-        [NotMapped]
-        public int? ExternalKey
-        {
-            get{return supporter_KEY;}
-            set { supporter_KEY = value; }
-        }
-        */
         
         [NotMapped]
         public DateTime? ExternalModifiedDate

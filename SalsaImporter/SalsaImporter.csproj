@@ -78,13 +78,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sync.cs" />
-    <Compile Include="Synchronization\IObjectProcess.cs" />
+    <Compile Include="Synchronization\IConditonalUpdater.cs" />
     <Compile Include="Repositories\ISyncObjectRepository.cs" />
-    <Compile Include="Synchronization\ISyncLog.cs" />
-    <Compile Include="Synchronization\BatchProcess.cs" />
+    <Compile Include="Synchronization\ISyncState.cs" />
+    <Compile Include="Synchronization\BatchOneWaySynchronize.cs" />
     <Compile Include="Synchronization\ISyncObject.cs" />
-    <Compile Include="Synchronization\ObjectProcess.cs" />
-    <Compile Include="Synchronization\SyncLog.cs" />
+    <Compile Include="Synchronization\ConditionalUpdater.cs" />
+    <Compile Include="Synchronization\SyncState.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>
   <ItemGroup>

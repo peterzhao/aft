@@ -67,11 +67,11 @@
     <Compile Include="Repositories\LocalRepositoryTests.cs" />
     <Compile Include="Repositories\SalsaRepositoryTests.cs" />
     <Compile Include="SalsaClientTests.cs" />
-    <Compile Include="Synchronization\BatchProcessTests.cs" />
+    <Compile Include="Synchronization\BatchOneWaySynchronizeTests.cs" />
     <Compile Include="Synchronization\PullSalsaToLocalTests.cs" />
     <Compile Include="Synchronization\SyncLogTests.cs" />
-    <Compile Include="Synchronization\ObjectProcessTests.cs" />
-    <Compile Include="Synchronization\SyncLogStub.cs" />
+    <Compile Include="Synchronization\ConditionalUpdaterTests.cs" />
+    <Compile Include="Synchronization\SyncStateStub.cs" />
     <Compile Include="utilities\TestUtils.cs" />
     <Compile Include="utilities\XDocumentExtensionTests.cs" />
   </ItemGroup>

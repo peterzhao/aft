@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[SyncRuns](
 	[Complete] [bit] NOT NULL,
 	[StartTime] [datetime2](7) NOT NULL,
 	[CurrentRecord] [int] NOT NULL,
-	[LastUpdatedMinimum] [datetime2](7) NULL
+	[MinimumModificationDate] [datetime2](7) NULL
 	PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

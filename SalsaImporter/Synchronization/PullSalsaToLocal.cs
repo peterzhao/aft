@@ -12,19 +12,18 @@ namespace SalsaImporter.Synchronization
     {
         public void run()
         {
-            
             var syncErrorHandler = new SyncErrorHandler(10, 10, 10);
 
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
 
-            var syncLog = new SyncLog(DateTime.Now);
+            var syncLog = new SyncState(DateTime.Now);
 
-            var objectProcess = new ObjectProcess(localRepository, salsaRepository, syncErrorHandler);
+            var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
 
-            var batchProcess = new BatchProcess(localRepository, salsaRepository, syncLog, objectProcess);
+            var batchProcess = new BatchOneWaySynchronize(salsaRepository, localConditionalUpdater, syncLog, 100);
 
-            batchProcess.PullFromExternal<Supporter>(100);
+            batchProcess.Synchronize<Supporter>();
         }
     }
 }

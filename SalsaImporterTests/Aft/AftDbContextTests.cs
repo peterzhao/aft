@@ -29,7 +29,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldCreateSyncRunInAftDb()
         {
-            var syncrun = new SyncRun { Complete = false, CurrentRecord = 0, LastUpdatedMinimum = DateTime.MinValue, StartTime = DateTime.Now};
+            var syncrun = new SyncRun { Complete = false, CurrentRecord = 0, MinimumModificationDate = DateTime.MinValue, StartTime = DateTime.Now};
             db.SyncRuns.Add(syncrun);
             db.SaveChanges();
             Assert.Greater(syncrun.Id, 0);

@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace SalsaImporter.Synchronization
 {
-    public class SyncLog: ISyncLog
+    public class SyncState: ISyncState
     {
         private readonly SyncRun _currentSyncRun;
 
-        public SyncLog(DateTime now)
+        public SyncState(DateTime now)
         {
             using (var db = new AftDbContext())
             {
@@ -24,7 +24,7 @@ namespace SalsaImporter.Synchronization
                                       {
                                           StartTime = now,
                                           CurrentRecord = 0,
-                                          LastUpdatedMinimum =
+                                          MinimumModificationDate =
                                               completedRuns.Any()
                                                   ? completedRuns.Max(s => s.StartTime)
                                                   : DateTime.MinValue
@@ -36,11 +36,12 @@ namespace SalsaImporter.Synchronization
             }
         }
 
-        public DateTime LastPullDateTime
+        public DateTime MinimumModificationDate
         {
-            get {return _currentSyncRun.LastUpdatedMinimum;} 
+            get {return _currentSyncRun.MinimumModificationDate;} 
         }
-        public int LastPulledKey
+
+        public int CurrentRecord
         {
             get { return _currentSyncRun.CurrentRecord; }
             set
@@ -54,42 +55,13 @@ namespace SalsaImporter.Synchronization
             }
         }
 
-        public void PullingCompleted()
+        public void MarkComplete()
         {
             using (var db = new AftDbContext())
             {
                 db.SyncRuns.Attach(_currentSyncRun);
                 _currentSyncRun.Complete = true;
                 db.SaveChanges();
-            }
-        }
-
-        public void PushingCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
-        public DateTime LastPushDateTime 
-        { 
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            } 
-        }
-
-        public int LastPushedKey
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
             }
         }
 

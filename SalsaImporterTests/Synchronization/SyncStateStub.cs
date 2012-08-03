@@ -3,18 +3,18 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Synchronization
 {
-    public class SyncLogStub: ISyncLog
+    public class SyncStateStub: ISyncState
     {
         public DateTime LastPushDateTime { get; set; }
-        public DateTime LastPullDateTime { get; set; }
+        public DateTime MinimumModificationDate { get; set; }
         public int LastPushedKey { get; set; }
-        public int LastPulledKey { get; set; }
+        public int CurrentRecord { get; set; }
 
         public bool PushingCompletedCalled;
 
         public bool PullingCompletedCalled;
 
-        public void PullingCompleted()
+        public void MarkComplete()
         {
             PullingCompletedCalled = true;
         }

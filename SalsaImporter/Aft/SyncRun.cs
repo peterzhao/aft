@@ -9,6 +9,6 @@ namespace SalsaImporter.Aft
         public bool Complete { get; set; }
         public DateTime StartTime { get; set; }
         public int CurrentRecord { get; set; }
-        public DateTime LastUpdatedMinimum   { get; set; }
+        public DateTime MinimumModificationDate   { get; set; }
     }
 }
