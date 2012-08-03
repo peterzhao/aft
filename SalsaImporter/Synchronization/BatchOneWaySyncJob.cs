@@ -12,11 +12,12 @@ namespace SalsaImporter.Synchronization
         private readonly IConditonalUpdater _destination;
         private int _batchSize;
 
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
 
-        public BatchOneWaySyncJob(ISyncObjectRepository source, IConditonalUpdater destination, int batchSize)
+        public BatchOneWaySyncJob(ISyncObjectRepository source, IConditonalUpdater destination, int batchSize, string name)
         {
+            Name = name;
             _source = source;
             _destination = destination;
             _batchSize = batchSize;

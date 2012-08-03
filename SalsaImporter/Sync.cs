@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
+using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
@@ -21,10 +23,22 @@ namespace SalsaImporter
             _salsa.Login();
         }
 
-        public void PushToSalsa()
+        public void Run()
         {
+            var syncErrorHandler = new SyncErrorHandler(10, 10, 10);
 
-            PrintFailedRecords();
+            var localRepository = new LocalRepository();
+            var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
+
+            var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
+            var salsaConditionalUpdater = new ConditionalUpdater(salsaRepository, syncErrorHandler);
+
+            var pullJob = new BatchOneWaySyncJob<Supporter>(salsaRepository, localConditionalUpdater, 100, "Pulling supporters");
+            var pushJob = new BatchOneWaySyncJob<Supporter>(localRepository, salsaConditionalUpdater, 100, "Push supporters");
+
+            var syncSession = new SyncSession();
+            syncSession.AddJob(pullJob);//.AddJob(pushJob);
+            syncSession.Start();
         }
 
         public void DeleteAllSupporters()
@@ -39,10 +53,7 @@ namespace SalsaImporter
         }
 
 
-        public void PullFromSalsa()
-        {
-
-        }
+      
 
 
         private void PrintFailedRecords()

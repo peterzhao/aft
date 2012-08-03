@@ -21,11 +21,8 @@ namespace SalsaImporter
                 var sync = new Sync();
                 switch (args[0])
                 {
-                    case "push":
-                        sync.PushToSalsa();
-                        break;
-                    case "pull":
-                        sync.PullFromSalsa();
+                    case "sync":
+                        sync.Run();
                         break;
                     case "count":
                         sync.CountSupportOnSalsa();
@@ -54,7 +51,7 @@ namespace SalsaImporter
       
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: push|pull|count|delete|customcolumns [environment]\n if no environment is specified, use dev.");
+            Console.WriteLine("Usage: sync|count|delete|customcolumns [environment]\n if no environment is specified, use dev.");
         }
 
         private static void SetEnvironment(string[] args)

@@ -134,8 +134,10 @@ namespace SalsaImporterTests.Synchronization
             var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; throw new ApplicationException("error here");});
             var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
             session.AddJob(job31).AddJob(job32);
-
-            session.Start();
+            try
+            {
+                session.Start();
+            }catch(Exception){}
 
             Assert.IsTrue(job1Called);
             Assert.IsFalse(job2Called);

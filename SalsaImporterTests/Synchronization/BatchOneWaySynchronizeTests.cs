@@ -23,7 +23,7 @@ namespace SalsaImporterTests.Synchronization
             _sourceMock = new Mock<ISyncObjectRepository>();
             _destinationMock = new Mock<IConditonalUpdater>();
             _jobContext = new JobContextStub();
-            _batchOneWaySyncJob = new BatchOneWaySyncJob<Supporter>(_sourceMock.Object, _destinationMock.Object, BatchSize);
+            _batchOneWaySyncJob = new BatchOneWaySyncJob<Supporter>(_sourceMock.Object, _destinationMock.Object, BatchSize, null);
         }
 
         [Test]

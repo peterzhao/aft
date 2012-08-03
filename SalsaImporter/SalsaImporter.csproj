@@ -71,7 +71,6 @@
     <Compile Include="Repositories\LocalRepository.cs" />
     <Compile Include="Repositories\SalsaRepository.cs" />
     <Compile Include="Synchronization\ISyncJob.cs" />
-    <Compile Include="Synchronization\PullSalsaToLocal.cs" />
     <Compile Include="Synchronization\ISyncErrorHandler.cs" />
     <Compile Include="Synchronization\SessionContext.cs" />
     <Compile Include="Synchronization\SyncErrorHandler.cs" />

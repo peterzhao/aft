@@ -63,12 +63,12 @@
     <Compile Include="ImporterErrorHandlerTests.cs" />
     <Compile Include="CreateTestingCustomColumnsTests.cs" />
     <Compile Include="PerformanceTest\SyncTests.cs" />
+    <Compile Include="PerformanceTest\SyncTests1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\LocalRepositoryTests.cs" />
     <Compile Include="Repositories\SalsaRepositoryTests.cs" />
     <Compile Include="SalsaClientTests.cs" />
     <Compile Include="Synchronization\BatchOneWaySynchronizeTests.cs" />
-    <Compile Include="Synchronization\PullSalsaToLocalTests.cs" />
     <Compile Include="Synchronization\SyncJobStub.cs" />
     <Compile Include="Synchronization\SyncSessionTests.cs" />
     <Compile Include="Synchronization\ConditionalUpdaterTests.cs" />
