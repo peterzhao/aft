@@ -6,9 +6,10 @@ using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 using SalsaImporterTests.utilities;
 
-namespace SalsaImporterTests.PerformanceTest
+namespace SalsaImporterTests.FunctionalTests
 {
     [TestFixture]
+    [Category("FunctionalTest")]
     public class SyncTests
     {
 
