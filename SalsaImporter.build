@@ -10,17 +10,13 @@
   </PropertyGroup>
   
    <Target Name="Build" DependsOnTargets="
-      Clean;
       Compile;
       UnitTest;
      "/>
   
-  <Target Name="Clean">
-  </Target>
-  
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
  
-   <Target Name="Compile" DependsOnTargets="Clean">
+   <Target Name="Compile">
     <Error Text="No Solution property was defined" Condition="$(Solution) == ''" />
     <MSBuild Projects="$(Solution)" Targets="Rebuild" Properties="Configuration=$(Configuration)" />
   </Target>
@@ -31,7 +27,14 @@
    
     <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest" 
     WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
-  </Target> 
-  
+  </Target>
+
+  <Target Name="RebaseDb">
+    <Exec Command="sqlcmd -S . -E -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="importSupporters.bat" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+  </Target>
   
 </Project>
