@@ -16,11 +16,6 @@
      "/>
   
   <Target Name="Clean">
-    <ItemGroup>
-      <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\bin\$(Configuration)\**\*" />
-      <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\obj\$(Configuration)\**\*" />
-    </ItemGroup>
-    <Delete Files="@(VisualStudioFiles)" />
   </Target>
   
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
