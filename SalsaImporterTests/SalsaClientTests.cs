@@ -156,7 +156,6 @@ namespace SalsaImporterTests
                                        {"label", "Test Field"},
                                        {"type", "varchar"}
                                    };
-
             client.DeleteAllObjects("custom_column", 100, false);
             client.CreateSupporterCustomColumn(customColumn);
 

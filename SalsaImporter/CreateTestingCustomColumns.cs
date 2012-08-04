@@ -20,6 +20,7 @@ namespace SalsaImporter
         public void CreateCustomColumns()
         {
             _salsa.DeleteAllObjects("custom_column", 100, false);
+            Logger.Debug("Creating custom fields of string...");
             for (int i = 0; i < 10; i++)
             {
                 var customColumn = new NameValueCollection
@@ -39,6 +40,7 @@ namespace SalsaImporter
                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }
+            Logger.Debug("Creating custom fields of integer...");
             for (int i = 0; i < 5; i++)
             {
                 var customColumn = new NameValueCollection
@@ -49,6 +51,7 @@ namespace SalsaImporter
                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }
+            Logger.Debug("Created custom fields.");
         }
     }
 }

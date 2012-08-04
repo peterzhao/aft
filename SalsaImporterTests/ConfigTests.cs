@@ -15,7 +15,7 @@ namespace SalsaImporterTests
             Assert.IsNotNull(Config.SalsaPassword);
 
             Config.Environment = Config.PerformanceTest;
-            Assert.AreEqual("peter.qs.zhao@gmail.com", Config.SalsaUserName);
+            Assert.AreEqual("tom@alexandrowicz.ca", Config.SalsaUserName);
         }
     }
 }

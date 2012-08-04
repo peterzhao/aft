@@ -4,35 +4,36 @@
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
     <salsaPassword>notenote</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftDev;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </dev>
-  <unitTest>
+  <test>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>talexand@thoughtworks.com</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
-  </unitTest>
-  <altPerformanceTest>
+    <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+  </test>
+  <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
-  </altPerformanceTest>
-  <performanceTest>
-    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
-    <salsaPassword>notenote</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </performanceTest>
   <production>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
     <salsaPassword>notenote</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </production>
   <stub>
     <salsaApiUrl>http://10.10.67.164:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </stub>
   <stub2>
     <salsaApiUrl>http://192.168.0.101:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </stub2>
 </environments>

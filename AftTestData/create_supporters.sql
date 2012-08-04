@@ -1,7 +1,4 @@
-USE [AFT]
-GO
 
-/****** Object:  Table [dbo].[Supporters]    Script Date: 08/01/2012 10:45:27 ******/
 SET ANSI_NULLS ON
 GO
 

@@ -4,11 +4,10 @@ namespace SalsaImporter
 {
     public class Config
     {
-        public static string UnitTest = "unitTest";
+        public static string UnitTest = "test";
         public static string PerformanceTest = "performanceTest";
         public static string Production = "production";
         public static string Dev = "dev";
-        public static string AltPerformanceTest = "altPerformanceTest";
         public static string Stub = "stub";
         public static string Environment = Config.Dev;
 
@@ -25,6 +24,11 @@ namespace SalsaImporter
         public static string SalsaPassword
         {
             get { return GetSetting("salsaPassword"); }
+        }
+
+        public static string DbConnectionString
+        {
+            get { return GetSetting("dbConnectionString"); }
         }
 
         private static string GetSetting(string name)

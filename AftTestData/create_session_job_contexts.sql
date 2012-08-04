@@ -1,5 +1,4 @@
-USE [AFT]
-GO
+
 
 SET ANSI_NULLS ON
 GO

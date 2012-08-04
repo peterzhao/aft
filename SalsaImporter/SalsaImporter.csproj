@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
-    <Compile Include="Aft\SyncRun.cs" />
     <Compile Include="Mappers\MapperFactory.cs" />
     <Compile Include="Mappers\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
@@ -102,6 +101,7 @@
   <ItemGroup>
     <Content Include="environments.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup />

@@ -5,6 +5,7 @@
     <Solution Condition="Exists('$(ProjectName).sln')">$(ProjectName).sln</Solution>
     <UnitTestProject Condition="Exists('$(ProjectName)Tests')">$(ProjectName)Tests</UnitTestProject>
     <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
+    <Db Condition="$(Db) == ''">Aft</Db>
     <NUnitDirectory Condition="Exists('$(MSBuildProjectDirectory)\Dependencies\nunit')">$(MSBuildProjectDirectory)\Dependencies\nunit</NUnitDirectory>
     <MSBuildCommunityTasksPath Condition="$(MSBuildCommunityTasksPath) == ''">$(MSBuildProjectDirectory)\Dependencies\msbuild-community-tasks</MSBuildCommunityTasksPath>
   </PropertyGroup>
@@ -16,7 +17,15 @@
   
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
  
-   <Target Name="Compile">
+  <Target Name="Clean">
+    <ItemGroup>
+      <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\bin\$(Configuration)\**\*" />
+      <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\obj\$(Configuration)\**\*" />
+    </ItemGroup>
+    <Delete Files="@(VisualStudioFiles)" />
+  </Target>
+  
+  <Target Name="Compile">
     <Error Text="No Solution property was defined" Condition="$(Solution) == ''" />
     <MSBuild Projects="$(Solution)" Targets="Rebuild" Properties="Configuration=$(Configuration)" />
   </Target>
@@ -25,16 +34,20 @@
     <Error Text="Missing or invalid value specified for the NUnitDirectory property"
       Condition="$(UnitTestProject) != '' And !Exists('$(NUnitDirectory)')" />
    
-    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest" 
+    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest,FunctionalTest" 
     WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
   </Target>
 
   <Target Name="RebaseDb">
-    <Exec Command="sqlcmd -S . -E -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="importSupporters.bat" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+  </Target>
+
+  <Target Name="DbSeed">
+    <Exec Command="bcp $(Db).dbo.Supporters in FiveThousandSupporters.dat -q -f FiveThousandSupporters.fmt -S localhost -E -T -a 65535"
+          WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
   </Target>
   
 </Project>

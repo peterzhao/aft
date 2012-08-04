@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 
 namespace SalsaImporterTests
@@ -14,6 +15,7 @@ namespace SalsaImporterTests
         [SetUp]
         public void SetUp()
         {
+            Config.Environment = Config.UnitTest;
             db = new AftDbContext();
         }
         [Test]
