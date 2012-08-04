@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
@@ -65,6 +66,8 @@ namespace SalsaImporter.Synchronization
 
         public SyncSession AddJob(ISyncJob job)
         {
+            if (string.IsNullOrWhiteSpace(job.Name)) throw new ApplicationException("Job name cannot be empty");
+            if (_jobs.Any(j => j.Name == job.Name)) throw new ApplicationException("Job name must be different: " + job.Name);
             _jobs.Add(job);
             if(CurrentContext.JobContexts == null) CurrentContext.JobContexts = new List<JobContext>();
             if(CurrentContext.JobContexts.All(j => j.JobName != job.Name)) 

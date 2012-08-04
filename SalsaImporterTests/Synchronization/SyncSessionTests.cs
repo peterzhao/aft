@@ -60,7 +60,6 @@ namespace SalsaImporterTests.Synchronization
             var session = new SyncSession();
             Assert.AreEqual(SessionState.New, session.CurrentContext.State);
             Assert.AreEqual(_context2.StartTime, session.CurrentContext.MinimumModifiedDate);
-            //Assert.IsTrue(session.CurrentContext.StartTime >= start);
             Assert.IsNull(session.CurrentContext.JobContexts);
         }
 
@@ -146,6 +145,26 @@ namespace SalsaImporterTests.Synchronization
             Assert.IsNull(session.CurrentContext.JobContexts.Last().StartTime);
             Assert.IsNull(session.CurrentContext.JobContexts.First().FinishedTime);
 
+        }
+
+        [Test]
+        public void ShouldGetErrorWhenGivenJobHasNoName()
+        {
+            CreateTowSessions(SessionState.Aborted);
+            var session = new SyncSession();
+            var job31 = new SyncJobStub("", (jobContext) => { });
+            Assert.Throws <ApplicationException> (() => session.AddJob(job31));
+        }
+
+        [Test]
+        public void ShouldGetErrorWhenGivenJobNameIsNotUnique()
+        {
+            CreateTowSessions(SessionState.Aborted);
+            var session = new SyncSession();
+            var job31 = new SyncJobStub("job31", (jobContext) => { });
+            var job32 = new SyncJobStub("job31", (jobContext) => { });
+            session.AddJob(job31);
+            Assert.Throws<ApplicationException>(() => session.AddJob(job32));
         }
 
 
