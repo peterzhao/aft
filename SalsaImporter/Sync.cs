@@ -16,14 +16,14 @@ namespace SalsaImporter
 
         public Sync()
         {
-            _errorHandler = new SyncErrorHandler(500, 500, 500);
+            _errorHandler = new SyncErrorHandler(500, 500);
             _salsa = new SalsaClient(_errorHandler);
             _salsa.Login();
         }
 
         public void Run()
         {
-            var syncErrorHandler = new SyncErrorHandler(10, 10, 10);
+            var syncErrorHandler = new SyncErrorHandler(10, 10);
 
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
@@ -50,13 +50,9 @@ namespace SalsaImporter
             Logger.Info("total supporter on salsa:" + count);
         }
 
-
-      
-
-
         private void PrintFailedRecords()
         {
-            List<ISyncObject> failedCreatedSupporterKeys = _errorHandler.PullingFailure.Keys.ToList();
+            List<ISyncObject> failedCreatedSupporterKeys = _errorHandler.AddFailure.Keys.ToList();
             if (failedCreatedSupporterKeys.Count > 0)
             {
                 var message = "";

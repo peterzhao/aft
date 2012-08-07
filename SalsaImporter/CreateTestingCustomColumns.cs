@@ -11,7 +11,7 @@ namespace SalsaImporter
 
         public CreateTestingCustomColumns()
         {
-            _errorHandler = new SyncErrorHandler(500, 500, 500);
+            _errorHandler = new SyncErrorHandler(500, 500);
             _salsa = new SalsaClient(_errorHandler);
 
             _salsa.Login();

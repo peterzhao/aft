@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.IO;
 using NUnit.Framework;
-using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Synchronization;
 
-namespace SalsaImporterTests
+namespace SalsaImporterTests.Synchronization
 {
     [TestFixture]
-    public class ImporterErrorHandlerTests
+    public class SyncErrorHandlerTests
     {
 
         [Test]
-        public void ShouldAllowContinueToPullUntilFailureTimesExceedThreshold()
+        public void ShouldAllowContinueToAddUntilFailureTimesExceedThreshold()
         {
-            var handler = new SyncErrorHandler(2, 500, 1);
+            var handler = new SyncErrorHandler(2, 1);
             var exception1 = new ApplicationException("testing");
             var exception2 = new ApplicationException("testing");
             var exception3 = new ApplicationException("testing");
@@ -24,20 +22,19 @@ namespace SalsaImporterTests
             var data2 = new Supporter {Email = "foo2@abc.com"};
             var data3 = new Supporter {Email = "foo3@abc.com"};
 
-            Assert.DoesNotThrow(() => handler.HandleObjectFailure(data1, exception1));
-            Assert.DoesNotThrow(() => handler.HandleObjectFailure(data2, exception2));
-            Assert.Throws<SyncAbortedException>(() => handler.HandleObjectFailure(data3, exception3));
+            Assert.DoesNotThrow(() => handler.HandleAddObjectFailure(data1, exception1));
+            Assert.DoesNotThrow(() => handler.HandleAddObjectFailure(data2, exception2));
+            Assert.Throws<SyncAbortedException>(() => handler.HandleAddObjectFailure(data3, exception3));
 
-            Assert.AreEqual(exception1, handler.PullingFailure[data1]);
-            Assert.AreEqual(exception2, handler.PullingFailure[data2]);
-            Assert.AreEqual(exception3, handler.PullingFailure[data3]);
+            Assert.AreEqual(exception1, handler.AddFailure[data1]);
+            Assert.AreEqual(exception2, handler.AddFailure[data2]);
+            Assert.AreEqual(exception3, handler.AddFailure[data3]);
         }
-
 
         [Test]
         public void ShouldAllowContinueToDeleteUntilFailureTimesExceedThreshold()
         {
-            var handler = new SyncErrorHandler(1, 500, 2);
+            var handler = new SyncErrorHandler(1, 2);
             var key1 = "key1";
             var key2 = "key2";
             var key3 = "key3";
@@ -46,9 +43,9 @@ namespace SalsaImporterTests
             Assert.DoesNotThrow(() => handler.HandleDeleteObjectFailure(key2));
             Assert.Throws<SyncAbortedException>(() => handler.HandleDeleteObjectFailure(key3));
 
-            Assert.AreEqual(key1, handler.DeletionFailure["key1"]);
-            Assert.AreEqual(key2, handler.DeletionFailure["key2"]);
-            Assert.AreEqual(key3, handler.DeletionFailure["key3"]);
+            Assert.AreEqual(key1, handler.DeleteFailure["key1"]);
+            Assert.AreEqual(key2, handler.DeleteFailure["key2"]);
+            Assert.AreEqual(key3, handler.DeleteFailure["key3"]);
         }
 
         [Test]

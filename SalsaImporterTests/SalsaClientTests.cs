@@ -18,7 +18,7 @@ namespace SalsaImporterTests
         [SetUp]
         public void SetUp()
         {
-            client = new SalsaClient(new SyncErrorHandler(100, 500, 500));
+            client = new SalsaClient(new SyncErrorHandler(100, 500));
         }
 
         public SalsaClientTests()

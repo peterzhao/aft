@@ -16,7 +16,7 @@ namespace SalsaImporterTests.utilities
 
         private static SalsaClient SalsaClient
         {
-            get { return new SalsaClient(new SyncErrorHandler(10, 10, 10)); }
+            get { return new SalsaClient(new SyncErrorHandler(10, 10)); }
         }
 
         public static SalsaRepository SalsaRepository

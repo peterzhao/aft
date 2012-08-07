@@ -5,7 +5,7 @@ namespace SalsaImporter.Synchronization
 {
     public class ConditionalUpdater : IConditonalUpdater
     {
-        private readonly ISyncObjectRepository _destination;
+        protected readonly ISyncObjectRepository _destination;
         private readonly ISyncErrorHandler _errorHandler;
 
         public ConditionalUpdater(ISyncObjectRepository destination, ISyncErrorHandler errorHandler)
@@ -16,14 +16,14 @@ namespace SalsaImporter.Synchronization
 
         public void MaybeUpdate<T>(T sourceObject) where T:class, ISyncObject
         {
-            var externalKey = sourceObject.Id;
             var destinationObject = ForDestinationRepository(sourceObject);
             try
             {
-                var existingDestinationObject = _destination.GetByExternalKey<T>(externalKey);
+                var existingDestinationObject = FindExistingDestinationObject(sourceObject);
                 if (existingDestinationObject == null)
                 {
-                    _destination.Add(destinationObject);
+                    var destinationKey = _destination.Add(destinationObject);
+                    AfterCreateNew(destinationKey, sourceObject);
                 }
                 else if (!destinationObject.Equals(existingDestinationObject))
                 {
@@ -33,8 +33,19 @@ namespace SalsaImporter.Synchronization
             }
             catch(Exception ex)
             {       
-               _errorHandler.HandleObjectFailure(destinationObject, ex);
+               _errorHandler.HandleAddObjectFailure(destinationObject, ex);
             }
+        }
+
+        protected virtual T FindExistingDestinationObject<T>(T sourceObject) where T : class, ISyncObject
+        {
+            var externalKey = sourceObject.Id;
+            var existingDestinationObject = _destination.GetByExternalKey<T>(externalKey);
+            return existingDestinationObject;
+        }
+
+        protected virtual void AfterCreateNew<T>(int destinationKey, T sourceObject) where T : class, ISyncObject
+        {
         }
 
         private T ForDestinationRepository<T>(T incomingSourceObject) where T : class, ISyncObject
@@ -44,5 +55,6 @@ namespace SalsaImporter.Synchronization
             sourceObject.ExternalId = incomingSourceObject.Id;
             return (T)sourceObject;
         }
+
     }
 }

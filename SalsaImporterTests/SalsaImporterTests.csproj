@@ -60,7 +60,7 @@
     <Compile Include="Mappers\SupporterMapperTests.cs" />
     <Compile Include="Aft\SupporterTests.cs" />
     <Compile Include="ConfigTests.cs" />
-    <Compile Include="ImporterErrorHandlerTests.cs" />
+    <Compile Include="Synchronization\SyncErrorHandlerTests.cs" />
     <Compile Include="CreateTestingCustomColumnsTests.cs" />
     <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
