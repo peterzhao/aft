@@ -5,12 +5,12 @@ namespace SalsaImporter.Synchronization
 {
     public class LocalUpdater : IObjectUpdater
     {
-        protected readonly ISyncObjectRepository _destination;
+        protected readonly ISyncObjectRepository _destinationRepository;
         private readonly ISyncErrorHandler _errorHandler;
 
-        public LocalUpdater(ISyncObjectRepository destination, ISyncErrorHandler errorHandler)
+        public LocalUpdater(ISyncObjectRepository destinationRepository, ISyncErrorHandler errorHandler)
         {
-            _destination = destination;
+            _destinationRepository = destinationRepository;
             _errorHandler = errorHandler;
         }
 
@@ -22,13 +22,13 @@ namespace SalsaImporter.Synchronization
                 var existingDestinationObject = FindExistingDestinationObject(sourceObject);
                 if (existingDestinationObject == null)
                 {
-                    var destinationKey = _destination.Add(destinationObject);
+                    var destinationKey = _destinationRepository.Add(destinationObject);
                     AfterCreateNew(destinationKey, sourceObject);
                 }
                 else if (!destinationObject.Equals(existingDestinationObject))
                 {
                     destinationObject.Id = existingDestinationObject.Id;
-                    _destination.Update(destinationObject);
+                    _destinationRepository.Update(destinationObject);
                 }
             }
             catch(Exception ex)
@@ -40,7 +40,7 @@ namespace SalsaImporter.Synchronization
         protected virtual T FindExistingDestinationObject<T>(T sourceObject) where T : class, ISyncObject
         {
             var externalKey = sourceObject.Id;
-            var existingDestinationObject = _destination.GetByExternalKey<T>(externalKey);
+            var existingDestinationObject = _destinationRepository.GetByExternalKey<T>(externalKey);
             return existingDestinationObject;
         }
 
@@ -48,12 +48,12 @@ namespace SalsaImporter.Synchronization
         {
         }
 
-        private T GenerateDestinationObject<T>(T soureObject) where T : class, ISyncObject
+        private T GenerateDestinationObject<T>(T sourceObject) where T : class, ISyncObject
         {
-            var sourceObject = soureObject.Clone();
-            sourceObject.Id = 0;
-            sourceObject.ExternalId = soureObject.Id;
-            return (T)sourceObject;
+            var destinationObject = sourceObject.Clone();
+            destinationObject.Id = 0;
+            destinationObject.ExternalId = sourceObject.Id;
+            return (T)destinationObject;
         }
 
     }

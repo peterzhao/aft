@@ -228,7 +228,7 @@ namespace SalsaImporter.Aft
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2}", First_Name, Last_Name, Email);
+            return string.Format("FirstName: {0} LastName: {1} Email:{2} ID:{3} ExternalId: {4}", First_Name, Last_Name, Email, Id, ExternalId);
         }
     }
 }

@@ -5,13 +5,13 @@ namespace SalsaImporter.Synchronization
 {
     public class ExternalUpdater : LocalUpdater
     {
-        private readonly ISyncObjectRepository _source;
+        private readonly ISyncObjectRepository _sourceRepository;
 
-        public ExternalUpdater(ISyncObjectRepository destination,
-            ISyncObjectRepository source,
-            ISyncErrorHandler errorHandler) : base(destination, errorHandler)
+        public ExternalUpdater(ISyncObjectRepository destinationRepository,
+            ISyncObjectRepository sourceRepository,
+            ISyncErrorHandler errorHandler) : base(destinationRepository, errorHandler)
         {
-            _source = source;
+            _sourceRepository = sourceRepository;
         }
 
         protected override void AfterCreateNew<T>(int destinationKey, T sourceObject)
@@ -19,13 +19,13 @@ namespace SalsaImporter.Synchronization
             base.AfterCreateNew(destinationKey, sourceObject);
             
             sourceObject.ExternalId = destinationKey;
-            _source.Update(sourceObject);
+            _sourceRepository.Update(sourceObject);
         }
 
         protected override T FindExistingDestinationObject<T>(T sourceObject)
         {
             var destinationKey = sourceObject.ExternalId;
-            var existingDestinationObject = destinationKey == null ? null : _destination.Get<T>((int)destinationKey);
+            var existingDestinationObject = destinationKey == null ? null : _destinationRepository.Get<T>((int)destinationKey);
             return existingDestinationObject;
         }
     }
