@@ -12,6 +12,7 @@ using SalsaImporter.Synchronization;
 namespace SalsaImporterTests
 {
     [TestFixture]
+    [Category("IntegrationTest")]
     public class SalsaClientTests
     {
 

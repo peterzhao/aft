@@ -13,7 +13,7 @@ namespace SalsaImporterTests.Synchronization
     {
         private BatchOneWaySyncJob<Supporter> _batchOneWaySyncJob;
         private Mock<ISyncObjectRepository> _sourceMock;
-        private Mock<IConditonalUpdater> _destinationMock;
+        private Mock<IObjectUpdater> _destinationMock;
         private JobContextStub _jobContext;
         private const int BatchSize = 100;
 
@@ -21,7 +21,7 @@ namespace SalsaImporterTests.Synchronization
         public void SetUp()
         {
             _sourceMock = new Mock<ISyncObjectRepository>();
-            _destinationMock = new Mock<IConditonalUpdater>();
+            _destinationMock = new Mock<IObjectUpdater>();
             _jobContext = new JobContextStub();
             _batchOneWaySyncJob = new BatchOneWaySyncJob<Supporter>(_sourceMock.Object, _destinationMock.Object, BatchSize, null);
         }
@@ -46,9 +46,9 @@ namespace SalsaImporterTests.Synchronization
 
             _batchOneWaySyncJob.Start(_jobContext);
 
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter1));
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter2));
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter3));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.Update(supporter1));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.Update(supporter2));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.Update(supporter3));
         }
     }
 }

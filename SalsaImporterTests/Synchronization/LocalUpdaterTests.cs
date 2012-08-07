@@ -8,18 +8,18 @@ using SalsaImporter.Synchronization;
 namespace SalsaImporterTests.Synchronization
 {
     [TestFixture]
-    public class ConditionalUpdaterTests
+    public class LocalUpdaterTests
     {
         private Mock<ISyncObjectRepository> _localRepositoryMock;
         private Mock<ISyncErrorHandler> _errorHandlerMock;
-        private ConditionalUpdater _conditionalUpdater;
+        private LocalUpdater _localUpdater;
 
         [SetUp]
         public void SetUp()
         {
             _localRepositoryMock = new Mock<ISyncObjectRepository>();
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
-            _conditionalUpdater = new ConditionalUpdater(_localRepositoryMock.Object, _errorHandlerMock.Object);
+            _localUpdater = new LocalUpdater(_localRepositoryMock.Object, _errorHandlerMock.Object);
         }
      
 
@@ -31,7 +31,7 @@ namespace SalsaImporterTests.Synchronization
             _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(sourceObject.Id)).Returns(()=> null);
             _localRepositoryMock.Setup(localRepository => localRepository.Add(sourceObject)).Returns(3456);
 
-            _conditionalUpdater.MaybeUpdate(sourceObject);
+            _localUpdater.Update(sourceObject);
 
             _localRepositoryMock.Verify(localRepository => localRepository.Add(sourceObject));
         }
@@ -43,7 +43,7 @@ namespace SalsaImporterTests.Synchronization
             var localObj = new Supporter { ExternalId = 1234, Email = "jj@abc.com", Id = 5678};
             _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id)).Returns(localObj);
 
-            _conditionalUpdater.MaybeUpdate(externalObj);
+            _localUpdater.Update(externalObj);
 
             _localRepositoryMock.Verify(localRepository => localRepository.Add(It.IsAny<Supporter>()), Times.Never());
             _localRepositoryMock.Verify(localRepository => localRepository.Update(It.IsAny<Supporter>()), Times.Never());
@@ -56,7 +56,7 @@ namespace SalsaImporterTests.Synchronization
             var localObj = new Supporter { ExternalId = 1234, Email = "jj@abc.com", Id = 5678, Phone = "4161234568"};
             _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id)).Returns(localObj);
 
-            _conditionalUpdater.MaybeUpdate(externalObj);
+            _localUpdater.Update(externalObj);
 
             _localRepositoryMock.Verify(localRepository => localRepository.Update(externalObj));
         }
@@ -68,7 +68,7 @@ namespace SalsaImporterTests.Synchronization
             _localRepositoryMock.Setup(localRepository => localRepository.GetByExternalKey<Supporter>(externalObj.Id))
                 .Throws<Exception>();
 
-            _conditionalUpdater.MaybeUpdate(externalObj);
+            _localUpdater.Update(externalObj);
 
             _errorHandlerMock.Verify(errorHandler => errorHandler.HandleAddObjectFailure(externalObj, It.IsAny<Exception>()));
         }

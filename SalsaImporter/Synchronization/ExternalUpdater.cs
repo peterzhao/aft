@@ -3,11 +3,11 @@ using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class ConditionalUpdaterByInternalId : ConditionalUpdater
+    public class ExternalUpdater : LocalUpdater
     {
         private readonly ISyncObjectRepository _source;
 
-        public ConditionalUpdaterByInternalId(ISyncObjectRepository destination,
+        public ExternalUpdater(ISyncObjectRepository destination,
             ISyncObjectRepository source,
             ISyncErrorHandler errorHandler) : base(destination, errorHandler)
         {

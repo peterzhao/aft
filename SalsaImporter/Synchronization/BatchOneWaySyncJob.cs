@@ -9,13 +9,13 @@ namespace SalsaImporter.Synchronization
     public class BatchOneWaySyncJob<T> :ISyncJob where T: class , ISyncObject
     {
         private readonly ISyncObjectRepository _source;
-        private readonly IConditonalUpdater _destination;
+        private readonly IObjectUpdater _destination;
         private int _batchSize;
 
         public string Name { get; set; }
 
 
-        public BatchOneWaySyncJob(ISyncObjectRepository source, IConditonalUpdater destination, int batchSize, string name)
+        public BatchOneWaySyncJob(ISyncObjectRepository source, IObjectUpdater destination, int batchSize, string name)
         {
             Name = name;
             _source = source;
@@ -34,7 +34,7 @@ namespace SalsaImporter.Synchronization
                 currentBatch = _source.GetBatchOfObjects<T>(_batchSize,
                     jobContext.CurrentRecord,
                     jobContext.MinimumModificationDate);
-                var tasks = currentBatch.Select(obj => Task.Factory.StartNew(arg => _destination.MaybeUpdate<T>(obj), null));
+                var tasks = currentBatch.Select(obj => Task.Factory.StartNew(arg => _destination.Update<T>(obj), null));
                 Task.WaitAll(tasks.ToArray());
 
                 if (currentBatch.Any())

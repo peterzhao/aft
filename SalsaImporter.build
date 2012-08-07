@@ -34,7 +34,23 @@
     <Error Text="Missing or invalid value specified for the NUnitDirectory property"
       Condition="$(UnitTestProject) != '' And !Exists('$(NUnitDirectory)')" />
    
-    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest,FunctionalTest" 
+    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /exclude:PerformanceTest,FunctionalTest,IntegrationTest" 
+    WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
+  </Target>
+
+  <Target Name="FunctionalTest" DependsOnTargets="Compile">
+    <Error Text="Missing or invalid value specified for the NUnitDirectory property"
+      Condition="$(UnitTestProject) != '' And !Exists('$(NUnitDirectory)')" />
+
+    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /include:FunctionalTest"
+    WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
+  </Target>
+
+  <Target Name="IntegrationTest" DependsOnTargets="Compile">
+    <Error Text="Missing or invalid value specified for the NUnitDirectory property"
+      Condition="$(UnitTestProject) != '' And !Exists('$(NUnitDirectory)')" />
+
+    <Exec Command="$(NUnitDirectory)\nunit-console-x86.exe $(UnitTestProject).dll /include:IntegrationTest"
     WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
   </Target>
 

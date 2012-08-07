@@ -28,8 +28,8 @@ namespace SalsaImporter
             var localRepository = new LocalRepository();
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
 
-            var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
-            var salsaConditionalUpdater = new ConditionalUpdaterByInternalId(salsaRepository, localRepository, syncErrorHandler);
+            var localConditionalUpdater = new LocalUpdater(localRepository, syncErrorHandler);
+            var salsaConditionalUpdater = new ExternalUpdater(salsaRepository, localRepository, syncErrorHandler);
 
             var pullJob = new BatchOneWaySyncJob<Supporter>(salsaRepository, localConditionalUpdater, 100, "Pulling supporters");
             var pushJob = new BatchOneWaySyncJob<Supporter>(localRepository, salsaConditionalUpdater, 100, "Push supporters");

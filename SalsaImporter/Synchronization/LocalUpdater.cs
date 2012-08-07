@@ -3,20 +3,20 @@ using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class ConditionalUpdater : IConditonalUpdater
+    public class LocalUpdater : IObjectUpdater
     {
         protected readonly ISyncObjectRepository _destination;
         private readonly ISyncErrorHandler _errorHandler;
 
-        public ConditionalUpdater(ISyncObjectRepository destination, ISyncErrorHandler errorHandler)
+        public LocalUpdater(ISyncObjectRepository destination, ISyncErrorHandler errorHandler)
         {
             _destination = destination;
             _errorHandler = errorHandler;
         }
 
-        public void MaybeUpdate<T>(T sourceObject) where T:class, ISyncObject
+        public void Update<T>(T sourceObject) where T:class, ISyncObject
         {
-            var destinationObject = ForDestinationRepository(sourceObject);
+            var destinationObject = GenerateDestinationObject(sourceObject);
             try
             {
                 var existingDestinationObject = FindExistingDestinationObject(sourceObject);
@@ -48,11 +48,11 @@ namespace SalsaImporter.Synchronization
         {
         }
 
-        private T ForDestinationRepository<T>(T incomingSourceObject) where T : class, ISyncObject
+        private T GenerateDestinationObject<T>(T soureObject) where T : class, ISyncObject
         {
-            var sourceObject = incomingSourceObject.Clone();
+            var sourceObject = soureObject.Clone();
             sourceObject.Id = 0;
-            sourceObject.ExternalId = incomingSourceObject.Id;
+            sourceObject.ExternalId = soureObject.Id;
             return (T)sourceObject;
         }
 

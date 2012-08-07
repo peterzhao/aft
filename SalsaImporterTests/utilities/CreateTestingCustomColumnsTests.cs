@@ -6,6 +6,7 @@ using SalsaImporter;
 namespace SalsaImporterTests.Utilities
 {
     [TestFixture]
+    [Category("IntegrationTest")]
     public class CreateTestingCustomColumnsTests
     {
         public CreateTestingCustomColumnsTests()

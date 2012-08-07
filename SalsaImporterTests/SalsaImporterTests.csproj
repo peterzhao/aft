@@ -70,7 +70,7 @@
     <Compile Include="Synchronization\BatchOneWaySynchronizeTests.cs" />
     <Compile Include="Synchronization\SyncJobStub.cs" />
     <Compile Include="Synchronization\SyncSessionTests.cs" />
-    <Compile Include="Synchronization\ConditionalUpdaterTests.cs" />
+    <Compile Include="Synchronization\LocalUpdaterTests.cs" />
     <Compile Include="Synchronization\JobContextStub.cs" />
     <Compile Include="Utilities\TestUtils.cs" />
     <Compile Include="Utilities\XDocumentExtensionTests.cs" />
