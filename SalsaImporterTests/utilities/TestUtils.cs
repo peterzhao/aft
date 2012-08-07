@@ -79,5 +79,12 @@ namespace SalsaImporterTests.Utilities
             objects.ToList().ForEach(LocalRepository.Update);
         }
 
+        public static void RemoveAllSupporter()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("truncate table Supporters");
+            }
+        }
     }
 }

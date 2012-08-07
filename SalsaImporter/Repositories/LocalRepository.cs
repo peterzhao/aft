@@ -18,8 +18,11 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Records<T>().Take(batchSize).Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id >= startKey).
-                    ToList();
+                return db.Records<T>()
+                    .Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id > startKey)
+                    .OrderBy(s => s.Id)
+                    .Take(batchSize)
+                    .ToList();
             }
         }
 

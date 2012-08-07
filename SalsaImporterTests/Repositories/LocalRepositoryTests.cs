@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 using SalsaImporterTests.Utilities;
@@ -8,14 +10,15 @@ using SalsaImporterTests.Utilities;
 namespace SalsaImporterTests.Repositories
 {
     [TestFixture]
+    [Category("IntegrationTest")]
     public class LocalRepositoryTests
     {
-        private readonly string MarkerLastName = "LocalRepositoryTests";
-
+        
         [SetUp]
         public void SetUp()
         {
-            TestUtils.RemoveLocal<Supporter>(s => s.Last_Name == MarkerLastName);
+            Config.Environment = Config.UnitTest;
+            TestUtils.RemoveAllSupporter();
         }
 
         [Test]
@@ -39,7 +42,7 @@ namespace SalsaImporterTests.Repositories
                                     {
                                         ExternalId = externalId, 
                                         Email = expectedEmailAddress, 
-                                        Last_Name = MarkerLastName
+                                        Last_Name = "LastName"
                                     });
 
             var retrieved = localRepository.GetByExternalKey<Supporter>(externalId);
@@ -53,12 +56,7 @@ namespace SalsaImporterTests.Repositories
             var localRepository = new LocalRepository();
             int externalId = 100;
             var expectedCustomStringValue = Guid.NewGuid().ToString();
-            var supporter = new Supporter
-                                 {
-                                     ExternalId = externalId, 
-                                     Email = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com",
-                                     CustomString0 = "BeforeChange", Last_Name = MarkerLastName
-                                 };
+            var supporter = GenerateSupporter(externalId);
 
             // Setup...
             supporter.Id = localRepository.Add(supporter);
@@ -72,6 +70,25 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(expectedCustomStringValue, retrieved.CustomString0);
         }
 
+        private static Supporter GenerateSupporter(int externalId)
+        {
+            var supporter = GenerateSupporter("FirstName");
+            supporter.ExternalId = externalId;
+            return supporter;
+        }
+
+        private static Supporter GenerateSupporter(string firstName)
+        {
+            return new Supporter
+                                {
+                                    Email = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com",
+                                    CustomString0 = "BeforeChange", 
+                                    First_Name =  firstName,
+                                    Last_Name = "LastName"
+                                };
+        }
+
+
         [Test]
         public void ShouldHaveAnIncrementingCurrentTime()
         {
@@ -80,6 +97,32 @@ namespace SalsaImporterTests.Repositories
             Thread.Sleep(1000);
             DateTime secondCurrentTime = localRepository.CurrentTime;
             Assert.Greater(secondCurrentTime, firstCurrentTime);
+        }
+
+        [Test]
+        public void ShouldGetBatchOfObjectsFromLocal()
+        {
+            var supporterOne = GenerateSupporter("One");
+            var supporterTwo = GenerateSupporter("Two");
+            var supporterThree = GenerateSupporter("Three");
+            var supporterFour = GenerateSupporter("Four");
+            var supporterFive = GenerateSupporter("Five");
+            TestUtils.CreateLocal(supporterOne, supporterTwo, supporterThree, supporterFour, supporterFive);
+
+            var localRepository = new LocalRepository();
+            var batch1 = localRepository.GetBatchOfObjects<Supporter>(2, 0, new DateTime(1991, 1, 1)).ToList();
+            var batch2 = localRepository.GetBatchOfObjects<Supporter>(2, supporterTwo.Id, new DateTime(1991, 1, 1)).ToList();
+            var batch3 = localRepository.GetBatchOfObjects<Supporter>(2, supporterFour.Id, new DateTime(1991, 1, 1)).ToList();
+
+            Assert.AreEqual(2, batch1.Count);
+            Assert.AreEqual(2, batch2.Count);
+            Assert.AreEqual(1, batch3.Count);
+
+            Assert.AreEqual(supporterOne, batch1.First());
+            Assert.AreEqual(supporterTwo, batch1.Last());
+            Assert.AreEqual(supporterThree, batch2.First());
+            Assert.AreEqual(supporterFour, batch2.Last());
+            Assert.AreEqual(supporterFive, batch3.First());
         }
 
     }
