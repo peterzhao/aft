@@ -3,7 +3,7 @@ using System.Threading;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
-using SalsaImporterTests.utilities;
+using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Repositories
 {

@@ -6,7 +6,7 @@ using Moq;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 using SalsaImporter.Synchronization;
-using SalsaImporterTests.utilities;
+using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Synchronization
 {

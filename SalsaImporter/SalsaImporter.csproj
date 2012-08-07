@@ -55,10 +55,10 @@
   <ItemGroup>
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
+    <Compile Include="Utilities\CreateTestingCustomColumns.cs" />
     <Compile Include="Mappers\MapperFactory.cs" />
     <Compile Include="Mappers\SupporterMapper.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CreateTestingCustomColumns.cs" />
     <Compile Include="Exceptions\CreateSupportersException.cs" />
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>
