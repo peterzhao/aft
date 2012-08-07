@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 
-namespace SalsaImporterTests.utilities
+namespace SalsaImporterTests.Utilities
 {
     class TestUtils
     {

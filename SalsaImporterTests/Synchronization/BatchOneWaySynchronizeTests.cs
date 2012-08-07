@@ -46,9 +46,9 @@ namespace SalsaImporterTests.Synchronization
 
             _batchOneWaySyncJob.Start(_jobContext);
 
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter1));
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter2));
-            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate<Supporter>(supporter3));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter1));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter2));
+            _destinationMock.Verify(conditionalUpdater => conditionalUpdater.MaybeUpdate(supporter3));
         }
     }
 }

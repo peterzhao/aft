@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
 
-namespace SalsaImporterTests
+namespace SalsaImporterTests.Utilities
 {
     [TestFixture]
     public class CreateTestingCustomColumnsTests
