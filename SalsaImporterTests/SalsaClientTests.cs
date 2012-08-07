@@ -142,8 +142,6 @@ namespace SalsaImporterTests
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
         }
 
-      
-
         [Test]
         public void ShouldReadWriteCustomFieldOnSupporter()
         {

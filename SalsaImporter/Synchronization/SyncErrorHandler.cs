@@ -39,7 +39,7 @@ namespace SalsaImporter.Synchronization
             get { return _deletionFailure; }
         }
 
-        public void HandlePullObjectFailure(ISyncObject obj, Exception ex)
+        public void HandleObjectFailure(ISyncObject obj, Exception ex)
         {
             PullingFailure[obj] = ex;
             Logger.Error(String.Format("Failed to pull object:" + obj, ex));

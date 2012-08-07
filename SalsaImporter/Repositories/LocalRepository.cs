@@ -14,9 +14,13 @@ namespace SalsaImporter.Repositories
     public class LocalRepository : ISyncObjectRepository
     {
        
-        public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime lastProcessedDateTime) where T : ISyncObject
+        public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
         {
-            throw new NotImplementedException("GetBatchOfObjects");
+            using (var db = new AftDbContext())
+            {
+                return db.Records<T>().Take(batchSize).Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id >= startKey).
+                    ToList();
+            }
         }
 
         public int Add<T>(T syncObject) where T : class, ISyncObject

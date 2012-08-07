@@ -24,34 +24,15 @@ namespace SalsaImporterTests
             var data2 = new Supporter {Email = "foo2@abc.com"};
             var data3 = new Supporter {Email = "foo3@abc.com"};
 
-            Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data1, exception1));
-            Assert.DoesNotThrow(() => handler.HandlePullObjectFailure(data2, exception2));
-            Assert.Throws<SyncAbortedException>(() => handler.HandlePullObjectFailure(data3, exception3));
+            Assert.DoesNotThrow(() => handler.HandleObjectFailure(data1, exception1));
+            Assert.DoesNotThrow(() => handler.HandleObjectFailure(data2, exception2));
+            Assert.Throws<SyncAbortedException>(() => handler.HandleObjectFailure(data3, exception3));
 
             Assert.AreEqual(exception1, handler.PullingFailure[data1]);
             Assert.AreEqual(exception2, handler.PullingFailure[data2]);
             Assert.AreEqual(exception3, handler.PullingFailure[data3]);
         }
 
-        [Test]
-        public void ShouldAllowContinueToPushUntilFailureTimesExceedThreshold()
-        {
-            var handler = new SyncErrorHandler(200, 2, 1);
-            var exception1 = new ApplicationException("testing");
-            var exception2 = new ApplicationException("testing");
-            var exception3 = new ApplicationException("testing");
-            var data1 = new Supporter { Email = "foo1@abc.com" };
-            var data2 = new Supporter { Email = "foo2@abc.com" };
-            var data3 = new Supporter { Email = "foo3@abc.com" };
-
-            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data1, exception1));
-            Assert.DoesNotThrow(() => handler.HandlePushObjectFailure(data2, exception2));
-            Assert.Throws<SyncAbortedException>(() => handler.HandlePushObjectFailure(data3, exception3));
-
-            Assert.AreEqual(exception1, handler.PushingFailure[data1]);
-            Assert.AreEqual(exception2, handler.PushingFailure[data2]);
-            Assert.AreEqual(exception3, handler.PushingFailure[data3]);
-        }
 
         [Test]
         public void ShouldAllowContinueToDeleteUntilFailureTimesExceedThreshold()

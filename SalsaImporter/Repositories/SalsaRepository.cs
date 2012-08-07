@@ -17,9 +17,9 @@ namespace SalsaImporter.Repositories
             _mapperFactory = mapperFactory;
         }
 
-        public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime lastProcessedDateTime) where T : ISyncObject
+        public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
         {
-            var xElements = _salsa.GetObjects(GetObjectType<T>(), batchSize, startKey.ToString(), lastProcessedDateTime, null);
+            var xElements = _salsa.GetObjects(GetObjectType<T>(), batchSize, startKey.ToString(), minimumModifiedDate, null);
             var mapper = GetMapper<T>();
             return xElements.Select(element => (T) mapper.ToObject(element));
         }

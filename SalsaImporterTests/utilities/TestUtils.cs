@@ -13,6 +13,22 @@ namespace SalsaImporterTests.utilities
 {
     class TestUtils
     {
+
+        private static SalsaClient SalsaClient
+        {
+            get { return new SalsaClient(new SyncErrorHandler(10, 10, 10)); }
+        }
+
+        public static SalsaRepository SalsaRepository
+        {
+            get { return new SalsaRepository(SalsaClient, new MapperFactory()); }
+        }
+
+        public static LocalRepository LocalRepository
+        {
+            get { return new LocalRepository(); }
+        }
+
         public static void RemoveLocal<T>(Expression<Func<T, bool>> expression) where T : class
         {
             using (var db = new AftDbContext())
@@ -33,20 +49,17 @@ namespace SalsaImporterTests.utilities
 
         public static void RemoveAllSalsa(string objectType)
         {
-            var salsaClient = new SalsaClient(new SyncErrorHandler(10, 10, 10));
-            salsaClient.DeleteAllObjects(objectType, 100, true);
+            SalsaClient.DeleteAllObjects(objectType, 100, true);
         }
-
+ 
         public static void CreateSalsa<T>(params T[] objects) where T : class, ISyncObject
         {
-            var salsaRepository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10, 10, 10)), new MapperFactory());
-            objects.ToList().ForEach(syncObject => syncObject.Id = salsaRepository.Add(syncObject));
+            objects.ToList().ForEach(syncObject => syncObject.Id = SalsaRepository.Add(syncObject));
         }
 
         public static void UpdateSalsa<T>(params T[] objects) where T : class, ISyncObject
         {
-            var salsaRepository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10, 10, 10)), new MapperFactory());
-            objects.ToList().ForEach(salsaRepository.Update);
+            objects.ToList().ForEach(SalsaRepository.Update);
         }
 
         public static void ClearAllSessions()
@@ -57,5 +70,16 @@ namespace SalsaImporterTests.utilities
                 db.Database.ExecuteSqlCommand("delete  from SessionContexts");
             }
         }
+
+        public static void CreateLocal<T>(params T[] objects) where T : class, ISyncObject
+        {
+            objects.ToList().ForEach(syncObject => LocalRepository.Add(syncObject));
+        }
+
+        public static void UpdateLocal<T>(params T[] objects) where T : class, ISyncObject
+        {
+            objects.ToList().ForEach(LocalRepository.Update);
+        }
+
     }
 }

@@ -11,7 +11,6 @@ namespace SalsaImporter
     public class Sync
     {
         private readonly SyncErrorHandler _errorHandler;
-        private readonly SupporterMapper _mapper;
         private readonly SalsaClient _salsa;
 
 
@@ -19,7 +18,6 @@ namespace SalsaImporter
         {
             _errorHandler = new SyncErrorHandler(500, 500, 500);
             _salsa = new SalsaClient(_errorHandler);
-            _mapper = new SupporterMapper();
             _salsa.Login();
         }
 
@@ -31,13 +29,13 @@ namespace SalsaImporter
             var salsaRepository = new SalsaRepository(new SalsaClient(syncErrorHandler), new MapperFactory());
 
             var localConditionalUpdater = new ConditionalUpdater(localRepository, syncErrorHandler);
-            var salsaConditionalUpdater = new ConditionalUpdater(salsaRepository, syncErrorHandler);
+            var salsaConditionalUpdater = new ConditionalUpdaterByInternalId(salsaRepository, localRepository, syncErrorHandler);
 
             var pullJob = new BatchOneWaySyncJob<Supporter>(salsaRepository, localConditionalUpdater, 100, "Pulling supporters");
             var pushJob = new BatchOneWaySyncJob<Supporter>(localRepository, salsaConditionalUpdater, 100, "Push supporters");
 
             var syncSession = new SyncSession();
-            syncSession.AddJob(pullJob);//.AddJob(pushJob);
+            syncSession.AddJob(pullJob).AddJob(pushJob);
             syncSession.Start();
         }
 

@@ -65,10 +65,6 @@ namespace SalsaImporter
             return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
         }
 
-
-
-
-
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();

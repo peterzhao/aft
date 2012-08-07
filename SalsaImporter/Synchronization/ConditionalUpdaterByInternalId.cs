@@ -3,27 +3,35 @@ using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class ConditionalUpdater : IConditonalUpdater
+    public class ConditionalUpdaterByInternalId : IConditonalUpdater
     {
         private readonly ISyncObjectRepository _destination;
+        private readonly ISyncObjectRepository _source;
         private readonly ISyncErrorHandler _errorHandler;
 
-        public ConditionalUpdater(ISyncObjectRepository destination, ISyncErrorHandler errorHandler)
+        public ConditionalUpdaterByInternalId(ISyncObjectRepository destination,
+            ISyncObjectRepository source,
+            ISyncErrorHandler errorHandler)
         {
             _destination = destination;
+            _source = source;
             _errorHandler = errorHandler;
         }
 
         public void MaybeUpdate<T>(T sourceObject) where T:class, ISyncObject
         {
-            var externalKey = sourceObject.Id;
+            var destinationKey = sourceObject.ExternalId;
             var destinationObject = ForDestinationRepository(sourceObject);
             try
             {
-                var existingDestinationObject = _destination.GetByExternalKey<T>(externalKey);
+                var existingDestinationObject = destinationKey == null ? null : _destination.Get<T>((int)destinationKey);
                 if (existingDestinationObject == null)
                 {
-                    _destination.Add(destinationObject);
+                    destinationKey = _destination.Add(destinationObject);
+                    
+                    // Remember the destination id in the source's external id.
+                    sourceObject.ExternalId = destinationKey;
+                    _source.Update(sourceObject);
                 }
                 else if (!destinationObject.Equals(existingDestinationObject))
                 {
