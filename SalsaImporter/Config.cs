@@ -1,4 +1,9 @@
-﻿using System.Xml.Linq;
+﻿using System.Linq;
+using System.Xml.Linq;
+using NLog;
+using NLog.Config;
+using NLog.Layouts;
+using NLog.Targets;
 
 namespace SalsaImporter
 {
@@ -9,7 +14,43 @@ namespace SalsaImporter
         public static string Production = "production";
         public static string Dev = "dev";
         public static string Stub = "stub";
-        public static string Environment = Config.Dev;
+        private static string _environment;
+
+        Config()
+        {
+            Config.Environment = Config.Dev;
+        }
+
+
+        public static string Environment
+        {
+            get { return _environment; }
+            set
+            {
+                _environment = value;
+                AddDbTargetToNLog();
+            }
+        }
+
+        private static void AddDbTargetToNLog()
+        {
+            var name = "db";
+            var loggingConfiguration = NLog.LogManager.Configuration;
+            if (loggingConfiguration.AllTargets.ToList().Any(t => t.Name == name))
+            {
+                loggingConfiguration.RemoveTarget(name);
+
+            }
+            var target = new DatabaseTarget {Name = name, ConnectionString = Config.DbConnectionString, KeepConnection = true, UseTransactions = true, 
+                CommandText = "INSERT INTO ImporterLogs([time_stamp], [level], [threadId], [message]) VALUES (@time_stamp,@level,@threadid,@message)"};
+            target.Parameters.Add(new DatabaseParameterInfo("@time_stamp", new SimpleLayout("${date}")));
+            target.Parameters.Add(new DatabaseParameterInfo("@level", new SimpleLayout("${level}")));
+            target.Parameters.Add(new DatabaseParameterInfo("@threadid", new SimpleLayout("${threadid}")));
+            target.Parameters.Add(new DatabaseParameterInfo("@message", new SimpleLayout("${message}")));
+            loggingConfiguration.AddTarget(name, target);
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, target));
+            NLog.LogManager.ReconfigExistingLoggers();
+        }
 
         public static string SalsaApiUri
         {

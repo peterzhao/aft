@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using NLog.Layouts;
+using NLog.Targets;
 
 namespace SalsaImporter
 {
@@ -58,6 +61,7 @@ namespace SalsaImporter
         {
             Config.Environment = args.Length > 1 ? args[1] : Config.Dev;
             Logger.Info("Sync under environment:" + Config.Environment);
+           
         }
 
         

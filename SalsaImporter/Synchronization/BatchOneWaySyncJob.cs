@@ -26,8 +26,11 @@ namespace SalsaImporter.Synchronization
         public void Start(IJobContext jobContext)
         {
             IEnumerable<T> currentBatch;
+            int batchCount = 0;
             do
             {
+                batchCount += 1;
+                Logger.Debug("Running batch " + batchCount + " with batch size:" + _batchSize + " for" + Name);
                 currentBatch = _source.GetBatchOfObjects<T>(_batchSize,
                     jobContext.CurrentRecord,
                     jobContext.MinimumModificationDate);
@@ -38,7 +41,7 @@ namespace SalsaImporter.Synchronization
                 {
                     jobContext.SetCurrentRecord(currentBatch.Last().Id);
                 }
-
+                
             } while (currentBatch.Count() >= _batchSize);
         }
 
