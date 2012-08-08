@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft
@@ -115,8 +116,9 @@ namespace SalsaImporter.Aft
                 && string.Equals(Instant_Messenger_Name, other.Instant_Messenger_Name) && string.Equals(Web_Page, other.Web_Page)
                 && string.Equals(Alternative_Email, other.Alternative_Email) && string.Equals(Other_Data_1, other.Other_Data_1)
                 && string.Equals(Other_Data_2, other.Other_Data_2) && string.Equals(Other_Data_3, other.Other_Data_3)
-                && string.Equals(Notes, other.Notes) && string.Equals(Source, other.Source)
-                && string.Equals(Source_Details, other.Source_Details) && string.Equals(Source_Tracking_Code, other.Source_Tracking_Code)
+                && string.Equals(Notes, other.Notes) 
+//                && string.Equals(Source, other.Source)
+//                && string.Equals(Source_Details, other.Source_Details) && string.Equals(Source_Tracking_Code, other.Source_Tracking_Code)
                 && string.Equals(Tracking_Code, other.Tracking_Code)
                 && string.Equals(Status, other.Status) && string.Equals(Timezone, other.Timezone)
                 && string.Equals(Language_Code, other.Language_Code) && string.Equals(CustomString0, other.CustomString0)
@@ -139,8 +141,7 @@ namespace SalsaImporter.Aft
         {
             unchecked
             {
-                int hashCode = (ExternalId != null ? ExternalId.GetHashCode() : 0); ;
-                hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
+                int hashCode = (Title != null ? Title.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (First_Name != null ? First_Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MI != null ? MI.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Last_Name != null ? Last_Name.GetHashCode() : 0);
@@ -177,9 +178,9 @@ namespace SalsaImporter.Aft
                 hashCode = (hashCode * 397) ^ (Other_Data_2 != null ? Other_Data_2.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Other_Data_3 != null ? Other_Data_3.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Notes != null ? Notes.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Source != null ? Source.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Source_Details != null ? Source_Details.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Source_Tracking_Code != null ? Source_Tracking_Code.GetHashCode() : 0);
+                //hashCode = (hashCode * 397) ^ (Source != null ? Source.GetHashCode() : 0);
+                //hashCode = (hashCode * 397) ^ (Source_Details != null ? Source_Details.GetHashCode() : 0);
+                //hashCode = (hashCode * 397) ^ (Source_Tracking_Code != null ? Source_Tracking_Code.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Tracking_Code != null ? Tracking_Code.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Status != null ? Status.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Timezone != null ? Timezone.GetHashCode() : 0);
@@ -228,7 +229,19 @@ namespace SalsaImporter.Aft
 
         public override string ToString()
         {
-            return string.Format("FirstName: {0} LastName: {1} Email:{2} ID:{3} ExternalId: {4}", First_Name, Last_Name, Email, Id, ExternalId);
+            var builder = new StringBuilder();
+            foreach (var property in this.GetType().GetProperties())
+            {
+                if ( !property.CanRead) continue;
+                var value = property.GetValue(this, null);
+                if(value != null)
+                    builder.AppendFormat(" {0}:{1}", property.Name, value);
+                else
+                    builder.AppendFormat(" {0}:{1}", property.Name, "null");
+            }
+            return builder.ToString();
         }
+
+     
     }
 }

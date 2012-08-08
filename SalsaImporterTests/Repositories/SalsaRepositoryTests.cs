@@ -12,6 +12,7 @@ using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
+using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Repositories
 {
@@ -26,6 +27,7 @@ namespace SalsaImporterTests.Repositories
         [SetUp]
         public void SetUp()
         {
+            Config.Environment = Config.UnitTest;
             _salsaMock = new Mock<ISalsaClient>();
             _mapperFacotryMock = new Mock<IMapperFactory>();
             _mapperMock = new Mock<IMapper>();
@@ -44,6 +46,19 @@ namespace SalsaImporterTests.Repositories
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
 
             Assert.AreEqual(supporter, _repository.Get<Supporter>(key));
+        }
+
+        [Test]
+        [Category("IntegrationTest")]
+        public void ShouldCreateSupporter()
+        {
+            var repository = TestUtils.SalsaRepository;
+            var supporter = new Supporter { First_Name = "peter", Last_Name = "zhao", Email = "abc@sd.com", ExternalId = 1234 };
+            supporter.Id = repository.Add(supporter);
+
+            var externalSupporter = repository.Get<Supporter>(supporter.Id);
+            Assert.AreEqual(supporter, externalSupporter);
+
         }
 
         [Test]

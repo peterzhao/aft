@@ -10,8 +10,10 @@ namespace SalsaImporter.Utilities
     {
         public static string StringValueOrNull(this XElement root, string elementName)
         {
+            string result = null;
             XElement xElement = root.Element(elementName);
-            return xElement == null? null: xElement.Value;
+            if (xElement != null && !string.IsNullOrWhiteSpace(xElement.Value)) result = xElement.Value;
+            return result;
         }
 
         public static int? IntValueOrNull(this XElement root, string elementName)
