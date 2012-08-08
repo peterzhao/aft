@@ -129,7 +129,7 @@ namespace SalsaImporterTests.Mappers
             var supporter = new Supporter {Id = 3456, Email = "jim@abc.com"};
             var nameValues = new SupporterMapper().ToNameValues(supporter);
             Assert.AreEqual(nameValues["Email"], "jim@abc.com");
-            Assert.AreEqual(2, nameValues.Keys.Count);
+            Assert.AreEqual(12, nameValues.Keys.Count);
         }
 
         [Test] 
