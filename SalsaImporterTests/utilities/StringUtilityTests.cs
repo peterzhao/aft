@@ -17,11 +17,13 @@ namespace SalsaImporterTests.Utilities
             Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty("", ""));
             Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty("", null));
             Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty(null, null));
-            Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty(null, " "));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty("abc", "abc  "));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty("abc", "  abc"));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty("", " "));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullEmpty(null, " "));
+
             Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("abc", ""));
-            Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("", " "));
-            Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("", "abc"));
-            Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("", " "));
+            Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty(" ", "abc"));
             Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("dad", null));
         }
     }

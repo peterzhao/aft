@@ -9,9 +9,20 @@ namespace SalsaImporter.Utilities
     {
         public static bool EqualsIncludingNullEmpty(string string1, string string2)
         {
-            if (string.IsNullOrEmpty(string1) && string.IsNullOrEmpty(string2)) return true;
-            return string1 != null && string1.Equals(string2);
-
+            if (string.IsNullOrWhiteSpace(string1))
+            {
+                if (string.IsNullOrWhiteSpace(string2))
+                {
+                    return true;
+                }
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(string2))
+            {
+                return false;
+            }
+            // Both not null or whitespace...
+            return string1.Trim().Equals(string2.Trim());
         }
     }
 }

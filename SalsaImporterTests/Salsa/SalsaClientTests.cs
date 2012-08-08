@@ -28,6 +28,8 @@ namespace SalsaImporterTests.Salsa
             client = new SalsaClient(new SyncErrorHandler(100));
         }
 
+
+
         [Test]
         public void ShouldAllowDeletingDeletedSupporter()
         {
