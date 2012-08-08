@@ -62,6 +62,7 @@ namespace SalsaImporter.Mappers
                                                 {"Status","Status"},
                                                 {"Timezone","Timezone"},
                                                 {"Language_Code","Language_Code"},
+                                                {"Chapter_Key","chapter_KEY"},
                                                 {"CustomString0","CustomString0"},
                                                 {"CustomString1","CustomString1"},
                                                 {"CustomString2","CustomString2"},

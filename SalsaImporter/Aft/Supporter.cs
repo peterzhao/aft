@@ -62,6 +62,7 @@ namespace SalsaImporter.Aft
         public string Status { get; set; }
         public string Timezone { get; set; }
         public string Language_Code { get; set; }
+        public string Chapter_Key { get; set; }
         public string CustomString0 { get; set; }
         public string CustomString1 { get; set; }
         public string CustomString2 { get; set; }

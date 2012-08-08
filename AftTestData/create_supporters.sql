@@ -19,7 +19,7 @@ CREATE TABLE [dbo].[Supporters](
 	[MI] [nvarchar](50) NULL,
 	[Last_Name] [nvarchar](50) NULL,
 	[Suffix] [nvarchar](50) NULL,
-	[Email] [nvarchar](50) NULL,
+	[Email] [nvarchar](50) NOT NULL,
 	[Password] [nvarchar](50) NULL,
 	[Receive_Email] [tinyint] NULL,
 	[Email_Preference] [nvarchar](50) NULL,
@@ -49,7 +49,7 @@ CREATE TABLE [dbo].[Supporters](
 	[Occupation] [nvarchar](50) NULL,
 	[Instant_Messenger_Service] [nvarchar](50) NULL,
 	[Instant_Messenger_Name] [nvarchar](50) NULL,
-	[Web_Page] [nvarchar](50) NULL,
+	[Web_Page] [nvarchar](90) NULL,
 	[Alternative_Email] [nvarchar](50) NULL,
 	[Other_Data_1] [nvarchar](50) NULL,
 	[Other_Data_2] [nvarchar](50) NULL,
@@ -62,6 +62,7 @@ CREATE TABLE [dbo].[Supporters](
 	[Status] [nvarchar](50) NULL,
 	[Timezone] [nvarchar](50) NULL,
 	[Language_Code] [nvarchar](50) NULL,
+	[Chapter_Key] [int] NULL,
 	[CustomString0] [nvarchar](50) NULL,
 	[CustomString1] [nvarchar](50) NULL,
 	[CustomString2] [nvarchar](50) NULL,
@@ -96,7 +97,15 @@ PRIMARY KEY CLUSTERED
 
 GO
 
-IF OBJECT_ID('dbo.UQ_Supporters_supporter_KEY', 'UQ') IS NOT NULL  
+IF OBJECT_ID('dbo.UQ_Supporters_Email', 'UQ') IS NOT NULL  
+DROP INDEX dbo.UQ_Supporters_Email
+GO
+
+CREATE UNIQUE  NONCLUSTERED  INDEX UQ_Supporters_Email
+    ON dbo.Supporters ( Email ASC )
+GO
+
+IF OBJECT_ID('dbo.UQ_Supporters_ExternalId', 'UQ') IS NOT NULL  
 DROP INDEX dbo.UQ_Supporters_ExternalId
 GO
 
@@ -104,7 +113,6 @@ CREATE UNIQUE  NONCLUSTERED  INDEX UQ_Supporters_ExternalId
     ON dbo.Supporters ( ExternalId ASC )
     WHERE ExternalId is not null
 GO
-
 
 IF OBJECT_ID('dbo.trg_UpdateSupportersModifiedDate', 'TR') IS NOT NULL  
 DROP TRIGGER dbo.trg_UpdateSupportersModifiedDate 

@@ -1,2 +1,2 @@
 sqlcmd -Q "TRUNCATE TABLE Aft.dbo.Supporters"
-bcp Aft.dbo.Supporters in "FiveThousandSupporters.dat" -q -f "FiveThousandSupporters.fmt" -S localhost -E -T -a 65535
+bcp Aft.dbo.Supporters in %1Supporters.dat -q -f %1Supporters.fmt -S localhost -T -a 65535
