@@ -18,7 +18,7 @@ namespace SalsaImporterTests.Repositories
         public void SetUp()
         {
             Config.Environment = Config.UnitTest;
-            TestUtils.RemoveAllSupporter();
+            TestUtils.RemoveAllSupporterLocal();
         }
 
         [Test]

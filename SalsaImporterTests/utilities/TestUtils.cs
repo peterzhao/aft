@@ -70,6 +70,14 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
+        public static void RemoveAllSupporterLocal()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("truncate table Supporters");
+            }
+        }
+
         public static void CreateLocal<T>(params T[] objects) where T : class, ISyncObject
         {
             objects.ToList().ForEach(syncObject => LocalRepository.Add(syncObject));
@@ -80,12 +88,5 @@ namespace SalsaImporterTests.Utilities
             objects.ToList().ForEach(LocalRepository.Update);
         }
 
-        public static void RemoveAllSupporter()
-        {
-            using (var db = new AftDbContext())
-            {
-                db.Database.ExecuteSqlCommand("truncate table Supporters");
-            }
-        }
-    }
+         }
 }
