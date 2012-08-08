@@ -18,8 +18,7 @@ namespace SalsaImporterTests.Utilities
         [Test]
         public void ShouldCreateCustomColumnsAndReturnThemEmptyOnNewSupporter()
         {
-            var createTestingCustomColumns = new CreateTestingCustomColumns();
-            createTestingCustomColumns.CreateCustomColumns();
+            new CreateTestingCustomColumns().CreateCustomColumns();
 
             var salsaClient = new SalsaClient(null);
 
@@ -57,6 +56,7 @@ namespace SalsaImporterTests.Utilities
             Assert.NotNull(newSupporterXml.Element("CustomInteger3"));
             Assert.NotNull(newSupporterXml.Element("CustomInteger4"));
 
+            Assert.NotNull(newSupporterXml.Element("CustomDateTime0"));
         }
     }
 }

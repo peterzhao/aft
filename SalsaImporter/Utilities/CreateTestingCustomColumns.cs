@@ -52,6 +52,18 @@ namespace SalsaImporter
                                           };
                 _salsa.CreateSupporterCustomColumn(customColumn);
             }
+
+            for (int i = 0; i < 1; i++)
+            {
+                var customColumn = new NameValueCollection
+                                       {
+                                           {"name", String.Format("CustomDateTime{0}", i)},
+                                           {"label", String.Format("Custom DateTime {0}", i)},
+                                           {"type", "datetime"}
+                                       };
+                _salsa.CreateSupporterCustomColumn(customColumn);
+            }
+
             Logger.Debug("Created custom fields.");
         }
     }
