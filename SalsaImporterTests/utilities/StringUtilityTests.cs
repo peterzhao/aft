@@ -26,5 +26,17 @@ namespace SalsaImporterTests.Utilities
             Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty(" ", "abc"));
             Assert.IsFalse(StringUtility.EqualsIncludingNullEmpty("dad", null));
         }
+
+        [Test]
+        public void SpecificValueCanBeIgnored()
+        {
+            Assert.IsTrue(StringUtility.EqualsIncludingNullAndSpecifiedvalue("0000", "", "0000"));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullAndSpecifiedvalue("0000", null, "0000"));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullAndSpecifiedvalue("0", "", "0"));
+            Assert.IsTrue(StringUtility.EqualsIncludingNullAndSpecifiedvalue("0", null, "0"));
+
+            Assert.IsFalse(StringUtility.EqualsIncludingNullAndSpecifiedvalue("1", null, "0"));
+            Assert.IsFalse(StringUtility.EqualsIncludingNullAndSpecifiedvalue("1", "", "0"));
+        }
     }
 }

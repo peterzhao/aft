@@ -47,5 +47,18 @@ namespace SalsaImporterTests.Aft
              Assert.AreEqual(supporter1, supporter2);
              Assert.AreNotEqual(supporter1, supporter3);
          }
+
+         [Test]
+         public void ShouldCompaireSupportersIgnoreDefaultPrivatePotalCode()
+         {
+             var supporter1 = new Supporter { PRIVATE_Zip_Plus_4 = "0000"};
+             var supporter2 = new Supporter { PRIVATE_Zip_Plus_4 = null};
+             var supporter4 = new Supporter { PRIVATE_Zip_Plus_4 = ""};
+             var supporter5 = new Supporter { PRIVATE_Zip_Plus_4 = "2345"};
+
+             Assert.AreEqual(supporter1, supporter2);
+             Assert.AreEqual(supporter1, supporter4);
+             Assert.AreNotEqual(supporter1, supporter5);
+         }
     }
 }

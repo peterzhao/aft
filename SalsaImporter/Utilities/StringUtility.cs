@@ -24,5 +24,12 @@ namespace SalsaImporter.Utilities
             // Both not null or whitespace...
             return string1.Trim().Equals(string2.Trim());
         }
+
+        public static bool EqualsIncludingNullAndSpecifiedvalue(string string1, string string2, string ignoredValue)
+        {
+            if (string1 == ignoredValue) string1 = null;
+            if (string2 == ignoredValue) string2 = null;
+            return EqualsIncludingNullEmpty(string1, string2);
+        }
     }
 }
