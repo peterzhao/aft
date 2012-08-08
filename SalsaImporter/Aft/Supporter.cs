@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using SalsaImporter.Synchronization;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Aft
 {
@@ -98,35 +99,35 @@ namespace SalsaImporter.Aft
 
         protected bool Equals(Supporter other)
         {
-            return string.Equals(Title, other.Title)
-                && string.Equals(First_Name, other.First_Name) && string.Equals(MI, other.MI) && string.Equals(Last_Name, other.Last_Name)
-                && string.Equals(Suffix, other.Suffix) && string.Equals(Email, other.Email)
-                && string.Equals(Email_Preference, other.Email_Preference) && string.Equals(Phone, other.Phone)
-                && string.Equals(Cell_Phone, other.Cell_Phone) && string.Equals(Phone_Provider, other.Phone_Provider)
-                && string.Equals(Work_Phone, other.Work_Phone) && string.Equals(Pager, other.Pager)
-                && string.Equals(Home_Fax, other.Home_Fax) && string.Equals(Work_Fax, other.Work_Fax)
-                && string.Equals(Street, other.Street) && string.Equals(Street_2, other.Street_2)
-                && string.Equals(Street_3, other.Street_3) && string.Equals(City, other.City)
-                && string.Equals(State, other.State) && string.Equals(Zip, other.Zip)
-                && string.Equals(PRIVATE_Zip_Plus_4, other.PRIVATE_Zip_Plus_4) && string.Equals(County, other.County)
-                && string.Equals(District, other.District) && string.Equals(Country, other.Country)
+            return StringUtility.EqualsIncludingNullEmpty(Title, other.Title)
+                && StringUtility.EqualsIncludingNullEmpty(First_Name, other.First_Name) && StringUtility.EqualsIncludingNullEmpty(MI, other.MI) && StringUtility.EqualsIncludingNullEmpty(Last_Name, other.Last_Name)
+                && StringUtility.EqualsIncludingNullEmpty(Suffix, other.Suffix) && StringUtility.EqualsIncludingNullEmpty(Email, other.Email)
+                && StringUtility.EqualsIncludingNullEmpty(Email_Preference, other.Email_Preference) && StringUtility.EqualsIncludingNullEmpty(Phone, other.Phone)
+                && StringUtility.EqualsIncludingNullEmpty(Cell_Phone, other.Cell_Phone) && StringUtility.EqualsIncludingNullEmpty(Phone_Provider, other.Phone_Provider)
+                && StringUtility.EqualsIncludingNullEmpty(Work_Phone, other.Work_Phone) && StringUtility.EqualsIncludingNullEmpty(Pager, other.Pager)
+                && StringUtility.EqualsIncludingNullEmpty(Home_Fax, other.Home_Fax) && StringUtility.EqualsIncludingNullEmpty(Work_Fax, other.Work_Fax)
+                && StringUtility.EqualsIncludingNullEmpty(Street, other.Street) && StringUtility.EqualsIncludingNullEmpty(Street_2, other.Street_2)
+                && StringUtility.EqualsIncludingNullEmpty(Street_3, other.Street_3) && StringUtility.EqualsIncludingNullEmpty(City, other.City)
+                && StringUtility.EqualsIncludingNullEmpty(State, other.State) && StringUtility.EqualsIncludingNullEmpty(Zip, other.Zip)
+                && StringUtility.EqualsIncludingNullEmpty(PRIVATE_Zip_Plus_4, other.PRIVATE_Zip_Plus_4) && StringUtility.EqualsIncludingNullEmpty(County, other.County)
+                && StringUtility.EqualsIncludingNullEmpty(District, other.District) && StringUtility.EqualsIncludingNullEmpty(Country, other.Country)
                 && Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude)
-                && string.Equals(Organization, other.Organization) && string.Equals(Department, other.Department)
-                && string.Equals(Occupation, other.Occupation) && string.Equals(Instant_Messenger_Service, other.Instant_Messenger_Service)
-                && string.Equals(Instant_Messenger_Name, other.Instant_Messenger_Name) && string.Equals(Web_Page, other.Web_Page)
-                && string.Equals(Alternative_Email, other.Alternative_Email) && string.Equals(Other_Data_1, other.Other_Data_1)
-                && string.Equals(Other_Data_2, other.Other_Data_2) && string.Equals(Other_Data_3, other.Other_Data_3)
-                && string.Equals(Notes, other.Notes) 
-//                && string.Equals(Source, other.Source)
-//                && string.Equals(Source_Details, other.Source_Details) && string.Equals(Source_Tracking_Code, other.Source_Tracking_Code)
-                && string.Equals(Tracking_Code, other.Tracking_Code)
-                && string.Equals(Status, other.Status) && string.Equals(Timezone, other.Timezone)
-                && string.Equals(Language_Code, other.Language_Code) && string.Equals(CustomString0, other.CustomString0)
-                && string.Equals(CustomString1, other.CustomString1) && string.Equals(CustomString2, other.CustomString2)
-                && string.Equals(CustomString3, other.CustomString3) && string.Equals(CustomString4, other.CustomString4)
-                && string.Equals(CustomString5, other.CustomString5) && string.Equals(CustomString6, other.CustomString6)
-                && string.Equals(CustomString7, other.CustomString7) && string.Equals(CustomString8, other.CustomString8)
-                && string.Equals(CustomString9, other.CustomString9) && CustomInteger0 == other.CustomInteger0
+                && StringUtility.EqualsIncludingNullEmpty(Organization, other.Organization) && StringUtility.EqualsIncludingNullEmpty(Department, other.Department)
+                && StringUtility.EqualsIncludingNullEmpty(Occupation, other.Occupation) && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Service, other.Instant_Messenger_Service)
+                && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Name, other.Instant_Messenger_Name) && StringUtility.EqualsIncludingNullEmpty(Web_Page, other.Web_Page)
+                && StringUtility.EqualsIncludingNullEmpty(Alternative_Email, other.Alternative_Email) && StringUtility.EqualsIncludingNullEmpty(Other_Data_1, other.Other_Data_1)
+                && StringUtility.EqualsIncludingNullEmpty(Other_Data_2, other.Other_Data_2) && StringUtility.EqualsIncludingNullEmpty(Other_Data_3, other.Other_Data_3)
+                && StringUtility.EqualsIncludingNullEmpty(Notes, other.Notes) 
+//                && StringUtility.EqualsIncludingNullEmpty(Source, other.Source)
+//                && StringUtility.EqualsIncludingNullEmpty(Source_Details, other.Source_Details) && StringUtility.EqualsIncludingNullEmpty(Source_Tracking_Code, other.Source_Tracking_Code)
+                && StringUtility.EqualsIncludingNullEmpty(Tracking_Code, other.Tracking_Code)
+                && StringUtility.EqualsIncludingNullEmpty(Status, other.Status) && StringUtility.EqualsIncludingNullEmpty(Timezone, other.Timezone)
+                && StringUtility.EqualsIncludingNullEmpty(Language_Code, other.Language_Code) && StringUtility.EqualsIncludingNullEmpty(CustomString0, other.CustomString0)
+                && StringUtility.EqualsIncludingNullEmpty(CustomString1, other.CustomString1) && StringUtility.EqualsIncludingNullEmpty(CustomString2, other.CustomString2)
+                && StringUtility.EqualsIncludingNullEmpty(CustomString3, other.CustomString3) && StringUtility.EqualsIncludingNullEmpty(CustomString4, other.CustomString4)
+                && StringUtility.EqualsIncludingNullEmpty(CustomString5, other.CustomString5) && StringUtility.EqualsIncludingNullEmpty(CustomString6, other.CustomString6)
+                && StringUtility.EqualsIncludingNullEmpty(CustomString7, other.CustomString7) && StringUtility.EqualsIncludingNullEmpty(CustomString8, other.CustomString8)
+                && StringUtility.EqualsIncludingNullEmpty(CustomString9, other.CustomString9) && CustomInteger0 == other.CustomInteger0
                 && CustomInteger1 == other.CustomInteger1 && CustomInteger2 == other.CustomInteger2
                 && CustomInteger3 == other.CustomInteger3 && CustomInteger4 == other.CustomInteger4
                 && CustomBoolean0.Equals(other.CustomBoolean0) && CustomBoolean1.Equals(other.CustomBoolean1)
@@ -236,8 +237,6 @@ namespace SalsaImporter.Aft
                 var value = property.GetValue(this, null);
                 if(value != null)
                     builder.AppendFormat(" {0}:{1}", property.Name, value);
-                else
-                    builder.AppendFormat(" {0}:{1}", property.Name, "null");
             }
             return builder.ToString();
         }

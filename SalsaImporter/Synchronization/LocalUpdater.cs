@@ -29,7 +29,7 @@ namespace SalsaImporter.Synchronization
                 else if (!destinationObject.Equals(existingDestinationObject))
                 {
                     destinationObject.Id = existingDestinationObject.Id;
-                    Logger.Debug(String.Format("Updating {0}: existing {1}, new {2}", _destinationRepository, existingDestinationObject, destinationObject) );
+                    Logger.Debug(String.Format("Updating {0}: existing: {1}, \n new: {2}", _destinationRepository, existingDestinationObject, destinationObject) );
                     _destinationRepository.Update(destinationObject);
                 }
             }
