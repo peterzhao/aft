@@ -103,7 +103,7 @@ namespace SalsaImporter.Mappers
                     if (value != null)
                     {
                         var stringValue = value.ToString();
-                        if (property.PropertyType == typeof(bool)) stringValue = stringValue.ToLower();
+                        if (property.PropertyType == typeof(bool)) stringValue = value.Equals(true)? "1" : "0";
                         result.Add(map[propertyName], stringValue);
                     }
                 }

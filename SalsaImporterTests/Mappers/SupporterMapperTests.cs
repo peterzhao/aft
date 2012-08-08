@@ -118,8 +118,8 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(nameValues["uid"], "123456");
             Assert.AreEqual(nameValues["Timezone"], "");
             Assert.AreEqual(nameValues["Language_Code"], "en");
-            Assert.AreEqual(nameValues["CustomBoolean0"], "true");
-            Assert.AreEqual(nameValues["CustomBoolean1"], "false");
+            Assert.AreEqual(nameValues["CustomBoolean0"], "1");
+            Assert.AreEqual(nameValues["CustomBoolean1"], "0");
             
         }
 
