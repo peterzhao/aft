@@ -70,7 +70,7 @@ namespace SalsaImporterTests.Synchronization
 
             _localUpdater.Update(externalObj);
 
-            _errorHandlerMock.Verify(errorHandler => errorHandler.HandleAddObjectFailure(externalObj, It.IsAny<Exception>()));
+            _errorHandlerMock.Verify(errorHandler => errorHandler.HandleSyncObjectFailure(externalObj, It.IsAny<Exception>()));
         }
 
     }

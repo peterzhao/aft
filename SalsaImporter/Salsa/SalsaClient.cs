@@ -173,17 +173,7 @@ namespace SalsaImporter.Salsa
         {
             Logger.Debug("Deleting objects");
             IEnumerable<Task> tasks = keys.Select(key =>
-                                                  Task.Factory.StartNew(arg =>
-                                                  {
-                                                      try
-                                                      {
-                                                          DeleteObject(objectType, key);
-                                                      }
-                                                      catch (Exception)
-                                                      {
-                                                          _errorHandler.HandleDeleteObjectFailure(key);
-                                                      }
-                                                  }, null));
+                                                  Task.Factory.StartNew(arg => DeleteObject(objectType, key), null));
 
             Task.WaitAll(tasks.ToArray(), -1); // no timeout
         }

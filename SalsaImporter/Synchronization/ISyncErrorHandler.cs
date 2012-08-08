@@ -6,7 +6,6 @@ namespace SalsaImporter.Synchronization
 {
     public interface ISyncErrorHandler
     {
-        void HandleAddObjectFailure(ISyncObject obj, Exception ex);
-        void HandleDeleteObjectFailure(string supporterKey);
+        void HandleSyncObjectFailure(ISyncObject obj, Exception ex);
     }
 }

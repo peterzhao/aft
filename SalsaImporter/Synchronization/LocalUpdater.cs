@@ -35,7 +35,7 @@ namespace SalsaImporter.Synchronization
             }
             catch(Exception ex)
             {       
-               _errorHandler.HandleAddObjectFailure(destinationObject, ex);
+               _errorHandler.HandleSyncObjectFailure(destinationObject, ex);
             }
         }
 

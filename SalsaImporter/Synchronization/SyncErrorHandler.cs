@@ -6,54 +6,34 @@ namespace SalsaImporter.Synchronization
 {
     public class SyncErrorHandler : ISyncErrorHandler
     {
-        private readonly ConcurrentDictionary<ISyncObject, Exception> _addFailure
+        private readonly ConcurrentDictionary<ISyncObject, Exception> _failures
             = new ConcurrentDictionary<ISyncObject, Exception>();
-        private readonly ConcurrentDictionary<string, string> _deleteFailure
-           = new ConcurrentDictionary<string, string>();
-        private readonly int _abortAddThreshold;
-        private readonly int _abortDeletionThreshold;
+        private readonly int _abortThreshold;
 
-        public SyncErrorHandler(int abortAddThreshold, int abortDeletionThreshold)
+        public SyncErrorHandler(int abortThreshold)
         {
-            _abortAddThreshold = abortAddThreshold;
-            _abortDeletionThreshold = abortDeletionThreshold;
+            _abortThreshold = abortThreshold;
         }
 
-        public ConcurrentDictionary<ISyncObject, Exception> AddFailure
+        public ConcurrentDictionary<ISyncObject, Exception> Failures
         {
-            get { return _addFailure; }
+            get { return _failures; }
         }
 
-        public ConcurrentDictionary<string, string> DeleteFailure
+    
+        public void HandleSyncObjectFailure(ISyncObject obj, Exception ex)
         {
-            get { return _deleteFailure; }
-        }
-
-        public void HandleAddObjectFailure(ISyncObject obj, Exception ex)
-        {
-            AddFailure[obj] = ex;
-            Logger.Error(String.Format("Failed to add object:" + obj), ex);
-            if (_abortAddThreshold < AddFailure.Keys.Count)
+            Failures[obj] = ex;
+            Logger.Error(String.Format("Failed to sync object:" + obj), ex);
+            if (_abortThreshold < Failures.Keys.Count)
             {
-                string message = "Add failures exceeded the threshold. Process aborted. Threshold:" + _abortAddThreshold;
+                string message = "Sync failures exceeded the threshold. Process aborted. Threshold:" + _abortThreshold;
                 Logger.Fatal(message);
                 throw new SyncAbortedException(message);
             }
             
         }
 
-        public void HandleDeleteObjectFailure(string suppoertKey)
-        {
-            DeleteFailure[suppoertKey] = suppoertKey;
-            Logger.Error(String.Format("Failed to delete supporter(key:{0})", suppoertKey));
-            if (_abortDeletionThreshold < DeleteFailure.Keys.Count)
-            {
-                string message = "Failure to delete supporters exceeded the threshold. Process aborted. Threshold:" + _abortDeletionThreshold;
-                Logger.Fatal(message);
-                throw new SyncAbortedException(message);
-            }
-        }
-      
         public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {
             int count = 0;
