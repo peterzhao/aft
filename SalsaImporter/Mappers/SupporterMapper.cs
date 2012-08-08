@@ -104,6 +104,7 @@ namespace SalsaImporter.Mappers
                     {
                         var stringValue = value.ToString();
                         if (property.PropertyType == typeof(bool)) stringValue = value.Equals(true)? "1" : "0";
+                        if (property.PropertyType == typeof(DateTime?)) stringValue = ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
                         result.Add(map[propertyName], stringValue);
                     }
                 }

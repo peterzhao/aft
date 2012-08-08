@@ -65,10 +65,12 @@ namespace SalsaImporterTests.Mappers
                                     Timezone = "",
                                     Language_Code = "en",
                                     CustomBoolean0 = true,
-                                    CustomBoolean1 = false
+                                    CustomBoolean1 = false,
+                                    CustomDateTime0 = new DateTime(2012,7,15, 23,12,2),
                                 };
             var nameValues = new SupporterMapper().ToNameValues(supporter);
 
+            Assert.AreEqual(nameValues["CustomDateTime0"], "2012-07-15 23:12:02");
             Assert.AreEqual(nameValues["supporter_KEY"], "456");
             Assert.AreEqual(nameValues["Title"], "myTitle");
             Assert.AreEqual(nameValues["First_Name"], "Tom");

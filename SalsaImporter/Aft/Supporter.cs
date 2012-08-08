@@ -136,7 +136,7 @@ namespace SalsaImporter.Aft
                 && CustomBoolean4.Equals(other.CustomBoolean4) && CustomBoolean5.Equals(other.CustomBoolean5)
                 && CustomBoolean6.Equals(other.CustomBoolean6) && CustomBoolean7.Equals(other.CustomBoolean7)
                 && CustomBoolean8.Equals(other.CustomBoolean8) && CustomBoolean9.Equals(other.CustomBoolean9)
-                && CustomDateTime0.Equals(other.CustomDateTime0);
+                && CustomDateTime0.EqualsIgnoreMillionSeconds(other.CustomDateTime0);
         }
 
         public override int GetHashCode()

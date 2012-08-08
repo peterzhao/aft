@@ -36,5 +36,16 @@ namespace SalsaImporterTests.Aft
 
             Assert.AreEqual(supporter1, supporter2);
         }
+
+         [Test]
+         public void ShouldCompaireSupportersIgnoreMillionSeconds()
+         {
+             var supporter1 = new Supporter { CustomDateTime0 = new DateTime(2012,7,15,9,30,27,323)};
+             var supporter2 = new Supporter { CustomDateTime0 = new DateTime(2012, 7, 15, 9, 30, 27,15) };
+             var supporter3 = new Supporter { CustomDateTime0 = new DateTime(2012, 7, 15, 9, 31, 27,15) };
+
+             Assert.AreEqual(supporter1, supporter2);
+             Assert.AreNotEqual(supporter1, supporter3);
+         }
     }
 }
