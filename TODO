@@ -3,4 +3,6 @@ primarily based on saving records to the database whenever things change.
 
 khodgson@thoughtworks.com
 
-As AFT, I would like to know how long it takes to run certain operations, in particular how long each update takes to run on a per supporter basis so that I can make decisions about the peformance of the synchronizer.
+As AFT, I would like to know how long it takes to run certain operations,
+in particular how long each update takes to run on a per supporter basis
+so that I can make decisions about the peformance of the synchronizer.
