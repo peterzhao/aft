@@ -54,7 +54,7 @@ namespace SalsaImporterTests.Repositories
         public void ShouldCreateSupporter()
         {
             var repository = TestUtils.SalsaRepository;
-            var supporter = new Supporter { First_Name = "peter", Last_Name = "zhao", Email = "abc@sd.com", CustomBoolean0 = true, ExternalId = 1234 };
+            var supporter = new Supporter { First_Name = "peter", Last_Name = "zhao", Email = "abc@sd.com", CustomBoolean0 = true, CustomDateTime0 = DateTime.Now, ExternalId = 1234 };
             supporter.Id = repository.Add(supporter);
 
             var externalSupporter = repository.Get<Supporter>(supporter.Id);

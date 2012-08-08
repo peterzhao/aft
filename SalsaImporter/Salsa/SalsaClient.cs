@@ -227,7 +227,7 @@ namespace SalsaImporter.Salsa
                 using (var client1 = new ExtentedWebClient(cookieContainer))
                 {
                     Logger.Trace(string.Format("POST to {0} {1} with {2}",
-                                               action, objectType, data));
+                                               action, objectType, string.Join(" ", data.AllKeys.Select(k => string.Format("{0}:{1}", k, data[k])))));
                     data.Set("xml", "");
                     data.Set("object", objectType);
 
