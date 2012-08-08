@@ -78,16 +78,16 @@ namespace SalsaImporter.Aft
         public int? CustomInteger2 { get; set; }       
         public int? CustomInteger3 { get; set; }       
         public int? CustomInteger4 { get; set; }
-        public bool? CustomBoolean0 { get; set; }
-        public bool? CustomBoolean1 { get; set; }
-        public bool? CustomBoolean2 { get; set; }
-        public bool? CustomBoolean3 { get; set; }
-        public bool? CustomBoolean4 { get; set; }
-        public bool? CustomBoolean5 { get; set; }
-        public bool? CustomBoolean6 { get; set; }
-        public bool? CustomBoolean7 { get; set; }
-        public bool? CustomBoolean8 { get; set; }
-        public bool? CustomBoolean9 { get; set; }
+        public bool CustomBoolean0 { get; set; }
+        public bool CustomBoolean1 { get; set; }
+        public bool CustomBoolean2 { get; set; }
+        public bool CustomBoolean3 { get; set; }
+        public bool CustomBoolean4 { get; set; }
+        public bool CustomBoolean5 { get; set; }
+        public bool CustomBoolean6 { get; set; }
+        public bool CustomBoolean7 { get; set; }
+        public bool CustomBoolean8 { get; set; }
+        public bool CustomBoolean9 { get; set; }
         public DateTime? CustomDateTime0 { get; set; }
 
         public override bool Equals(object obj)

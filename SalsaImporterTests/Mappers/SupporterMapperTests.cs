@@ -118,8 +118,8 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(nameValues["uid"], "123456");
             Assert.AreEqual(nameValues["Timezone"], "");
             Assert.AreEqual(nameValues["Language_Code"], "en");
-            Assert.AreEqual(nameValues["CustomBoolean0"], "True");
-            Assert.AreEqual(nameValues["CustomBoolean1"], "False");
+            Assert.AreEqual(nameValues["CustomBoolean0"], "true");
+            Assert.AreEqual(nameValues["CustomBoolean1"], "false");
             
         }
 
@@ -147,6 +147,8 @@ namespace SalsaImporterTests.Mappers
       <Other_Data_2></Other_Data_2>
       <object>supporter</object>
       <Longitude/>
+      <CustomBoolean0>false</CustomBoolean0>
+      <CustomBoolean1>true</CustomBoolean1>
 </item>";
             XElement element = XDocument.Parse(xml).Root;
             Supporter supporter = (Supporter)new SupporterMapper().ToObject(element);
@@ -155,6 +157,8 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
             Assert.AreEqual(32294089, supporter.Id);
+            Assert.IsFalse(supporter.CustomBoolean0);
+            Assert.IsTrue(supporter.CustomBoolean1);
             Assert.IsNull(supporter.Other_Data_1);
             Assert.IsNull(supporter.Other_Data_2);
             Assert.IsNull(supporter.Longitude);

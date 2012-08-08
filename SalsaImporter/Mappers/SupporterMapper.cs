@@ -100,8 +100,12 @@ namespace SalsaImporter.Mappers
                 if(map.Keys.Contains(propertyName))
                 {
                     object value = property.GetValue(supporter, null);
-                    if(value != null)
-                        result.Add(map[propertyName], value.ToString());
+                    if (value != null)
+                    {
+                        var stringValue = value.ToString();
+                        if (property.PropertyType == typeof(bool)) stringValue = stringValue.ToLower();
+                        result.Add(map[propertyName], stringValue);
+                    }
                 }
             }
             return result;
@@ -126,6 +130,8 @@ namespace SalsaImporter.Mappers
                     propertyValue = element.FloatValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(DateTime?))
                     propertyValue = element.DateTimeValueOrNull(map[propertyName]);
+                else if (propertyType == typeof(bool))
+                    propertyValue = element.BoolValueOrFalse(map[propertyName]);
                 if (propertyValue != null)
                     property.SetValue(supporter, propertyValue, null);
             }

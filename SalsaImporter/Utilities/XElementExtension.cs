@@ -32,6 +32,14 @@ namespace SalsaImporter.Utilities
             return result;
         }
 
+        public static bool BoolValueOrFalse(this XElement root, string elementName)
+        {
+            bool result = false;
+            XElement xElement = root.Element(elementName);
+            if (xElement != null && !string.IsNullOrWhiteSpace(xElement.Value)) result = bool.Parse(xElement.Value);
+            return result;
+        }
+
         public static DateTime? DateTimeValueOrNull(this XElement root, string elementName)
         {
             DateTime? result = null;
