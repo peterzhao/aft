@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter

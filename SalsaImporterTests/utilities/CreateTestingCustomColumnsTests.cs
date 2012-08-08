@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Salsa;
 
 namespace SalsaImporterTests.Utilities
 {

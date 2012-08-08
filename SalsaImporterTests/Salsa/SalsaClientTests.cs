@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -6,31 +6,27 @@ using System.Threading;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
-using SalsaImporter.Aft;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
-using SalsaImporterTests.Utilities;
 
-namespace SalsaImporterTests
+namespace SalsaImporterTests.Salsa
 {
     [TestFixture]
     [Category("IntegrationTest")]
     public class SalsaClientTests
     {
-
-        [SetUp]
-        public void SetUp()
-        {
-            client = new SalsaClient(new SyncErrorHandler(100, 500));
-        }
+        private SalsaClient client;
 
         public SalsaClientTests()
         {
             Config.Environment = Config.UnitTest;
         }
 
-        private SalsaClient client;
-
-       
+        [SetUp]
+        public void SetUp()
+        {
+            client = new SalsaClient(new SyncErrorHandler(100, 500));
+        }
 
         [Test]
         public void ShouldAllowDeletingDeletedSupporter()
@@ -40,10 +36,6 @@ namespace SalsaImporterTests
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
         }
-
-      
-      
-
 
         [Test]
         public void ShouldCreateObject()
@@ -55,15 +47,12 @@ namespace SalsaImporterTests
             Assert.AreEqual(id, xml.Element("supporter_KEY").Value);
         }
 
-      
-
         [Test]
         public void ShouldDeleteAllCustomFields()
         {
             client.DeleteAllObjects("custom_column", 100, false);
             Assert.AreEqual(0, client.CustomColumnCount());
         }
-
 
         [Test]
         public void ShouldDeleteAllSupporters()
@@ -105,14 +94,12 @@ namespace SalsaImporterTests
             XElement support = client.GetSupporter("-8976");
             Assert.IsFalse(support.HasElements);
         }
-
        
         [Test]
         public void ShouldGetObjects()
         {
             string objectType = "supporter";
             client.DeleteAllObjects(objectType, 100, true);
-
 
             Thread.Sleep(2000);
             DateTime lastPulledDate = DateTime.Now.AddDays(-1);

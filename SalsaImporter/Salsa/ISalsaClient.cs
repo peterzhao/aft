@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Xml.Linq;
 
-namespace SalsaImporter
+namespace SalsaImporter.Salsa
 {
     public interface ISalsaClient
     {

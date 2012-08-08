@@ -44,7 +44,6 @@ namespace SalsaImporterTests.FunctionalTests
             AssertLocalSupporterMatches(supporterTwo);
         }
 
-
         [Test]
         public void ShouldPullToUpdateSubscriberInLocalDb()
         {
@@ -87,7 +86,6 @@ namespace SalsaImporterTests.FunctionalTests
             AssertSalsaSupporterMatches(supporterTwo);
         }
 
-
         [Test]
         public void ShouldPushToUpdateSubscriberInSalsa()
         {
@@ -112,7 +110,6 @@ namespace SalsaImporterTests.FunctionalTests
             AssertSalsaSupporterMatches(supporterOne);
             AssertSalsaSupporterMatches(supporterTwo);
         }
-
 
         private static void CreateTwoSubscribers(
             out Supporter supporterOne,
@@ -139,12 +136,8 @@ namespace SalsaImporterTests.FunctionalTests
             var localRepository = new LocalRepository();
             var localSupporter = localRepository.GetByExternalKey<Supporter>(salsaSupporter.Id);
 
-            Assert.AreEqual(salsaSupporter.Email, localSupporter.Email);
-            Assert.AreEqual(salsaSupporter.First_Name, localSupporter.First_Name);
-            Assert.AreEqual(salsaSupporter.Last_Name, localSupporter.Last_Name);
-            Assert.AreEqual(salsaSupporter.Phone, localSupporter.Phone);
+            Assert.AreEqual(salsaSupporter, localSupporter);
         }
-
 
         private void AssertSalsaSupporterMatches(Supporter localSupporter)
         {
@@ -156,10 +149,7 @@ namespace SalsaImporterTests.FunctionalTests
             var salsaRepository = TestUtils.SalsaRepository;
             var salsaSupporter = salsaRepository.Get<Supporter>((int)localSupporterFromDb.ExternalId);
 
-            Assert.AreEqual(localSupporter.Email, salsaSupporter.Email);
-            Assert.AreEqual(localSupporter.First_Name, salsaSupporter.First_Name);
-            Assert.AreEqual(localSupporter.Last_Name, salsaSupporter.Last_Name);
-            Assert.AreEqual(localSupporter.Phone, salsaSupporter.Phone);
+            Assert.AreEqual(localSupporter, salsaSupporter);
         }
        
     }

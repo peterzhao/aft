@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Net;
-using System.Threading;
 
-namespace SalsaImporter
+namespace SalsaImporter.Salsa
 {
     public class ExtentedWebClient : WebClient
     {

@@ -5,6 +5,7 @@ using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Utilities

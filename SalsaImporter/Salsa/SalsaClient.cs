@@ -1,19 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
-namespace SalsaImporter
+namespace SalsaImporter.Salsa
 {
     public class SalsaClient : ISalsaClient
     {
