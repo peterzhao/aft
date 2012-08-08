@@ -1,0 +1,4 @@
+This branch aims to add some performance instrumentation to the code,
+primarily based on saving records to the database whenever things change.
+
+khodgson@thoughtworks.com
