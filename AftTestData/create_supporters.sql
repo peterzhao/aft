@@ -88,7 +88,7 @@ CREATE TABLE [dbo].[Supporters](
 	[CustomBoolean7] [bit] NOT NULL,
 	[CustomBoolean8] [bit] NOT NULL,
 	[CustomBoolean9] [bit] NOT NULL,
-	[CustomDateTime0] [datetime2](7) NULL
+	[CustomDateTime0] [datetime2](0) NULL
 PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
