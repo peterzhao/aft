@@ -30,7 +30,7 @@ namespace SalsaImporter.Synchronization
             do
             {
                 batchCount += 1;
-                Logger.Debug("Running batch " + batchCount + " with batch size:" + _batchSize + " for" + Name);
+                Logger.Debug("Running batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
                 currentBatch = _source.GetBatchOfObjects<T>(_batchSize,
                     jobContext.CurrentRecord,
                     jobContext.MinimumModificationDate);
