@@ -13,6 +13,7 @@
    <Target Name="Build" DependsOnTargets="
       Compile;
       UnitTest;
+      IntegrationTest;
      "/>
   
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />

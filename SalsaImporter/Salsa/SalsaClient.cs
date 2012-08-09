@@ -171,7 +171,7 @@ namespace SalsaImporter.Salsa
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
         {
-            Logger.Debug("Deleting objects");
+            Logger.Debug(String.Format("Deleting {0} {1}(s) in {2}", keys.Count(), objectType, Config.Environment));
             IEnumerable<Task> tasks = keys.Select(key =>
                                                   Task.Factory.StartNew(arg => DeleteObject(objectType, key), null));
 

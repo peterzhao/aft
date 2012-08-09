@@ -114,6 +114,8 @@ namespace SalsaImporterTests.Repositories
         [Category("Integration")]
         public void ShouldSaveAndGetSupporter()
         {
+            new CreateTestingCustomColumns().CreateCustomColumns();
+
             var name = Guid.NewGuid().ToString().Substring(0, 6);
             var supporter = new Supporter
                                 {
@@ -135,6 +137,8 @@ namespace SalsaImporterTests.Repositories
         [Category("Integration")]
         public void ShouldSaveAndGetSupporterWithDayLightSavingAdjustment()
         {
+            new CreateTestingCustomColumns().CreateCustomColumns();
+
             var name = Guid.NewGuid().ToString().Substring(0, 6);
             var supporter = new Supporter
             {
@@ -150,6 +154,7 @@ namespace SalsaImporterTests.Repositories
             var externalSupporter = repository.Get<Supporter>(supporterId);
 
             Assert.AreNotEqual(supporter, externalSupporter);
+            Assert.IsNotNull(externalSupporter.CustomDateTime0);
             Assert.AreEqual(3, externalSupporter.CustomDateTime0.Value.Hour);
         }
 
