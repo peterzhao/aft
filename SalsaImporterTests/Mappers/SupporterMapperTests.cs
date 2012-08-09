@@ -143,7 +143,7 @@ namespace SalsaImporterTests.Mappers
       <First_Name>peter</First_Name>
       <Last_Name>zhao</Last_Name>
       <Latitude>-45.234</Latitude>
-      <CustomDateTime0>Wed Jul 25 2012 09:17:50 GMT-0400 (EDT)</CustomDateTime0>
+      <CustomDateTime0>Wed Jul 25 2012 09:17:50 GMT-0500 (EDT)</CustomDateTime0>
       <key>32294089</key>
       <Other_Data_1/>
       <Other_Data_2></Other_Data_2>
@@ -165,7 +165,7 @@ namespace SalsaImporterTests.Mappers
             Assert.IsNull(supporter.Other_Data_2);
             Assert.IsNull(supporter.Longitude);
 
-            Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-4, 0, 0)).LocalDateTime, 
+            Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-5, 0, 0)).LocalDateTime, 
                 supporter.CustomDateTime0);
             Assert.AreEqual(-45.234f, supporter.Latitude);
 

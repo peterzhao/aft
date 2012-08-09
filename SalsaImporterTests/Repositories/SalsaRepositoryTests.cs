@@ -110,5 +110,52 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(expectedDateTime, _repository.CurrentTime);
         }
 
+        [Test]
+        [Category("Integration")]
+        public void ShouldSaveAndGetSupporter()
+        {
+            var name = Guid.NewGuid().ToString().Substring(0, 6);
+            var supporter = new Supporter
+                                {
+                                    First_Name = name,
+                                    Last_Name = "SalsaRepoTest",
+                                    Email = name + "@abc.com",
+                                    Organization = " LCBO  ", //salsa will trim 
+                                    CustomDateTime0 = new DateTime(2007, 3, 11, 1, 21, 17, 137), //million second will be ignored by salsa; 
+                                };
+            var repository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10)), new MapperFactory());
+
+
+            var supporterId = repository.Add(supporter);
+            var externalSupporter = repository.Get<Supporter>(supporterId);
+            Assert.AreEqual(supporter, externalSupporter);
+        }
+
+        [Test]
+        [Category("Integration")]
+        public void ShouldSaveAndGetSupporterWithDayLightSavingAdjustment()
+        {
+            var name = Guid.NewGuid().ToString().Substring(0, 6);
+            var supporter = new Supporter
+            {
+                First_Name = name,
+                Last_Name = "SalsaRepoTest",
+                Email = name + "@abc.com",
+                CustomDateTime0 = new DateTime(2007, 3, 11, 2, 21, 0), //2007/3/11 2:00 - 2:59 does not exist, will be convert to 3:00-3:59
+            };
+            var repository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10)), new MapperFactory());
+
+
+            var supporterId = repository.Add(supporter);
+            var externalSupporter = repository.Get<Supporter>(supporterId);
+
+            Assert.AreNotEqual(supporter, externalSupporter);
+            Assert.AreEqual(3, externalSupporter.CustomDateTime0.Value.Hour);
+        }
+
+
+
+     
+
     }
 }
