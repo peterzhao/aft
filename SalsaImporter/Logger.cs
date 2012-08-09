@@ -26,8 +26,8 @@ namespace SalsaImporter
 
         public static void Error(string message, Exception e = null)
         {
-            if(e != null)
-                nLogger.Error(string.Format("{0} {1} {2}", message, e.Message, e.StackTrace), e);
+            if (e != null)
+                nLogger.ErrorException(message, e);
             else
                 nLogger.Error(message);
         }
@@ -35,7 +35,7 @@ namespace SalsaImporter
         public static void Fatal(string message, Exception e = null)
         {
             if (e != null)
-                nLogger.Fatal(string.Format("{0} {1} {2}", message, e.Message, e.StackTrace), e);
+                nLogger.FatalException(message, e);
             else
                 nLogger.Fatal(message);
         }

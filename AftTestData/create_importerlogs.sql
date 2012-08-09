@@ -13,7 +13,8 @@ CREATE TABLE [dbo].[ImporterLogs](
 	[time_stamp] [datetime] NULL,
 	[level] [nchar](20) NULL,
 	[threadid] [int] NULL,
-	[message] [nvarchar](max) NULL
+	[message] [nvarchar](max) NULL,
+	[exception] [nvarchar](max) NULL
 ) ON [PRIMARY]
 
 GO

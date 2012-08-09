@@ -42,11 +42,13 @@ namespace SalsaImporter
 
             }
             var target = new DatabaseTarget {Name = name, ConnectionString = Config.DbConnectionString, KeepConnection = true, UseTransactions = true, 
-                CommandText = "INSERT INTO ImporterLogs([time_stamp], [level], [threadId], [message]) VALUES (@time_stamp,@level,@threadid,@message)"};
+                CommandText = "INSERT INTO ImporterLogs([time_stamp], [level], [threadId], [message], [exception]) VALUES (@time_stamp,@level,@threadid,@message,@exception)"};
             target.Parameters.Add(new DatabaseParameterInfo("@time_stamp", new SimpleLayout("${date}")));
             target.Parameters.Add(new DatabaseParameterInfo("@level", new SimpleLayout("${level}")));
             target.Parameters.Add(new DatabaseParameterInfo("@threadid", new SimpleLayout("${threadid}")));
             target.Parameters.Add(new DatabaseParameterInfo("@message", new SimpleLayout("${message}")));
+            target.Parameters.Add(new DatabaseParameterInfo("@exception", new SimpleLayout("${exception:format=type,message,stacktrace:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}")));
+            
             loggingConfiguration.AddTarget(name, target);
             loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, target));
             NLog.LogManager.ReconfigExistingLoggers();
