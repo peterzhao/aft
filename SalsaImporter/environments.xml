@@ -2,26 +2,26 @@
 <environments>
   <dev>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
-    <salsaPassword>notenote</salsaPassword>
+    <salsaUserName>khodgson@thoughtworks.com</salsaUserName>
+    <salsaPassword>Welcome00</salsaPassword>
     <dbConnectionString>Server=.;Database=AftDev;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </dev>
   <test>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>talexand@thoughtworks.com</salsaUserName>
-    <salsaPassword>7eleven</salsaPassword>
+    <salsaUserName>khodgson@thoughtworks.com</salsaUserName>
+    <salsaPassword>Welcome00</salsaPassword>
     <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
-    <salsaPassword>7eleven</salsaPassword>
+    <salsaUserName>khodgson@thoughtworks.com</salsaUserName>
+    <salsaPassword>Welcome00</salsaPassword>
     <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </performanceTest>
   <production>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
-    <salsaPassword>notenote</salsaPassword>
+    <salsaUserName>khodgson@thoughtworks.com</salsaUserName>
+    <salsaPassword>Welcome00</salsaPassword>
     <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </production>
   <stub>
@@ -36,4 +36,10 @@
     <salsaPassword>1234</salsaPassword>
     <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </stub2>
+  <inst>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>khodgson@thoughtworks.com</salsaUserName>
+    <salsaPassword>Welcome00</salsaPassword>
+    <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+  </inst>
 </environments>
