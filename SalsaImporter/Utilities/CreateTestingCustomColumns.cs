@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
@@ -18,74 +19,33 @@ namespace SalsaImporter
             _salsa.Login();
         }
 
-        public void CreateCustomColumns()
+        public void CreateCustomColumns(List<SupporterCustomColumnsRequest> list)
+        {
+            list.ForEach( CreateSupporterCustomColumns);
+
+            Logger.Debug("Created custom fields.");
+        }
+
+        public void CreateSupporterCustomColumns(SupporterCustomColumnsRequest p)
         {
 
-            Logger.Debug("Creating custom fields of string...");
-            for (int i = 0; i < 10; i++)
+            Logger.Debug(String.Format("Creating custom fields of {0}...", p.SalsaType));
+            for (int i = 0; i < p.HowManyToMake; i++)
             {
-                string name = String.Format("CustomString{0}", i);
-                string value = String.Format("Custom String {0}", i);
+                var name = String.Format("Custom{0}{1}", p.CustomColumnName, i);
+                var label = String.Format("Custom {0} {1}", p.CustomColumnName, i);
 
-                if (0 == _salsa.CountObjectsMatchingQuery("custom_column", "name", Comparator.Equality, name) )
-                {
-                    var customColumn = new NameValueCollection
-                                          {
-                                              {"name", name},
-                                              {"label", value}, 
-                                              {"type", "varchar"}                                           };
-                    _salsa.CreateSupporterCustomColumn(customColumn); 
-                }
-
-                
-                
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                string name = String.Format("CustomBoolean{0}", i);
-                string label = String.Format("Custom Boolean {0}", i);
-                if(0 == _salsa.CountObjectsMatchingQuery("custom_column", "name", Comparator.Equality, name ))
-                {
-
-                    var customColumn = new NameValueCollection
-                                           {
-                                               {"name", name},
-                                               {"label", label}, 
-                                               {"type", "bool"}
-                                           };
-                    _salsa.CreateSupporterCustomColumn(customColumn); 
-                }
-                 
-            }
-            Logger.Debug("Creating custom fields of integer...");
-            for (int i = 0; i < 5; i++)
-            {
-                string name = String.Format("CustomInteger{0}", i);
-                string value = String.Format("Custom Integer {0}", i);
                 if (0 == _salsa.CountObjectsMatchingQuery("custom_column", "name", Comparator.Equality, name))
                 {
                     var customColumn = new NameValueCollection
                                            {
                                                {"name", name},
-                                               {"label", value},
-                                               {"type", "int"}
+                                               {"label", label},
+                                               {"type", p.SalsaType}
                                            };
                     _salsa.CreateSupporterCustomColumn(customColumn);
                 }
             }
-
-            for (int i = 0; i < 1; i++)
-            {
-                var customColumn = new NameValueCollection
-                                       {
-                                           {"name", String.Format("CustomDateTime{0}", i)},
-                                           {"label", String.Format("Custom DateTime {0}", i)},
-                                           {"type", "datetime"}
-                                       };
-                _salsa.CreateSupporterCustomColumn(customColumn);
-            }
-
-            Logger.Debug("Created custom fields.");
         }
     }
 }

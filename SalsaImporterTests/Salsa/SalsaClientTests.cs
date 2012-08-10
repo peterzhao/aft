@@ -217,11 +217,33 @@ namespace SalsaImporterTests.Salsa
             var expected = "api/getCount.sjs?object=type&condition=name=kyle&countColumn=type_KEY";
             Assert.AreEqual(expected, actual);
 
-            actual = SalsaClient.GetQueryString("type",null, null, null);
+            actual = SalsaClient.GetQueryString("type", null, null, null);
             expected = "api/getCount.sjs?object=type&countColumn=type_KEY";
             Assert.AreEqual(expected, actual);
         }
-     
+
+        [ExpectedException(typeof(ArgumentException))]
+        [Test]
+        public void ShouldThrowArgumentExceptionIfNoObjectTypeIsProvidedToGetQueryString()
+        {
+            SalsaClient.GetQueryString(null, null, null, null);
+        }
+
+        [Test]
+        public void ShouldBeAbleToCountSupporterObjectsMatchingAQuery()
+        {
+            var name = NewName();
+            var remoteId = client.CreateSupporter(GenerateSupporter(name));
+
+            var actual = client.CountObjectsMatchingQuery("supporter", "First_Name", Comparator.Equality, name);
+            var expected = 1;
+
+            Assert.AreEqual(expected, actual);
+
+            client.DeleteObject("supporter", remoteId);
+        }
+
+      
         private bool DoesSupporterExist(string id)
         {
             return client.GetSupporter(id).HasElements;

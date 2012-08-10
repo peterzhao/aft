@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NLog.Layouts;
+using NLog.Targets;
+
 
 namespace SalsaImporter
 {
@@ -33,7 +38,17 @@ namespace SalsaImporter
                         sync.DeleteAllSupporters();
                         break;
                     case "customcolumns":
-                        new CreateTestingCustomColumns().CreateCustomColumns();
+                        new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
+                                                                                 {
+                                                                                     new SupporterCustomColumnsRequest
+                                                                                         {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
+                                                                                     new SupporterCustomColumnsRequest
+                                                                                         {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
+                                                                                     new SupporterCustomColumnsRequest
+                                                                                         {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
+                                                                                     new SupporterCustomColumnsRequest
+                                                                                         {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
+                                                                                 });
                         break;
                     default:
                         ShowUsage();

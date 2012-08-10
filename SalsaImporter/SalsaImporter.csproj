@@ -96,6 +96,7 @@
     <Compile Include="Synchronization\SyncSession.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
     <Compile Include="Utilities\StringUtility.cs" />
+    <Compile Include="Utilities\SupporterCustomColumnsRequest.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>
   <ItemGroup>

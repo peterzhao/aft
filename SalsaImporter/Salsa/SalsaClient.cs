@@ -222,6 +222,11 @@ namespace SalsaImporter.Salsa
 
         public static string GetQueryString(string objectType, string conditionName, string comparator, string conditionValue)
         {
+            if (String.IsNullOrEmpty(objectType))
+            {
+                throw new ArgumentException("objectType must be provided");
+            }
+
             if (conditionName != null && conditionValue != null && comparator != null)
             {
                 string condition = String.Format("{0}{1}{2}", conditionName, comparator, conditionValue);
@@ -317,6 +322,7 @@ namespace SalsaImporter.Salsa
                 throw new InvalidSalsaResponseException(string.Format("Get invalid response from server when get objects:{0}.", response), ex);
             }
         }
+
 
     }
 }

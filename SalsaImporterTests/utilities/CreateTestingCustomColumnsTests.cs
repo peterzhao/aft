@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
@@ -19,7 +20,17 @@ namespace SalsaImporterTests.Utilities
         [Test]
         public void ShouldCreateCustomColumnsAndReturnThemEmptyOnNewSupporter()
         {
-            new CreateTestingCustomColumns().CreateCustomColumns();
+            new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
+                                                                     {
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
+                                                                     });
 
             var salsaClient = new SalsaClient();
 

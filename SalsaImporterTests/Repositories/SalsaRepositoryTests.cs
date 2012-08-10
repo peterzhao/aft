@@ -115,7 +115,17 @@ namespace SalsaImporterTests.Repositories
         [Category("IntegrationTest")]
         public void ShouldSaveAndGetSupporter()
         {
-            new CreateTestingCustomColumns().CreateCustomColumns();
+            new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
+                                                                     {
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
+                                                                     });
 
             var name = Guid.NewGuid().ToString().Substring(0, 6);
             var supporter = new Supporter
@@ -138,7 +148,17 @@ namespace SalsaImporterTests.Repositories
         [Category("IntegrationTest")]
         public void ShouldSaveAndGetSupporterWithDayLightSavingAdjustment()
         {
-            new CreateTestingCustomColumns().CreateCustomColumns();
+            new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
+                                                                     {
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
+                                                                         new SupporterCustomColumnsRequest
+                                                                             {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
+                                                                     });
 
             var name = Guid.NewGuid().ToString().Substring(0, 6);
             var supporter = new Supporter
