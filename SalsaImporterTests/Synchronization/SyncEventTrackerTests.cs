@@ -42,7 +42,6 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(supporter.ToString(), syncEvent.Data);
             Assert.AreEqual(salsaRepository.GetType().Name, syncEvent.Destination);
             Assert.AreEqual(currentSessionContext.Id, syncEvent.SessionContext.Id);
-            Assert.IsTrue(syncEvent.TimeStamp >= start);
             Assert.IsNull(syncEvent.Error);
 
         }
@@ -53,7 +52,7 @@ namespace SalsaImporterTests.Synchronization
             var supporter = new Supporter { Id = 23, ExternalId = 45, First_Name = "peter", Last_Name = "Foo" };
             var error = new ApplicationException("testing error");
             ISyncObjectRepository salsaRepository = new SalsaRepository(null, null);
-            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Abort, Error = error});
+            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Error, Error = error});
             var syncEvent = Db(db => db.SyncEvents.Include("SessionContext").FirstOrDefault());
             Assert.IsNotNull(syncEvent);
             Assert.AreEqual(error.ToString(), syncEvent.Error);

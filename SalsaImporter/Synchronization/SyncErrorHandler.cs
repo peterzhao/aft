@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
@@ -21,10 +22,11 @@ namespace SalsaImporter.Synchronization
         }
 
     
-        public void HandleSyncObjectFailure(ISyncObject obj, Exception ex)
+        public void HandleSyncObjectFailure(ISyncObject obj, ISyncObjectRepository destination, Exception ex)
         {
             Failures[obj] = ex;
             Logger.Error(String.Format("Failed to sync object:" + obj), ex);
+            NotifySyncEvent(this, new SyncEventArgs{Destination = destination, EventType = SyncEventType.Error, SyncObject = obj, Error = ex});
             if (_abortThreshold < Failures.Keys.Count)
             {
                 string message = "Sync failures exceeded the threshold. Process aborted. Threshold:" + _abortThreshold;
@@ -33,6 +35,8 @@ namespace SalsaImporter.Synchronization
             }
             
         }
+
+        public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate{};
 
         public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
         {

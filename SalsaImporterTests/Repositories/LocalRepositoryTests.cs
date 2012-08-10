@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
+using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Repositories
@@ -35,19 +36,25 @@ namespace SalsaImporterTests.Repositories
         public void ShouldAddSupporterAndRetrieveSupporterByExternalId()
         {
             var localRepository = new LocalRepository();
+            SyncEventArgs syncEventArgs = null;
+            localRepository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
             int externalId = 100;
             var expectedEmailAddress = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com";
 
-            localRepository.Add(new Supporter
-                                    {
-                                        ExternalId = externalId, 
-                                        Email = expectedEmailAddress, 
-                                        Last_Name = "LastName"
-                                    });
+            var supporter = new Supporter
+                                 {
+                                     ExternalId = externalId, Email = expectedEmailAddress, Last_Name = "LastName"
+                                 };
+            localRepository.Add(supporter);
 
             var retrieved = localRepository.GetByExternalKey<Supporter>(externalId);
 
             Assert.AreEqual(expectedEmailAddress, retrieved.Email);
+
+            Assert.IsNotNull(syncEventArgs);
+            Assert.AreEqual(localRepository, syncEventArgs.Destination);
+            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
+            Assert.AreEqual(SyncEventType.Add, syncEventArgs.EventType);
         }
 
         [Test]
@@ -60,14 +67,20 @@ namespace SalsaImporterTests.Repositories
 
             // Setup...
             supporter.Id = localRepository.Add(supporter);
-
+            SyncEventArgs syncEventArgs = null;
+            localRepository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
             // Test...
             supporter.CustomString0 = expectedCustomStringValue;
+          
             localRepository.Update(supporter);
 
             // Verify...
             var retrieved = localRepository.Get<Supporter>(supporter.Id);
             Assert.AreEqual(expectedCustomStringValue, retrieved.CustomString0);
+            Assert.IsNotNull(syncEventArgs);
+            Assert.AreEqual(localRepository, syncEventArgs.Destination);
+            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
+            Assert.AreEqual(SyncEventType.Update, syncEventArgs.EventType);
         }
 
         private static Supporter GenerateSupporter(int externalId)

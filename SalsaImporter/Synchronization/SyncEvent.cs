@@ -13,7 +13,7 @@ namespace SalsaImporter.Synchronization
         public string EventType { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime TimeStamp { get; set; }
+        public DateTime TimeStamp { get; set;}
 
         public string Error { get; set; }
         public string Destination { get; set; }

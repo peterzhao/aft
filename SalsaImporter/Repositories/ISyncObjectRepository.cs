@@ -13,5 +13,7 @@ namespace SalsaImporter.Repositories
         T Get<T>(int key) where T: class, ISyncObject;
 
         DateTime CurrentTime { get; }
+
+        event EventHandler<SyncEventArgs> NotifySyncEvent;
     }
 }

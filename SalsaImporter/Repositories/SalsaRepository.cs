@@ -27,12 +27,15 @@ namespace SalsaImporter.Repositories
 
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
-            return int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
+            var id = int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
+            NotifySyncEvent(this, new SyncEventArgs{EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject});
+            return id;
         }
 
         public void Update<T>(T newData) where T : class, ISyncObject
         {
             _salsa.Update(GetObjectType<T>(), GetMapper<T>().ToNameValues(newData));
+            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
         }
 
         public T GetByExternalKey<T>(int key) where T: class, ISyncObject
@@ -52,6 +55,8 @@ namespace SalsaImporter.Repositories
         {
             get { return _salsa.CurrentTime; }
         }
+
+        public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
 
         private IMapper GetMapper<T>() where T : ISyncObject
         {

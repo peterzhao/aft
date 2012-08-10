@@ -28,12 +28,15 @@ namespace SalsaImporter.Repositories
 
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
+            int id;
             using (var db = new AftDbContext())
             {
                 db.Records<T>().Add(syncObject);
                 db.SaveChanges();
-                return syncObject.Id;
+                id = syncObject.Id;
             }
+            NotifySyncEvent(this, new SyncEventArgs{Destination = this, EventType = SyncEventType.Add, SyncObject = syncObject});
+            return id;
         }
 
         public void Update<T>(T syncObject) where T : class, ISyncObject
@@ -44,6 +47,7 @@ namespace SalsaImporter.Repositories
                 db.Entry(syncObject).State = EntityState.Modified;
                 db.SaveChanges();
             }
+            NotifySyncEvent(this, new SyncEventArgs { Destination = this, EventType = SyncEventType.Update, SyncObject = syncObject });
         }
 
         public T GetByExternalKey<T>(int key) where T : class, ISyncObject
@@ -73,5 +77,7 @@ namespace SalsaImporter.Repositories
             }
 
         }
+
+        public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
     }
 }

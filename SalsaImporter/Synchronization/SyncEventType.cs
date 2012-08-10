@@ -4,6 +4,6 @@ namespace SalsaImporter.Synchronization
     {
         public static readonly string Add = "add";
         public static readonly string Update = "update";
-        public static readonly string Abort = "abort";
+        public static readonly string Error = "error";
     }
 }

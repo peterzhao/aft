@@ -24,16 +24,20 @@ namespace SalsaImporterTests.Repositories
         private Mock<ISalsaClient> _salsaMock;
         private Mock<IMapperFactory> _mapperFacotryMock;
         private Mock<IMapper> _mapperMock;
+        private SyncEventArgs syncEventArgs;
 
         [SetUp]
         public void SetUp()
         {
             Config.Environment = Config.UnitTest;
+            
             _salsaMock = new Mock<ISalsaClient>();
             _mapperFacotryMock = new Mock<IMapperFactory>();
             _mapperMock = new Mock<IMapper>();
             _repository = new SalsaRepository(_salsaMock.Object, _mapperFacotryMock.Object);
             _mapperFacotryMock.Setup(f => f.GetMapper<Supporter>()).Returns(_mapperMock.Object);
+
+            _repository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
         }
 
         [Test]
@@ -49,17 +53,6 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(supporter, _repository.Get<Supporter>(key));
         }
 
-        [Test]
-        [Category("IntegrationTest")]
-        public void ShouldCreateSupporter()
-        {
-            var repository = TestUtils.SalsaRepository;
-            var supporter = new Supporter { First_Name = "peter", Last_Name = "zhao", Email = "abc@sd.com", CustomBoolean0 = true, CustomDateTime0 = DateTime.Now, ExternalId = 1234 };
-            supporter.Id = repository.Add(supporter);
-
-            var externalSupporter = repository.Get<Supporter>(supporter.Id);
-            Assert.AreEqual(supporter, externalSupporter);
-        }
 
         [Test]
         public void ShouldGetObjects()
@@ -86,6 +79,10 @@ namespace SalsaImporterTests.Repositories
             _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
 
             Assert.AreEqual(key, _repository.Add(supporter));
+            Assert.IsNotNull(syncEventArgs);
+            Assert.AreEqual(_repository, syncEventArgs.Destination);
+            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
+            Assert.AreEqual(SyncEventType.Add, syncEventArgs.EventType);
         }
 
         [Test]
@@ -100,6 +97,10 @@ namespace SalsaImporterTests.Repositories
            _repository.Update(newObject);
            _salsaMock.Verify(s => s.Update("supporter", nameValues, null));
 
+           Assert.IsNotNull(syncEventArgs);
+           Assert.AreEqual(_repository, syncEventArgs.Destination);
+           Assert.AreEqual(newObject, syncEventArgs.SyncObject);
+           Assert.AreEqual(SyncEventType.Update, syncEventArgs.EventType);
         }
 
         [Test]
@@ -111,7 +112,7 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        [Category("Integration")]
+        [Category("IntegrationTest")]
         public void ShouldSaveAndGetSupporter()
         {
             new CreateTestingCustomColumns().CreateCustomColumns();
@@ -134,7 +135,7 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        [Category("Integration")]
+        [Category("IntegrationTest")]
         public void ShouldSaveAndGetSupporterWithDayLightSavingAdjustment()
         {
             new CreateTestingCustomColumns().CreateCustomColumns();

@@ -3,6 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Synchronization
@@ -22,9 +23,9 @@ namespace SalsaImporterTests.Synchronization
             var data2 = new Supporter {Email = "foo2@abc.com"};
             var data3 = new Supporter {Email = "foo3@abc.com"};
 
-            Assert.DoesNotThrow(() => handler.HandleSyncObjectFailure(data1, exception1));
-            Assert.DoesNotThrow(() => handler.HandleSyncObjectFailure(data2, exception2));
-            Assert.Throws<SyncAbortedException>(() => handler.HandleSyncObjectFailure(data3, exception3));
+            Assert.DoesNotThrow(() => handler.HandleSyncObjectFailure(data1, null, exception1));
+            Assert.DoesNotThrow(() => handler.HandleSyncObjectFailure(data2, null, exception2));
+            Assert.Throws<SyncAbortedException>(() => handler.HandleSyncObjectFailure(data3, null, exception3));
 
             Assert.AreEqual(exception1, handler.Failures[data1]);
             Assert.AreEqual(exception2, handler.Failures[data2]);
@@ -82,6 +83,25 @@ namespace SalsaImporterTests.Synchronization
                 return "OK";
             };
             Assert.Throws<ApplicationException>(() => SyncErrorHandler.Try<string, InvalidDataException>(func, 3));
+        }
+
+        [Test]
+        public void ShouldNotifySyncEvent()
+        {
+            var handler = new SyncErrorHandler(2);
+            var exception = new ApplicationException("testing");
+            var syncObject = new Supporter { Email = "foo1@abc.com" };
+            var localRepositoy = new LocalRepository();
+            SyncEventArgs syncEventArgs = null;
+            handler.NotifySyncEvent += (sender, args) => syncEventArgs = args;
+
+            handler.HandleSyncObjectFailure(syncObject, localRepositoy, exception);
+
+            Assert.IsNotNull(syncEventArgs);
+            Assert.AreEqual(SyncEventType.Error, syncEventArgs.EventType);
+            Assert.AreEqual(syncObject, syncEventArgs.SyncObject);
+            Assert.AreEqual(localRepositoy, syncEventArgs.Destination);
+            Assert.AreEqual(exception, syncEventArgs.Error);
         }
     }
 }
