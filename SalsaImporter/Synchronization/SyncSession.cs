@@ -21,15 +21,25 @@ namespace SalsaImporter.Synchronization
 
     public class SyncSession
     {
-        private List<ISyncJob> _jobs;
+        private readonly List<ISyncJob> _jobs;
         private SessionContext _currentContext;
-        private AftDbContext _db;
-
-        public SyncSession()
+        private readonly AftDbContext _db;
+        private static SyncSession _currentSession;
+        private SyncSession()
         {
             _jobs = new List<ISyncJob>();
             _db = new AftDbContext();
             Initialize();
+        }
+
+        public static SyncSession CurrentSession()
+        {
+            return _currentSession ?? (_currentSession = new SyncSession());
+        }
+
+        public static void ClearCache()
+        {
+            _currentSession = null;
         }
 
         private void Initialize()

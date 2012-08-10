@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Moq;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
@@ -22,16 +23,17 @@ namespace SalsaImporterTests.Synchronization
         [SetUp]
         public void SetUp()
         {
+            Config.Environment = Config.UnitTest;
             TestUtils.ClearAllSessions();
+            SyncSession.ClearCache();
         }
 
         [Test]
         public void ShouldStartANewSessionIfThereIsNoPreviousSessionBefore()
         {
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             Assert.AreEqual(SessionState.New, session.CurrentContext.State);
             Assert.AreEqual(new DateTime(1991, 1, 1), session.CurrentContext.MinimumModifiedDate);
-            //Assert.IsTrue(session.CurrentContext.StartTime >= start);
             Assert.IsNull(session.CurrentContext.JobContexts);
             Assert.IsNotNull(GetSessionContext(session.CurrentContext.Id));
         }
@@ -44,7 +46,7 @@ namespace SalsaImporterTests.Synchronization
         {
             CreateTowSessions(SessionState.Aborted);
 
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             Assert.AreEqual(SessionState.InProgress, session.CurrentContext.State);
             Assert.AreEqual(new DateTime(2012, 7, 1), session.CurrentContext.MinimumModifiedDate);
             Assert.IsNotNull(session.CurrentContext.JobContexts);
@@ -57,7 +59,7 @@ namespace SalsaImporterTests.Synchronization
         {
             CreateTowSessions(SessionState.Finished);
             var start = DateTime.Now;
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             Assert.AreEqual(SessionState.New, session.CurrentContext.State);
             Assert.AreEqual(_context2.StartTime, session.CurrentContext.MinimumModifiedDate);
             Assert.IsNull(session.CurrentContext.JobContexts);
@@ -67,7 +69,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldCreateNewJobContextForNewJobIfThereIsNoExistingOne()
         {
             CreateTowSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job31 = new SyncJobStub("job21", (jobContext) => { });
             var job32 = new SyncJobStub("job22", (jobContext) => { });
             session.AddJob(job31).AddJob(job32);
@@ -82,7 +84,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldUseExistingJobContextForJobIfThereIsExistingOne()
         {
             CreateTowSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job31 = new SyncJobStub("job21", (jobContext) => { });
             var job32 = new SyncJobStub("job22", (jobContext) => { });
             session.AddJob(job31).AddJob(job32);
@@ -97,7 +99,7 @@ namespace SalsaImporterTests.Synchronization
         {
             var start = DateTime.Now;
             CreateTowSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job1Called = false;
             var job2Called = false;
             var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; jobContext.SetCurrentRecord(200);});
@@ -125,7 +127,7 @@ namespace SalsaImporterTests.Synchronization
         {
             var start = DateTime.Now;
             CreateTowSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job1Called = false;
             var job2Called = false;
             var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; throw new ApplicationException("error here");});
@@ -151,7 +153,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGetErrorWhenGivenJobHasNoName()
         {
             CreateTowSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job31 = new SyncJobStub("", (jobContext) => { });
             Assert.Throws <ApplicationException> (() => session.AddJob(job31));
         }
@@ -160,7 +162,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGetErrorWhenGivenJobNameIsNotUnique()
         {
             CreateTowSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = SyncSession.CurrentSession();
             var job31 = new SyncJobStub("job31", (jobContext) => { });
             var job32 = new SyncJobStub("job31", (jobContext) => { });
             session.AddJob(job31);

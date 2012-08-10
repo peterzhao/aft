@@ -6,6 +6,24 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK__SyncEvent__Sessi__084B3915]') AND parent_object_id = OBJECT_ID(N'[dbo].[SyncEvents]'))
+ALTER TABLE [dbo].[SyncEvents] DROP CONSTRAINT [FK__SyncEvent__Sessi__084B3915]
+GO
+
+IF  EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[DF_SyncEvents_TimeStamp]') AND type = 'D')
+BEGIN
+ALTER TABLE [dbo].[SyncEvents] DROP CONSTRAINT [DF_SyncEvents_TimeStamp]
+END
+
+GO
+
+
+
+/****** Object:  Table [dbo].[SyncEvents]    Script Date: 08/09/2012 22:39:55 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SyncEvents]') AND type in (N'U'))
+DROP TABLE [dbo].[SyncEvents]
+GO
+
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK__JobContex__Sessi__286302EC]') AND parent_object_id = OBJECT_ID(N'[dbo].[JobContexts]'))
 ALTER TABLE [dbo].[JobContexts] DROP CONSTRAINT [FK__JobContex__Sessi__286302EC]
 GO
@@ -48,6 +66,33 @@ CREATE TABLE [dbo].[JobContexts](
 GO
 
 ALTER TABLE [dbo].[JobContexts]  WITH CHECK ADD FOREIGN KEY([SessionContext_Id])
+REFERENCES [dbo].[SessionContexts] ([Id])
+GO
+
+
+CREATE TABLE [dbo].[SyncEvents](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ObjectId] [int] NOT NULL,
+	[ExternalId] [int] NOT NULL,
+	[ObjectType] [nvarchar](250) NOT NULL,
+	[Destination] [nvarchar](250) NOT NULL,
+	[EventType] [nvarchar](50) NOT NULL,
+	[Error] [nvarchar](max) NULL,
+	[Data] [nvarchar](max) NOT NULL,
+	[TimeStamp] [datetime] NOT NULL,
+	[SessionContext_Id] [int] NOT NULL,
+ CONSTRAINT [PK_SyncEvents] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[SyncEvents] ADD  CONSTRAINT [DF_SyncEvents_TimeStamp]  DEFAULT (getdate()) FOR [TimeStamp]
+GO
+
+ALTER TABLE [dbo].[SyncEvents]  WITH CHECK ADD FOREIGN KEY([SessionContext_Id])
 REFERENCES [dbo].[SessionContexts] ([Id])
 GO
 

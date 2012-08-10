@@ -35,7 +35,7 @@ namespace SalsaImporter
             var pullJob = new BatchOneWaySyncJob<Supporter>(salsaRepository, localConditionalUpdater, 100, "Pulling supporters");
             var pushJob = new BatchOneWaySyncJob<Supporter>(localRepository, salsaConditionalUpdater, 100, "Push supporters");
 
-            var syncSession = new SyncSession();
+            var syncSession = SyncSession.CurrentSession();
             syncSession.AddJob(pullJob).AddJob(pushJob);
             syncSession.Start();
         }

@@ -65,6 +65,7 @@ namespace SalsaImporterTests.Utilities
         {
             using(var db = new AftDbContext())
             {
+                db.Database.ExecuteSqlCommand("delete  from SyncEvents");
                 db.Database.ExecuteSqlCommand("delete  from JobContexts");
                 db.Database.ExecuteSqlCommand("delete  from SessionContexts");
             }

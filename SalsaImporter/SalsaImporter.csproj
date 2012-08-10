@@ -61,6 +61,11 @@
     </Compile>
     <Compile Include="Salsa\ISalsaClient.cs" />
     <Compile Include="Salsa\SalsaClient.cs" />
+    <Compile Include="Synchronization\ISyncEventTracker.cs" />
+    <Compile Include="Synchronization\SyncEvent.cs" />
+    <Compile Include="Synchronization\SyncEventArgs.cs" />
+    <Compile Include="Synchronization\SyncEventTracker.cs" />
+    <Compile Include="Synchronization\SyncEventType.cs" />
     <Compile Include="Utilities\CreateTestingCustomColumns.cs" />
     <Compile Include="Mappers\MapperFactory.cs" />
     <Compile Include="Mappers\SupporterMapper.cs" />
