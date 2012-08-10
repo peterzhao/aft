@@ -16,11 +16,9 @@ namespace SalsaImporter.Salsa
     public class SalsaClient : ISalsaClient
     {
         private readonly string _salsaUrl;
-        private SyncErrorHandler _errorHandler;
 
-        public SalsaClient(SyncErrorHandler errorHandler)
+        public SalsaClient()
         {
-            _errorHandler = errorHandler;
             _salsaUrl = Config.SalsaApiUri;
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.Expect100Continue = false;
@@ -209,7 +207,7 @@ namespace SalsaImporter.Salsa
             return key;
         }
 
-        private int CountObjects(string objectType)
+        public int CountObjects(string objectType)
         {
             string result = Get(_salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType));
             string value = XDocument.Parse(result).Descendants("count").First().Value;

@@ -28,6 +28,7 @@ namespace SalsaImporter.Repositories
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
             var id = int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
+            syncObject.Id = id;
             NotifySyncEvent(this, new SyncEventArgs{EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject});
             return id;
         }

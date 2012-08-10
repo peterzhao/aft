@@ -17,5 +17,7 @@ namespace SalsaImporter.Salsa
                                   IEnumerable<String> fieldsToReturn = null);
 
         DateTime CurrentTime { get; }
+        void DeleteAllObjects(string objectType, int batchSize, bool fetchOnlyKeys);
+        int CountObjects(string objectType);
     }
 }

@@ -20,7 +20,7 @@ namespace SalsaImporterTests.Utilities
         {
             new CreateTestingCustomColumns().CreateCustomColumns();
 
-            var salsaClient = new SalsaClient(null);
+            var salsaClient = new SalsaClient();
 
             string newSupporterId = salsaClient.CreateSupporter(new NameValueCollection {{"email", "customcolumn@test.com"}});
 

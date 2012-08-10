@@ -126,7 +126,7 @@ namespace SalsaImporterTests.Repositories
                                     Organization = " LCBO  ", //salsa will trim 
                                     CustomDateTime0 = new DateTime(2007, 3, 11, 1, 21, 17, 137), //million second will be ignored by salsa; 
                                 };
-            var repository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10)), new MapperFactory());
+            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory());
 
 
             var supporterId = repository.Add(supporter);
@@ -148,7 +148,7 @@ namespace SalsaImporterTests.Repositories
                 Email = name + "@abc.com",
                 CustomDateTime0 = new DateTime(2007, 3, 11, 2, 21, 0), //2007/3/11 2:00 - 2:59 does not exist, will be convert to 3:00-3:59
             };
-            var repository = new SalsaRepository(new SalsaClient(new SyncErrorHandler(10)), new MapperFactory());
+            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory());
 
 
             var supporterId = repository.Add(supporter);
