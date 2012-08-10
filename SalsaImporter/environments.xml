@@ -4,36 +4,42 @@
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
     <salsaPassword>notenote</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftDev;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=AftDev;Trusted_Connection=true</dbConnectionString>
   </dev>
   <test>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>talexand@thoughtworks.com</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
-    <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true</dbConnectionString>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true</dbConnectionString>
   </performanceTest>
   <production>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
     <salsaPassword>notenote</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true</dbConnectionString>
   </production>
   <stub>
     <salsaApiUrl>http://10.10.67.164:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
   </stub>
   <stub2>
     <salsaApiUrl>http://192.168.0.101:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
   </stub2>
+  <demo>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>aftdemo@example.com</salsaUserName>
+    <salsaPassword>password</salsaPassword>
+    <dbConnectionString>Server=.;Database=AftDemo;Trusted_Connection=true</dbConnectionString>
+  </demo>
 </environments>
