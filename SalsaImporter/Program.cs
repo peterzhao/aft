@@ -43,6 +43,7 @@ namespace SalsaImporter
             catch (Exception e)
             {
                 Logger.Fatal("Encounter unexpected error.", e);
+                Console.WriteLine(e.Message);
                 return 1;
             }
             DateTime finished = DateTime.Now;
