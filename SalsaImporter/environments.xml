@@ -14,6 +14,12 @@
     <salsaPassword>7eleven</salsaPassword>
     <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true</dbConnectionString>
   </performanceTest>
+  <tomPlay>
+    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
+    <salsaUserName>tomplay@example.com</salsaUserName>
+    <salsaPassword>7eleven</salsaPassword>
+    <dbConnectionString>Server=.;Database=TomPlay;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+  </tomPlay>
   <production>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <!-- user name and password read from environment variables -->

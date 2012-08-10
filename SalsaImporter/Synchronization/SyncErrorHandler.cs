@@ -53,12 +53,14 @@ namespace SalsaImporter.Synchronization
                     count += 1;
                     if (count >= tryTimes)
                     {
-                        string message = String.Format("Rethrow {0} after try {1} times. {2} ", exceptionName, tryTimes, exception.Message);
-                        Logger.Error(message);
+                        string message = String.Format("Rethrow {0} after try {1} times. Error: {2} ", exceptionName, tryTimes, exception.Message);
+                        Logger.Error(message, exception);
                         throw new ApplicationException(message);
-                    }else
+                    }
+                    else
                     {
-                        Logger.Warn(String.Format("Caught {0} and try again. Error:{1}", exceptionName, exception.Message));
+                        string message = String.Format("Caught {0} on attempt {1}. Trying again. Error: {2}", exceptionName, count, exception.Message);
+                        Logger.Warn(message, exception);
                     }
                 }
             }

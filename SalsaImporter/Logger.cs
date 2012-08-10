@@ -19,9 +19,12 @@ namespace SalsaImporter
             nLogger.Info(message);
         }
 
-        public static void Warn(string message)
+        public static void Warn(string message, Exception e = null)
         {
-            nLogger.Warn(message);
+            if (e != null)
+                nLogger.WarnException(message, e);
+            else
+                nLogger.Warn(message);            
         }
 
         public static void Error(string message, Exception e = null)
