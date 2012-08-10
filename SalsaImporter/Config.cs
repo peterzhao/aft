@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using NLog;
 using NLog.Config;
@@ -78,7 +80,18 @@ namespace SalsaImporter
         private static string GetSetting(string name)
         {
             var root = XDocument.Load("environments.xml");
-            return root.Element("environments").Element(Environment).Element(name).Value;
+            var envRoot = root.Element("environments").Element(Environment);
+            if(envRoot == null)
+                throw new ApplicationException(string.Format("Cannot find environment {0} in environment.xml. Available environments: {1}", Environment, string.Join(",",Environments)));
+            return envRoot.Element(name).Value;
+        }
+
+        private static IEnumerable<string> Environments
+        {
+            get
+            {
+                return XDocument.Load("environments.xml").Element("environments").Elements().Select(e => e.Name.LocalName); 
+            }
         }
     }
 }
