@@ -19,7 +19,7 @@ namespace SalsaImporterTests.Salsa
 
         public SalsaClientTests()
         {
-            Config.Environment = Config.UnitTest;
+            Config.Environment = Config.Test;
         }
 
         [SetUp]

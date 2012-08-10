@@ -29,7 +29,7 @@ namespace SalsaImporterTests.Repositories
         [SetUp]
         public void SetUp()
         {
-            Config.Environment = Config.UnitTest;
+            Config.Environment = Config.Test;
             
             _salsaMock = new Mock<ISalsaClient>();
             _mapperFacotryMock = new Mock<IMapperFactory>();

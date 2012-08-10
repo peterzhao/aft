@@ -15,14 +15,14 @@ namespace SalsaImporterTests
         [SetUp]
         public void SetUp()
         {
-            Config.Environment = Config.UnitTest;
+            Config.Environment = Config.Test;
             db = new AftDbContext();
         }
         [Test]
         public void ShouldCreateSupporterInAftDb()
         {
             var name = Guid.NewGuid().ToString().Substring(0, 6);
-            var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "UnitTest"};
+            var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "Test"};
             db.Supporters.Add(supporter);
             db.SaveChanges();
             Assert.Greater(supporter.Id, 0);
@@ -33,7 +33,7 @@ namespace SalsaImporterTests
         [TearDown]
         public void TearDown()
         {
-            var supporters = db.Supporters.Where(s => s.Last_Name == "UnitTest");
+            var supporters = db.Supporters.Where(s => s.Last_Name == "Test");
 
             supporters.ToList().ForEach(s => db.Supporters.Remove(s));
             db.SaveChanges();

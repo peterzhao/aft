@@ -1,15 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <environments>
-  <dev>
-    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
-    <salsaPassword>notenote</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftDev;Trusted_Connection=true</dbConnectionString>
-  </dev>
   <test>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>talexand@thoughtworks.com</salsaUserName>
-    <salsaPassword>7eleven</salsaPassword>
+    <!-- please set environment variables 'salsaUserName' and 'salsaPassword' for test env then each machine can have diffrent settings.
+    <salsaUserName>yourAccountName</salsaUserName>
+    <salsaPassword>yourPassword</salsaPassword>
+    -->
     <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true</dbConnectionString>
   </test>
   <performanceTest>
@@ -20,8 +16,7 @@
   </performanceTest>
   <production>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>peter.qs.zhao@gmail.com</salsaUserName>
-    <salsaPassword>notenote</salsaPassword>
+    <!-- user name and password read from environment variables -->
     <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true</dbConnectionString>
   </production>
   <stub>
@@ -30,12 +25,6 @@
     <salsaPassword>1234</salsaPassword>
     <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
   </stub>
-  <stub2>
-    <salsaApiUrl>http://192.168.0.101:4567/</salsaApiUrl>
-    <salsaUserName>peter</salsaUserName>
-    <salsaPassword>1234</salsaPassword>
-    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
-  </stub2>
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>aftdemo@example.com</salsaUserName>

@@ -15,7 +15,7 @@ namespace SalsaImporter
                     ShowUsage();
                     return 1;
                 }
-                Config.Environment = args.Length > 1 ? args[1] : Config.Dev;
+                Config.Environment = args.Length > 1 ? args[1] : Config.Test;
                 Logger.Info("Sync under environment:" + Config.Environment);
                 Logger.Info("Start Salsa importer...");
 

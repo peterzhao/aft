@@ -23,7 +23,7 @@ namespace SalsaImporterTests.Synchronization
         [SetUp]
         public void SetUp()
         {
-            Config.Environment = Config.UnitTest;
+            Config.Environment = Config.Test;
             TestUtils.ClearAllSessions();
             SyncSession.ClearCache();
         }

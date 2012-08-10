@@ -12,7 +12,7 @@ namespace SalsaImporterTests.Utilities
     {
         public CreateTestingCustomColumnsTests()
         {
-            Config.Environment = Config.UnitTest;
+            Config.Environment = Config.Test;
         }
 
         [Test]
