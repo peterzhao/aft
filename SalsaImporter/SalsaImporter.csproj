@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\Supporter.cs" />
+    <Compile Include="Salsa\Comparator.cs" />
     <Compile Include="Salsa\ExtendedWebClient.cs">
       <SubType>Component</SubType>
     </Compile>

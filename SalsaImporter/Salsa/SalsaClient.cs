@@ -209,11 +209,27 @@ namespace SalsaImporter.Salsa
 
         public int CountObjects(string objectType)
         {
-            string result = Get(_salsaUrl + string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType));
+            return CountObjectsMatchingQuery(objectType, null, null, null);
+        }
+
+        public int CountObjectsMatchingQuery(string objectType, string conditionName, string comparator, string conditionValue ) 
+        {
+            var queryString = GetQueryString(objectType, conditionName, comparator, conditionValue);
+            string result = Get(_salsaUrl + queryString);
             string value = XDocument.Parse(result).Descendants("count").First().Value;
             return Int32.Parse(value);
         }
 
+        public static string GetQueryString(string objectType, string conditionName, string comparator, string conditionValue)
+        {
+            if (conditionName != null && conditionValue != null && comparator != null)
+            {
+                string condition = String.Format("{0}{1}{2}", conditionName, comparator, conditionValue);
+                return string.Format("api/getCount.sjs?object={0}&condition={1}&countColumn={0}_KEY", objectType,
+                                     condition);
+            }
+            return string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType);
+        }
 
 
         private string Post(string action, string objectType, NameValueCollection data)

@@ -209,6 +209,18 @@ namespace SalsaImporterTests.Salsa
             DateTime secondCurrentTime = client.CurrentTime;
             Assert.Greater(secondCurrentTime, firstCurrentTime);
         }
+
+        [Test]
+        public void ShouldBeAbleToGenerateAProperQueryString()
+        {
+            var actual = SalsaClient.GetQueryString("type", "name", Comparator.Equality, "kyle");
+            var expected = "api/getCount.sjs?object=type&condition=name=kyle&countColumn=type_KEY";
+            Assert.AreEqual(expected, actual);
+
+            actual = SalsaClient.GetQueryString("type",null, null, null);
+            expected = "api/getCount.sjs?object=type&countColumn=type_KEY";
+            Assert.AreEqual(expected, actual);
+        }
      
         private bool DoesSupporterExist(string id)
         {

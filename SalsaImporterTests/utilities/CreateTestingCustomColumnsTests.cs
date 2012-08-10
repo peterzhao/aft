@@ -15,6 +15,7 @@ namespace SalsaImporterTests.Utilities
             Config.Environment = Config.Test;
         }
 
+
         [Test]
         public void ShouldCreateCustomColumnsAndReturnThemEmptyOnNewSupporter()
         {
