@@ -23,7 +23,13 @@ namespace SalsaImporter.Utilities
             if (xElement != null && !string.IsNullOrWhiteSpace(xElement.Value)) result = int.Parse(xElement.Value);
             return result;
         }
-
+        public static int IntValueOrDefault(this XElement root, string elementName)
+        {
+            XElement xElement = root.Element(elementName);
+            if (xElement != null && !string.IsNullOrWhiteSpace(xElement.Value)) return int.Parse(xElement.Value);
+            return default(int);
+        }
+        
         public static float? FloatValueOrNull(this XElement root, string elementName)
         {
             float? result = null;

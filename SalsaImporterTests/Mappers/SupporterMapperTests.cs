@@ -67,6 +67,7 @@ namespace SalsaImporterTests.Mappers
                                     CustomBoolean0 = true,
                                     CustomBoolean1 = false,
                                     CustomDateTime0 = new DateTime(2012,7,15, 23,12,2),
+                                    Chapter_Key = 57,
                                 };
             var nameValues = new SupporterMapper().ToNameValues(supporter);
 
@@ -122,6 +123,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(nameValues["Language_Code"], "en");
             Assert.AreEqual(nameValues["CustomBoolean0"], "1");
             Assert.AreEqual(nameValues["CustomBoolean1"], "0");
+            Assert.AreEqual(nameValues["chapter_KEY"], "57");
             
         }
 
@@ -131,6 +133,7 @@ namespace SalsaImporterTests.Mappers
             var supporter = new Supporter {Id = 3456, Email = "jim@abc.com"};
             var nameValues = new SupporterMapper().ToNameValues(supporter);
             Assert.AreEqual(nameValues["Email"], "jim@abc.com");
+            Assert.IsNull(nameValues["chapter_KEY"]);
             Assert.AreEqual(12, nameValues.Keys.Count);
         }
 
@@ -151,6 +154,7 @@ namespace SalsaImporterTests.Mappers
       <Longitude/>
       <CustomBoolean0>false</CustomBoolean0>
       <CustomBoolean1>true</CustomBoolean1>
+      <chapter_KEY>57</chapter_KEY>
 </item>";
             XElement element = XDocument.Parse(xml).Root;
             Supporter supporter = (Supporter)new SupporterMapper().ToObject(element);
@@ -159,12 +163,12 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("zhao", supporter.Last_Name);
             Assert.AreEqual("peter@abc.com", supporter.Email);
             Assert.AreEqual(32294089, supporter.Id);
+            Assert.AreEqual(57, supporter.Chapter_Key);
             Assert.IsFalse(supporter.CustomBoolean0);
             Assert.IsTrue(supporter.CustomBoolean1);
             Assert.IsNull(supporter.Other_Data_1);
             Assert.IsNull(supporter.Other_Data_2);
             Assert.IsNull(supporter.Longitude);
-
             Assert.AreEqual(new DateTimeOffset(new DateTime(2012, 7, 25, 9, 17, 50), new TimeSpan(-5, 0, 0)).LocalDateTime, 
                 supporter.CustomDateTime0);
             Assert.AreEqual(-45.234f, supporter.Latitude);

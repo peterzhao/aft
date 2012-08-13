@@ -126,7 +126,7 @@ namespace SalsaImporter.Mappers
                 else if (propertyType == typeof(int?))
                     propertyValue = element.IntValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(int))
-                    propertyValue = element.IntValueOrNull(map[propertyName]);
+                    propertyValue = element.IntValueOrDefault(map[propertyName]);
                 else if (propertyType == typeof(float?))
                     propertyValue = element.FloatValueOrNull(map[propertyName]);
                 else if (propertyType == typeof(DateTime?))

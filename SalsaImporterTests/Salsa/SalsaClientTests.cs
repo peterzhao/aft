@@ -60,20 +60,11 @@ namespace SalsaImporterTests.Salsa
         public void ShouldDeleteAllSupporters()
         {
             CreateSupporters(5);
-            client.DeleteAllObjects("supporter", 2, true);
+            client.DeleteAllObjects("supporter", 4, true);
             Assert.AreEqual(0, client.SupporterCount());
         }
 
-        [Test]
-        public void ShouldDeleteMultipleObjectss()
-        {
-            var supporters = CreateSupporters(3);
-
-            client.DeleteObjects("supporter", supporters.Select(s => s.Get("supporter_KEY")));
-
-            foreach (var supporter in supporters)
-                Assert.IsFalse(DoesSupporterExist(supporter.Get("supporter_KEY")));
-        }
+      
 
         [Test]
         public void ShouldDeleteObject()

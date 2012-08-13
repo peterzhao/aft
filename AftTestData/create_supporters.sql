@@ -56,7 +56,7 @@ CREATE TABLE [dbo].[Supporters](
 	[Other_Data_3] [nvarchar](50) NULL,
 	[Notes] [nvarchar](255) NULL,
 	[Source] [nvarchar](50) NULL,
-	[Source_Details] [nvarchar](50) NULL,
+	[Source_Details] [nvarchar](MAX) NULL,
 	[Source_Tracking_Code] [nvarchar](50) NULL,
 	[Tracking_Code] [nvarchar](50) NULL,
 	[Status] [nvarchar](50) NULL,
