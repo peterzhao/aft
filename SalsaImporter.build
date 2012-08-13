@@ -63,7 +63,7 @@
   </Target>
 
   <Target Name="DbSeed">
-    <Exec Command="bcp $(Db).dbo.Supporters in FiveThousandSupporters.dat -q -f FiveThousandSupporters.fmt -S localhost -T -a 65535"
+    <Exec Command="bcp $(Db).dbo.Supporters in FiveHundredSupporters.dat -q -f FiveHundredSupporters.fmt -S localhost -T -a 65535"
           WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
   </Target>
 
