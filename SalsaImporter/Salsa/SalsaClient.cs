@@ -239,20 +239,18 @@ namespace SalsaImporter.Salsa
 
         private string Post(string action, string objectType, NameValueCollection data)
         {
-            CookieContainer cookieContainer = Login();
+            var cookieContainer = Login();
             return SyncErrorHandler.Try<string, WebException>(() =>
             {
                 string response;
                 using (var client1 = new ExtentedWebClient(cookieContainer))
                 {
-                    Logger.Trace(string.Format("POST to {0} {1} with {2}",
-                                               action, objectType, string.Join(" ", data.AllKeys.Select(k => string.Format("{0}:{1}", k, data[k])))));
                     data.Set("xml", "");
                     data.Set("object", objectType);
 
-                    string url = _salsaUrl + action;
-                    Logger.Trace("post:" + url);
-                    byte[] result = client1.UploadValues(url, "POST", data);
+                    var url = _salsaUrl + action;
+                    Logger.Trace("post:" + url + " data:" + String.Join("&", data.AllKeys.ToList().Select(key => key + "=" + data[key])));
+                    var result = client1.UploadValues(url, "POST", data);
                     response = Encoding.UTF8.GetString(result);
                     Logger.Trace("response from post: " + response);
                 }
