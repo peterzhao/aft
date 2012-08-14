@@ -1,0 +1,83 @@
+peter's account: peter.qs.zhao@gmail.com/notenote
+
+https://sandbox.salsalabs.com/api/getObjects.sjs?object=custom_column&limit=0,500&include=key
+
+Authenticate (get cookie)
+GET 
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=one@chapter.org&password=Welcome00
+
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=talexand@thoughtworks.com&password=7eleven
+
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=tom@alexandrowicz.ca&password=7eleven
+
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=peter.qs.zhao@gmail.com&password=notenote
+
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=aftdemo@example.com&password=password
+
+https://sandbox.salsalabs.com/api/authenticate.sjs?email=tomplay@example.com&password=7eleven
+
+
+https://hq-afl.salsalabs.com/api/authenticate.sjs?email=talexand@thoughtworks.com&password=password
+https://hq-afl.salsalabs.com/api/getObjects.sjs?object=supporter
+
+
+Get all supporters
+GET https://sandbox.salsalabs.com/api/getObjects.sjs?object=supporter
+
+Get custom field values
+GET https://sandbox.salsalabs.com/api/getObjects.sjs?object=supporter_custom
+
+Get custom field definitions
+https://sandbox.salsalabs.com/api/getObjects.sjs?object=custom_column
+https://hq-afl.salsalabs.com/api/getObjects.sjs?object=custom_column
+
+Get one supporter
+GET https://sandbox.salsalabs.com/api/getObject.sjs?object=supporter&key=31771217
+
+Create new supporter
+POST https://sandbox.salsalabs.com/save
+body xml=&object=supporter&key=0&Email=second@supporter.org&First_Name=Second&Last_Name=Supporter
+
+Delete one supporter
+POST https://sandbox.salsalabs.com/delete
+body xml=&object=supporter&key=0
+
+
+Create string custom field definition
+POST https://sandbox.salsalabs.com/save
+xml=&object=custom_column&database_table_KEY=142&data_table=supporter_custom&key=0&data_column=VARCHAR1&name=CustomString1&label=Custom String 1&type=varchar
+
+Create boolean custom field definition
+POST https://sandbox.salsalabs.com/save
+xml=&object=custom_column&database_table_KEY=142&data_table=supporter_custom&key=0&data_column=BOOL0&name=CustomBoolean0&label=Custom Boolean 0&type=bool
+
+Create integer custom field definition
+POST https://sandbox.salsalabs.com/save
+xml=&object=custom_column&database_table_KEY=142&data_table=supporter_custom&key=0&data_column=INTEGER0&name=CustomInteger0&label=Custom Integer 0&type=int
+
+
+Update supporter
+POST https://sandbox.salsalabs.com/save
+body xml=&object=supporter&key=0&Email=second@supporter.org&First_Name=Second&Last_Name=Supporter
+
+Create Group 
+POST https://sandbox.salsalabs.com/save
+xml=&object=groups&key=0&Group_Name=GroupName
+
+Query Group
+GET https://sandbox.salsalabs.com/api/getObject.sjs?object=groups&key=37636
+
+Query Groups for supporter
+https://sandbox.salsalabs.com/api/getObjects.sjs?object=supporter_groups&condition=supporter_KEY=32991355
+
+Query Group Membership
+https://sandbox.salsalabs.com/api/getObjects.sjs?object=supporter_groups&condition=groups_KEY=37634
+
+Create Group Membership
+POST https://sandbox.salsalabs.com/save
+xml=&object=supporter_groups&key=0&supporter_KEY=32991355&groups_KEY=37634
+
+
+Install a package
+https://sandbox.salsalabs.com/salsa/hq/account/addPackage.jsp?packageId=d.thoughtworks.thoughtworks
+
