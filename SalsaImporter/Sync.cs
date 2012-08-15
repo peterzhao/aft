@@ -48,20 +48,20 @@ namespace SalsaImporter
 
         private void PrintSyncEvents()
         {
-            int totalError = 0;
+            int totalErrors = 0;
             int totalAddedToLocal = 0;
-            int totalUpdatedToLocal = 0;
+            int totalUpdatedInLocal = 0;
             int totalAddedToSalsa = 0;
-            int totalUpdatedToSalsa = 0;
+            int totalUpdatedinSalsa = 0;
             var currentContext = _syncSession.CurrentContext;
             var salsaDestination = _salsaRepository.GetType().Name;
             var localDestination = _localRepository.GetType().Name;
-            _syncEventTracker.SyncEventsForSession(currentContext, events =>totalError = events.Count(e => e.EventType == SyncEventType.Error));
+            _syncEventTracker.SyncEventsForSession(currentContext, events =>totalErrors = events.Count(e => e.EventType == SyncEventType.Error));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Add && e.Destination == localDestination));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Add && e.Destination == salsaDestination));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedToLocal = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == localDestination));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedToSalsa = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == salsaDestination));
-            Logger.Info(string.Format("Total added to local:{0} Total updated to local:{1} Total added to Salsa:{2} Total updated to Salsa:{3} Total errors: {4}", totalAddedToLocal, totalUpdatedToLocal, totalAddedToSalsa, totalUpdatedToSalsa, totalError));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedInLocal = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == localDestination));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedinSalsa = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == salsaDestination));
+            Logger.Info(string.Format("Total added to local:{0} Total updated in local:{1} Total added to Salsa:{2} Total updated in Salsa:{3} Total errors: {4}", totalAddedToLocal, totalUpdatedInLocal, totalAddedToSalsa, totalUpdatedinSalsa, totalErrors));
         }
 
         public void DeleteAllSupporters()
