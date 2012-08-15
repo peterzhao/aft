@@ -15,8 +15,6 @@ namespace SalsaImporter.Mappers
                                              {
                                                 {"Id","supporter_KEY"},
                                                 {"ExternalId","uid"},
-                                                //{"ModifiedDate","Last_Modified"},
-                                                //{"Date_Created","Date_Created"},
                                                 {"Title","Title"},
                                                 {"First_Name","First_Name"},
                                                 {"MI","MI"},
@@ -24,7 +22,7 @@ namespace SalsaImporter.Mappers
                                                 {"Suffix","Suffix"},
                                                 {"Email","Email"},
                                                 {"Email_Preference","Email_Preference"},
-                                                //{"Last_Bounce","Last_Bounce"},
+                                                {"Last_Bounce","Last_Bounce"},
                                                 {"Phone","Phone"},
                                                 {"Cell_Phone","Cell_Phone"},
                                                 {"Phone_Provider","Phone_Provider"},

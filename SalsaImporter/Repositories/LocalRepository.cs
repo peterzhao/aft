@@ -18,7 +18,7 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Records<T>()
+                return db.Set<T>()
                     .Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id > startKey)
                     .OrderBy(s => s.Id)
                     .Take(batchSize)
@@ -31,7 +31,7 @@ namespace SalsaImporter.Repositories
             int id;
             using (var db = new AftDbContext())
             {
-                db.Records<T>().Add(syncObject);
+                db.Set<T>().Add(syncObject);
                 db.SaveChanges();
                 id = syncObject.Id;
             }
@@ -43,7 +43,7 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                db.Records<T>().Attach(syncObject);
+                db.Set<T>().Attach(syncObject);
                 db.Entry(syncObject).State = EntityState.Modified;
                 db.SaveChanges();
             }
@@ -54,7 +54,7 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Records<T>().SingleOrDefault(s => s.ExternalId == key);
+                return db.Set<T>().SingleOrDefault(s => s.ExternalId == key);
             }
         }
 
@@ -62,7 +62,7 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Records<T>().SingleOrDefault(s => s.Id == key);
+                return db.Set<T>().SingleOrDefault(s => s.Id == key);
             }
         }
 

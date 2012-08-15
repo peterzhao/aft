@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -11,6 +9,7 @@ namespace SalsaImporter
 {
     public class Sync
     {
+        private readonly SyncSession _syncSession;
         private readonly ISyncErrorHandler _errorHandler;
         private readonly ISalsaClient _salsaClient;
         private readonly ISyncEventTracker _syncEventTracker;
@@ -30,20 +29,20 @@ namespace SalsaImporter
             _salsaConditionalUpdater = new ExternalUpdater(_salsaRepository, _localRepository, _errorHandler);
 
             _salsaClient.Login();
+
+            _syncSession = new SyncSession();
+            _syncSession
+                .AddJob(new BatchOneWaySyncJob<Supporter>(_salsaRepository, _localConditionalUpdater, 100, "Pulling supporters"))
+                .AddJob(new BatchOneWaySyncJob<Supporter>(_localRepository, _salsaConditionalUpdater, 100, "Push supporters"));
         }
 
         public void Run()
         {
-            var syncSession = SyncSession.CurrentSession();
-            var pullJob = new BatchOneWaySyncJob<Supporter>(_salsaRepository, _localConditionalUpdater, 100, "Pulling supporters");
-            var pushJob = new BatchOneWaySyncJob<Supporter>(_localRepository, _salsaConditionalUpdater, 100, "Push supporters");
-            syncSession.AddJob(pullJob).AddJob(pushJob);
+            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            _localRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
 
-            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, syncSession.CurrentContext);
-            _localRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, syncSession.CurrentContext);
-            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, syncSession.CurrentContext);
-
-            syncSession.Start();
+            _syncSession.Start();
             PrintSyncEvents();
         }
 
@@ -54,7 +53,7 @@ namespace SalsaImporter
             int totalUpdatedToLocal = 0;
             int totalAddedToSalsa = 0;
             int totalUpdatedToSalsa = 0;
-            var currentContext = SyncSession.CurrentSession().CurrentContext;
+            var currentContext = _syncSession.CurrentContext;
             var salsaDestination = _salsaRepository.GetType().Name;
             var localDestination = _localRepository.GetType().Name;
             _syncEventTracker.SyncEventsForSession(currentContext, events =>totalError = events.Count(e => e.EventType == SyncEventType.Error));

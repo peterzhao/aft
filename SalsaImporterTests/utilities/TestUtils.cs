@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -32,7 +31,7 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Records<T>().Where(expression).ToList().ForEach(s => db.Records<T>().Remove(s));
+                db.Set<T>().Where(expression).ToList().ForEach(s => db.Set<T>().Remove(s));
                 db.SaveChanges();
             }
         }
@@ -41,7 +40,7 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Records<T>().ToList().ForEach(s => db.Records<T>().Remove(s));
+                db.Set<T>().ToList().ForEach(s => db.Set<T>().Remove(s));
                 db.SaveChanges();
             }
         }

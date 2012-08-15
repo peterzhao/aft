@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using SalsaImporter;
@@ -27,12 +26,12 @@ namespace SalsaImporterTests.FunctionalTests
 
 
         [Test]
-        public void ShouldPullNewSubscribersToLocalDb()
+        public void ShouldPullNewSupportersToLocalDb()
         {
             // Setup...
             Supporter supporterOne;
             Supporter supporterTwo;
-            CreateTwoSubscribers(out supporterOne, out supporterTwo);
+            CreateTwoSupporters(out supporterOne, out supporterTwo);
             TestUtils.CreateSalsa(supporterOne, supporterTwo);
 
             // Test...
@@ -45,12 +44,12 @@ namespace SalsaImporterTests.FunctionalTests
         }
 
         [Test]
-        public void ShouldPullToUpdateSubscriberInLocalDb()
+        public void ShouldPullToUpdateSupporterInLocalDb()
         {
             // Setup...
             Supporter supporterOne;
             Supporter supporterTwo;
-            CreateTwoSubscribers(out supporterOne, out supporterTwo);
+            CreateTwoSupporters(out supporterOne, out supporterTwo);
             TestUtils.CreateSalsa(supporterOne, supporterTwo);
 
             var sync = new Sync();
@@ -62,6 +61,7 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.UpdateSalsa(supporterOne);
 
             // Test...
+            sync = new Sync();
             sync.Run();
 
             // Verify...
@@ -69,12 +69,12 @@ namespace SalsaImporterTests.FunctionalTests
         }
 
         [Test]
-        public void ShouldPushNewSubscribersToSalsa()
+        public void ShouldPushNewSupportersToSalsa()
         {
             // Setup...
             Supporter supporterOne;
             Supporter supporterTwo;
-            CreateTwoSubscribers(out supporterOne, out supporterTwo);
+            CreateTwoSupporters(out supporterOne, out supporterTwo);
             TestUtils.CreateLocal(supporterOne, supporterTwo);
 
             // Test...
@@ -87,12 +87,12 @@ namespace SalsaImporterTests.FunctionalTests
         }
 
         [Test]
-        public void ShouldPushToUpdateSubscriberInSalsa()
+        public void ShouldPushToUpdateSupporterInSalsa()
         {
             // Setup...
             Supporter supporterOne;
             Supporter supporterTwo;
-            CreateTwoSubscribers(out supporterOne, out supporterTwo);
+            CreateTwoSupporters(out supporterOne, out supporterTwo);
             TestUtils.CreateLocal(supporterOne, supporterTwo);
 
             var sync = new Sync();
@@ -111,22 +111,22 @@ namespace SalsaImporterTests.FunctionalTests
             AssertSalsaSupporterMatches(supporterTwo);
         }
 
-        private static void CreateTwoSubscribers(
+        private static void CreateTwoSupporters(
             out Supporter supporterOne,
             out Supporter supporterTwo)
         {
             supporterOne = new Supporter
             {
-                Email = "newSubscriberOne@example.com",
+                Email = "newSupporterOne@example.com",
                 First_Name = "one",
-                Last_Name = "NewSubscriber",
+                Last_Name = "NewSupporter",
                 Phone = "416-555-1111"
             };
             supporterTwo = new Supporter
             {
-                Email = "newSubscriberTwo@example.com",
+                Email = "newSupporterTwo@example.com",
                 First_Name = "two",
-                Last_Name = "NewSubscriber",
+                Last_Name = "NewSupporter",
                 Phone = "416-444-1111"
             };
         }
