@@ -60,6 +60,8 @@
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporter_customfeilds.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_supporter_customfields.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
   </Target>
 
   <Target Name="DbSeed">
