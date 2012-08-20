@@ -1,11 +1,12 @@
 using System;
+using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
     public class LocalUpdater : IObjectUpdater
     {
-        protected readonly ISyncObjectRepository _destinationRepository;
+        private readonly ISyncObjectRepository _destinationRepository;
         private readonly ISyncErrorHandler _errorHandler;
 
         public LocalUpdater(ISyncObjectRepository destinationRepository, ISyncErrorHandler errorHandler)
@@ -14,8 +15,11 @@ namespace SalsaImporter.Synchronization
             _errorHandler = errorHandler;
         }
 
-        public void Update<T>(T sourceObject) where T:class, ISyncObject
+        protected ISyncObjectRepository DestinationRepository { get { return _destinationRepository; } } 
+
+        public void Update<T>(T sourceObject) where T:class, ISyncObject, new()
         {
+            
             var destinationObject = SwapKeys(sourceObject);
             try
             {
@@ -50,12 +54,13 @@ namespace SalsaImporter.Synchronization
         {
         }
 
-        private T SwapKeys<T>(T sourceObject) where T : class, ISyncObject
+        private T SwapKeys<T>(T sourceObject) where T : class, ISyncObject, new()
         {
-            var destinationObject = sourceObject.Clone();
+            var syncObjectCloner = new SyncObjectCloner();
+            var destinationObject = syncObjectCloner.Clone(sourceObject);
             destinationObject.Id = 0;
             destinationObject.ExternalId = sourceObject.Id;
-            return (T)destinationObject;
+            return destinationObject;
         }
 
     }

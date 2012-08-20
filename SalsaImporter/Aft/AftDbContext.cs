@@ -12,6 +12,6 @@ namespace SalsaImporter.Aft
         public DbSet<SessionContext> SessionContexts { get; set; }
         public DbSet<JobContext> JobContexts { get; set; }
         public DbSet<SyncEvent> SyncEvents { get; set; }
-       
+        public DbSet<Group> Groups { get; set; }
     }
 }

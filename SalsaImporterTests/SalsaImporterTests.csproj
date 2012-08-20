@@ -57,7 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aft\AftDbContextTests.cs" />
+    <Compile Include="Aft\GroupTests.cs" />
+    <Compile Include="Mappers\GroupMapperTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
+    <Compile Include="Synchronization\SyncObjectClonerTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Utilities\CreateTestingCustomColumnsTests.cs" />
     <Compile Include="Mappers\MapperFactoryTests.cs" />

@@ -20,14 +20,15 @@ namespace SalsaImporter.Repositories
 
         public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
         {
-            var xElements = _salsa.GetObjects(GetObjectType<T>(), batchSize, startKey.ToString(), minimumModifiedDate, null);
             var mapper = GetMapper<T>();
+            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate, null);
             return xElements.Select(element => (T) mapper.ToObject(element));
         }
 
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
-            var id = int.Parse(_salsa.Create(GetObjectType<T>(), GetMapper<T>().ToNameValues(syncObject)));
+            IMapper mapper = GetMapper<T>();
+            var id = int.Parse(_salsa.Create(mapper.SalsaType, mapper.ToNameValues(syncObject)));
             syncObject.Id = id;
             NotifySyncEvent(this, new SyncEventArgs{EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject});
             return id;
@@ -35,7 +36,8 @@ namespace SalsaImporter.Repositories
 
         public void Update<T>(T newData) where T : class, ISyncObject
         {
-            _salsa.Update(GetObjectType<T>(), GetMapper<T>().ToNameValues(newData));
+            var mapper = GetMapper<T>();
+            _salsa.Update(mapper.SalsaType, GetMapper<T>().ToNameValues(newData));
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
         }
 
@@ -46,9 +48,9 @@ namespace SalsaImporter.Repositories
 
         public T Get<T>(int key) where T: class, ISyncObject
         {
-            var objectType = GetObjectType<T>();
+            var mapper = GetMapper<T>();
+            var objectType = mapper.SalsaType;
             var xElement = _salsa.GetObject(objectType, key.ToString());
-            var mapper = _mapperFactory.GetMapper<T>();
             return (T)mapper.ToObject(xElement);
         }
 
@@ -63,9 +65,6 @@ namespace SalsaImporter.Repositories
         {
             return _mapperFactory.GetMapper<T>();
         }
-        private string GetObjectType<T>()
-        {
-            return typeof(T).Name.ToLower();
-        }
+        
     }
 }

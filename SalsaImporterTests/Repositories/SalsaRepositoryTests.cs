@@ -49,6 +49,7 @@ namespace SalsaImporterTests.Repositories
 
             _salsaMock.Setup(s => s.GetObject("supporter", key.ToString())).Returns(xElement);
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
 
             Assert.AreEqual(supporter, _repository.Get<Supporter>(key));
         }
@@ -64,6 +65,7 @@ namespace SalsaImporterTests.Repositories
 
             _salsaMock.Setup(s => s.GetObjects("supporter",10, "200", dateTime, null)).Returns(xElements);
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
 
             Assert.AreEqual(supporter, _repository.GetBatchOfObjects<Supporter>(10, 200, dateTime).First());
         }
@@ -77,6 +79,8 @@ namespace SalsaImporterTests.Repositories
 
             _salsaMock.Setup(s => s.Create("supporter", nameValues)).Returns(key.ToString);
             _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
+
 
             Assert.AreEqual(key, _repository.Add(supporter));
             Assert.IsNotNull(syncEventArgs);
@@ -86,13 +90,13 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        public void ShouldUpdateObject()
+        public void ShouldUpdateSupporter()
         {
             var newObject = new Supporter { Email = "boo@abc.com", Phone = "4359088234"};
-            var oldObject = new Supporter { Email = "boo@abc.com", Phone = "4359088235" };
             var nameValues = new NameValueCollection();
 
             _mapperMock.Setup(m => m.ToNameValues(newObject)).Returns(nameValues);
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
 
            _repository.Update(newObject);
            _salsaMock.Verify(s => s.Update("supporter", nameValues, null));

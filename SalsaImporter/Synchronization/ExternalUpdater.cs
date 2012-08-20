@@ -1,4 +1,3 @@
-using System;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
@@ -25,7 +24,7 @@ namespace SalsaImporter.Synchronization
         protected override T FindExistingDestinationObject<T>(T sourceObject)
         {
             var destinationKey = sourceObject.ExternalId;
-            var existingDestinationObject = destinationKey == null ? null : _destinationRepository.Get<T>((int)destinationKey);
+            var existingDestinationObject = destinationKey == null ? null : DestinationRepository.Get<T>((int)destinationKey);
             return existingDestinationObject;
         }
     }

@@ -7,6 +7,5 @@ namespace SalsaImporter.Synchronization
          int Id { get; set; }
          DateTime? ModifiedDate { get; }
          int? ExternalId { get; set; }
-         ISyncObject Clone();
     }
 }

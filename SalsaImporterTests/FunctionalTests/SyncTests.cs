@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
+using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.FunctionalTests
@@ -12,16 +13,52 @@ namespace SalsaImporterTests.FunctionalTests
     [Category("FunctionalTest")]
     public class SyncTests
     {
+        private Supporter _supporterOne;
+        private Supporter _supporterTwo;
+        private Group _groupOne;
+        private Group _groupTwo;
 
         [SetUp]
         public void SetUp()
         {
             Config.Environment = Config.Test;
 
-            TestUtils.RemoveAllLocal<Supporter>();
+            TestUtils.RemoveAllLocalModelObjects();
             TestUtils.ClearAllSessions();
 
             TestUtils.RemoveAllSalsa("supporter");
+            TestUtils.RemoveAllSalsa("groups");
+
+            _supporterOne = new Supporter
+            {
+                Email = "newSupporterOne@example.com",
+                First_Name = "one",
+                Last_Name = "NewSupporter",
+                Phone = "416-555-1111"
+            };
+
+            _supporterTwo = new Supporter
+            {
+                Email = "newSupporterTwo@example.com",
+                First_Name = "two",
+                Last_Name = "NewSupporter",
+                Phone = "416-444-1111"
+            };
+
+            _groupOne = new Group
+            {
+                Name = "Group One",
+                ReferenceName = "RefGroupOne",
+                Description = "Group one description",
+            };
+
+            _groupTwo = new Group
+            {
+                Name = "Group Two",
+                ReferenceName = "RefGroupTwo",
+                Description = "Group two description",
+            };
+
         }
 
 
@@ -29,128 +66,172 @@ namespace SalsaImporterTests.FunctionalTests
         public void ShouldPullNewSupportersToLocalDb()
         {
             // Setup...
-            Supporter supporterOne;
-            Supporter supporterTwo;
-            CreateTwoSupporters(out supporterOne, out supporterTwo);
-            TestUtils.CreateSalsa(supporterOne, supporterTwo);
+            TestUtils.CreateSalsa(_supporterOne, _supporterTwo);
 
             // Test...
             var sync = new Sync();
             sync.Run();
 
             // Verify...
-            AssertLocalSupporterMatches(supporterOne);
-            AssertLocalSupporterMatches(supporterTwo);
+            AssertLocalMatches(_supporterOne);
+            AssertLocalMatches(_supporterTwo);
         }
 
         [Test]
         public void ShouldPullToUpdateSupporterInLocalDb()
         {
             // Setup...
-            Supporter supporterOne;
-            Supporter supporterTwo;
-            CreateTwoSupporters(out supporterOne, out supporterTwo);
-            TestUtils.CreateSalsa(supporterOne, supporterTwo);
+            TestUtils.CreateSalsa(_supporterOne, _supporterTwo);
 
             var sync = new Sync();
             sync.Run();
 
             Thread.Sleep(10000);
 
-            supporterOne.Phone = "416-555-2222";
-            TestUtils.UpdateSalsa(supporterOne);
+            _supporterOne.Phone = "416-555-2222";
+            TestUtils.UpdateSalsa(_supporterOne);
 
             // Test...
             sync = new Sync();
             sync.Run();
 
             // Verify...
-            AssertLocalSupporterMatches(supporterOne);
+            AssertLocalMatches(_supporterOne);
         }
 
         [Test]
         public void ShouldPushNewSupportersToSalsa()
         {
             // Setup...
-            Supporter supporterOne;
-            Supporter supporterTwo;
-            CreateTwoSupporters(out supporterOne, out supporterTwo);
-            TestUtils.CreateLocal(supporterOne, supporterTwo);
+            TestUtils.CreateLocal(_supporterOne, _supporterTwo);
 
             // Test...
             var sync = new Sync();
             sync.Run();
 
             // Verify...
-            AssertSalsaSupporterMatches(supporterOne);
-            AssertSalsaSupporterMatches(supporterTwo);
+            AssertSalsaMatches(_supporterOne);
+            AssertSalsaMatches(_supporterTwo);
         }
 
         [Test]
         public void ShouldPushToUpdateSupporterInSalsa()
         {
             // Setup...
-            Supporter supporterOne;
-            Supporter supporterTwo;
-            CreateTwoSupporters(out supporterOne, out supporterTwo);
-            TestUtils.CreateLocal(supporterOne, supporterTwo);
+            TestUtils.CreateLocal(_supporterOne, _supporterTwo);
 
             var sync = new Sync();
             sync.Run();
 
             Thread.Sleep(10000);
 
-            supporterOne.Phone = "416-555-2222";
-            TestUtils.UpdateLocal(supporterOne);
+            _supporterOne.Phone = "416-555-2222";
+            TestUtils.UpdateLocal(_supporterOne);
 
             // Test...
             sync = new Sync();
             sync.Run();
 
             // Verify...
-            AssertSalsaSupporterMatches(supporterOne);
-            AssertSalsaSupporterMatches(supporterTwo);
+            AssertSalsaMatches(_supporterOne);
+            AssertSalsaMatches(_supporterTwo);
         }
-
-        private static void CreateTwoSupporters(
-            out Supporter supporterOne,
-            out Supporter supporterTwo)
+     
+      
+        [Test]
+        public void ShouldPullNewGroupsToLocalDb()
         {
-            supporterOne = new Supporter
-            {
-                Email = "newSupporterOne@example.com",
-                First_Name = "one",
-                Last_Name = "NewSupporter",
-                Phone = "416-555-1111"
-            };
-            supporterTwo = new Supporter
-            {
-                Email = "newSupporterTwo@example.com",
-                First_Name = "two",
-                Last_Name = "NewSupporter",
-                Phone = "416-444-1111"
-            };
+            // Setup...
+            TestUtils.CreateSalsa(_groupOne, _groupTwo);
+
+            // Test...
+            var sync = new Sync();
+            sync.Run();
+
+            // Verify...
+            AssertLocalMatches(_groupOne);
+            AssertLocalMatches(_groupTwo);
         }
 
-        private void AssertLocalSupporterMatches(Supporter salsaSupporter)
+
+        [Test]
+        public void ShouldPullToUpdateGroupInLocalDb()
+        {
+            // Setup...
+            TestUtils.CreateSalsa(_groupOne, _groupTwo);
+
+            var sync = new Sync();
+            sync.Run();
+
+            Thread.Sleep(10000);
+
+            _groupOne.Notes = "Changed the notes for testing";
+            TestUtils.UpdateSalsa(_groupOne);
+
+            // Test...
+            sync = new Sync();
+            sync.Run();
+
+            // Verify...
+            AssertLocalMatches(_groupOne);
+        }
+
+        [Test]
+        public void ShouldPushNewGroupToSalsa()
+        {
+            // Setup...
+            TestUtils.CreateLocal(_groupOne, _groupTwo);
+
+            // Test...
+            var sync = new Sync();
+            sync.Run();
+
+            // Verify...
+            AssertSalsaMatches(_groupOne);
+            AssertSalsaMatches(_groupTwo);
+        }
+
+        [Test]
+        public void ShouldPushToUpdateGroupInSalsa()
+        {
+            // Setup...
+            TestUtils.CreateLocal(_groupOne, _groupTwo);
+
+            var sync = new Sync();
+            sync.Run();
+
+            Thread.Sleep(10000);
+
+            _groupOne.Notes = "These notes have been updated";
+            TestUtils.UpdateLocal(_groupOne);
+
+            // Test...
+            sync = new Sync();
+            sync.Run();
+
+            // Verify...
+            AssertSalsaMatches(_groupOne);
+            AssertSalsaMatches(_groupTwo);
+        }
+        private void AssertLocalMatches<T>(T salsaObject) where T : class, ISyncObject
         {
             var localRepository = new LocalRepository();
-            var localSupporter = localRepository.GetByExternalKey<Supporter>(salsaSupporter.Id);
+            var localObject = localRepository.GetByExternalKey<T>(salsaObject.Id);
 
-            Assert.AreEqual(salsaSupporter, localSupporter);
+            Assert.AreEqual(salsaObject, localObject);
         }
 
-        private void AssertSalsaSupporterMatches(Supporter localSupporter)
+        private void AssertSalsaMatches<T>(T localObject) where T : class, ISyncObject
         {
             var localRepository = new LocalRepository();
-            var localSupporterFromDb = localRepository.Get<Supporter>(localSupporter.Id);
+            var localObjectFromDb = localRepository.Get<T>(localObject.Id);
 
-            Debug.Assert(localSupporterFromDb.ExternalId != null, "Supporter " + localSupporter.Id + " has no ExternalId in local db");
+            Debug.Assert(localObjectFromDb.ExternalId != null, string.Format("{0} {1} has no ExternalId in local db", localObject.GetType().Name, localObject.Id));
 
             var salsaRepository = TestUtils.SalsaRepository;
-            var salsaSupporter = salsaRepository.Get<Supporter>((int)localSupporterFromDb.ExternalId);
+            var salsaObject = salsaRepository.Get<T>((int)localObjectFromDb.ExternalId);
 
-            Assert.AreEqual(localSupporter, salsaSupporter);
+            Assert.AreEqual(localObject, salsaObject);
         }
        
     }

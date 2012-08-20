@@ -19,7 +19,7 @@ namespace SalsaImporterTests.Repositories
         public void SetUp()
         {
             Config.Environment = Config.Test;
-            TestUtils.RemoveAllSupporterLocal();
+            TestUtils.RemoveAllLocalModelObjects();
         }
 
         [Test]
@@ -42,9 +42,11 @@ namespace SalsaImporterTests.Repositories
             var expectedEmailAddress = Guid.NewGuid().ToString().Substring(0, 6) + "@example.com";
 
             var supporter = new Supporter
-                                 {
-                                     ExternalId = externalId, Email = expectedEmailAddress, Last_Name = "LastName"
-                                 };
+            {
+                ExternalId = externalId,
+                Email = expectedEmailAddress,
+                Last_Name = "LastName"
+            };
             localRepository.Add(supporter);
 
             var retrieved = localRepository.GetByExternalKey<Supporter>(externalId);
@@ -138,5 +140,28 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(supporterFive, batch3.First());
         }
 
+        [Test]
+        public void ShouldAddGroupAndRetrieveByExternalId()
+        {
+            var localRepository = new LocalRepository();
+            int externalId = 100;
+
+            var group = new Group
+            {
+                ExternalId = externalId,
+                Name = "GroupName",
+                ReferenceName = "GroupReferenceName",
+                Description = "Description...",
+                Notes = "Notes..."
+            };
+            localRepository.Add(group);
+
+            var retrievedGroup = localRepository.GetByExternalKey<Group>(externalId);
+
+            Assert.AreEqual(group, retrievedGroup);
+        }
     }
+
+    
+
 }

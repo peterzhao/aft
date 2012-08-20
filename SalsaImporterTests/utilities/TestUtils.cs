@@ -27,24 +27,6 @@ namespace SalsaImporterTests.Utilities
             get { return new LocalRepository(); }
         }
 
-        public static void RemoveLocal<T>(Expression<Func<T, bool>> expression) where T : class
-        {
-            using (var db = new AftDbContext())
-            {
-                db.Set<T>().Where(expression).ToList().ForEach(s => db.Set<T>().Remove(s));
-                db.SaveChanges();
-            }
-        }
-
-        public static void RemoveAllLocal<T>() where T : class
-        {
-            using (var db = new AftDbContext())
-            {
-                db.Set<T>().ToList().ForEach(s => db.Set<T>().Remove(s));
-                db.SaveChanges();
-            }
-        }
-
         public static void RemoveAllSalsa(string objectType)
         {
             SalsaClient.DeleteAllObjects(objectType, 100, true);
@@ -70,11 +52,12 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static void RemoveAllSupporterLocal()
+        public static void RemoveAllLocalModelObjects()
         {
             using (var db = new AftDbContext())
             {
                 db.Database.ExecuteSqlCommand("truncate table Supporters");
+                db.Database.ExecuteSqlCommand("truncate table Groups");
             }
         }
 

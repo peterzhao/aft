@@ -62,7 +62,8 @@
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporter_customfeilds.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_supporter_customfields.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-  </Target>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_groups.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+</Target>
 
   <Target Name="DbSeed">
     <Exec Command="bcp $(Db).dbo.Supporters in FiveHundredSupporters.dat -q -f FiveHundredSupporters.fmt -S localhost -T -a 65535"

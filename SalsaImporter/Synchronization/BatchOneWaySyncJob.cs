@@ -6,7 +6,7 @@ using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class BatchOneWaySyncJob<T> :ISyncJob where T: class , ISyncObject
+    public class BatchOneWaySyncJob<T> :ISyncJob where T: class , ISyncObject, new()
     {
         private readonly ISyncObjectRepository _source;
         private readonly IObjectUpdater _destination;

@@ -8,17 +8,10 @@ namespace SalsaImporterTests.Aft
     [TestFixture]
     public class SupporterTests
     {
-        [Test]
-        public void ShouldClone()
-        {
-            var origin = new Supporter {Email = "jj@abc.com", First_Name = "Jack", Last_Name = "Joono"};
-            var cloned = origin.Clone();
-
-            Assert.AreEqual(origin, cloned);
-        }
+       
 
         [Test]
-        public void ShouldCompaireSupportersExcludingSomeProperties()
+        public void ShouldCompareSupportersExcludingSomeProperties()
         {
             var supporter1 = new Supporter{Source = "web", Source_Details = "abc", Source_Tracking_Code = "dd", 
                 Id = 1234, ExternalId = 5678, ModifiedDate = new DateTime(2012, 12, 25)};
@@ -29,7 +22,7 @@ namespace SalsaImporterTests.Aft
         }
 
          [Test]
-        public void ShouldCompaireSupportersRegardingEmptyAndNullTheSame()
+        public void ShouldCompareSupportersRegardingEmptyAndNullTheSame()
         {
             var supporter1 = new Supporter{State = null};
              var supporter2 = new Supporter{State = ""};
@@ -38,7 +31,7 @@ namespace SalsaImporterTests.Aft
         }
 
          [Test]
-         public void ShouldCompaireSupportersIgnoreMillionSeconds()
+         public void ShouldCompareSupportersIgnoreMillionSeconds()
          {
              var supporter1 = new Supporter { CustomDateTime0 = new DateTime(2012,7,15,9,30,27,323)};
              var supporter2 = new Supporter { CustomDateTime0 = new DateTime(2012, 7, 15, 9, 30, 27,15) };
@@ -49,7 +42,7 @@ namespace SalsaImporterTests.Aft
          }
 
          [Test]
-         public void ShouldCompaireSupportersIgnoreDefaultPrivatePotalCode()
+         public void ShouldCompareSupportersIgnoreDefaultPrivatePotalCode()
          {
              var supporter1 = new Supporter { PRIVATE_Zip_Plus_4 = "0000"};
              var supporter2 = new Supporter { PRIVATE_Zip_Plus_4 = null};

@@ -33,7 +33,9 @@ namespace SalsaImporter
             _syncSession = new SyncSession();
             _syncSession
                 .AddJob(new BatchOneWaySyncJob<Supporter>(_salsaRepository, _localConditionalUpdater, 100, "Pulling supporters"))
-                .AddJob(new BatchOneWaySyncJob<Supporter>(_localRepository, _salsaConditionalUpdater, 100, "Push supporters"));
+                .AddJob(new BatchOneWaySyncJob<Supporter>(_localRepository, _salsaConditionalUpdater, 100, "Push supporters"))
+                .AddJob(new BatchOneWaySyncJob<Group>(_salsaRepository, _localConditionalUpdater, 100, "Pulling groups"))
+                .AddJob(new BatchOneWaySyncJob<Group>(_localRepository, _salsaConditionalUpdater, 100, "Push groups"));
         }
 
         public void Run()

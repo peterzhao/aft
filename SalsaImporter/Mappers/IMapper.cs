@@ -8,5 +8,7 @@ namespace SalsaImporter.Mappers
     {
         NameValueCollection ToNameValues(ISyncObject obj);
         ISyncObject ToObject(XElement xElement);
+        string SalsaType { get; }
+
     }
 }

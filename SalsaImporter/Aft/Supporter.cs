@@ -218,18 +218,6 @@ namespace SalsaImporter.Aft
             }
         }
 
-        public ISyncObject Clone()
-        {
-            var cloned = new Supporter();
-             foreach (var property in this.GetType().GetProperties())
-             {
-                 if(!property.CanWrite || !property.CanRead) continue;
-                 var value = property.GetValue(this, null);
-                 property.SetValue(cloned, value, null);
-             }
-            return cloned;
-        }
-
         public override string ToString()
         {
             var builder = new StringBuilder();

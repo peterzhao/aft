@@ -55,7 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aft\AftDbContext.cs" />
+    <Compile Include="Aft\Group.cs" />
     <Compile Include="Aft\Supporter.cs" />
+    <Compile Include="Synchronization\SyncObjectCloner.cs" />
+    <Compile Include="Mappers\GenericMapper.cs" />
+    <Compile Include="Mappers\GroupMapper.cs" />
     <Compile Include="Salsa\Comparator.cs" />
     <Compile Include="Salsa\ExtendedWebClient.cs">
       <SubType>Component</SubType>
