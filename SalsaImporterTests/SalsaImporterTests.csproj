@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aft\AftDbContextTests.cs" />
+    <Compile Include="Aft\SupporterGroupTests.cs" />
     <Compile Include="Aft\GroupTests.cs" />
     <Compile Include="Mappers\GroupMapperTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
