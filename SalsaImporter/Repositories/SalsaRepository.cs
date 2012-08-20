@@ -47,7 +47,7 @@ namespace SalsaImporter.Repositories
         public T Get<T>(int key) where T: class, ISyncObject
         {
             var objectType = GetObjectType<T>();
-            var xElement = _salsa.GetObject(key.ToString(), objectType);
+            var xElement = _salsa.GetObject(objectType, key.ToString());
             var mapper = _mapperFactory.GetMapper<T>();
             return (T)mapper.ToObject(xElement);
         }

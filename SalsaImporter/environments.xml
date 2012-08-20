@@ -6,12 +6,14 @@
     <salsaUserName>yourAccountName</salsaUserName>
     <salsaPassword>yourPassword</salsaPassword>
     -->
+    <salsaWritable/>
     <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true</dbConnectionString>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
+    <salsaWritable/>
     <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true</dbConnectionString>
   </performanceTest>
   <tomPlay>
@@ -20,21 +22,26 @@
     <salsaPassword>7eleven</salsaPassword>
     <dbConnectionString>Server=.;Database=TomPlay;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
   </tomPlay>
+  
   <production>
-    <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <!-- user name and password read from environment variables -->
+    <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
     <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true</dbConnectionString>
+    <!-- user name and password read from environment variables -->
+    <!-- NOT WRITABLE! -->
   </production>
+
   <stub>
     <salsaApiUrl>http://10.10.67.164:4567/</salsaApiUrl>
     <salsaUserName>peter</salsaUserName>
     <salsaPassword>1234</salsaPassword>
+    <salsaWritable/>
     <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
   </stub>
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>aftdemo@example.com</salsaUserName>
     <salsaPassword>password</salsaPassword>
+    <salsaWritable/>
     <dbConnectionString>Server=.;Database=AftDemo;Trusted_Connection=true</dbConnectionString>
   </demo>
 </environments>

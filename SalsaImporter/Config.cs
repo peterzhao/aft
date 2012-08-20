@@ -34,6 +34,11 @@ namespace SalsaImporter
             }
         }
 
+        public static bool SalsaWritable
+        {
+            get { return IsSettingPresent("salsaWritable"); }
+        }
+
         public static string SalsaApiUri
         {
             get { return GetSetting("salsaApiUrl"); }
@@ -83,17 +88,31 @@ namespace SalsaImporter
             LogManager.ReconfigExistingLoggers();
         }
 
+        private static bool IsSettingPresent(string name)
+        {
+            var xElement = GetEnvironmentsElement(name);
+            return (xElement != null);
+        }
+
         private static string GetSetting(string name)
+        {
+            var xElement = GetEnvironmentsElement(name);
+            if (xElement == null) return System.Environment.GetEnvironmentVariable(name);
+            return xElement.Value;
+        }
+
+        private static XElement GetEnvironmentsElement(string name)
         {
             XDocument root = XDocument.Load("environments.xml");
             XElement envRoot = root.Element("environments").Element(Environment);
             if (envRoot == null)
             {
-                throw new ApplicationException(string.Format("Cannot find environment {0} in environment.xml. Available environments: {1}", Environment, string.Join(",", Environments)));
+                throw new ApplicationException(
+                    string.Format("Cannot find environment {0} in environment.xml. Available environments: {1}", Environment,
+                                  string.Join(",", Environments)));
             }
             var xElement = envRoot.Element(name);
-            if (xElement == null) return System.Environment.GetEnvironmentVariable(name);
-            return xElement.Value;
+            return xElement;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace SalsaImporterTests.Repositories
             var supporter = new Supporter{Email = "boo@abc.com"};
             var xElement = XElement.Parse("<item/>");
 
-            _salsaMock.Setup(s => s.GetObject(key.ToString(), "supporter")).Returns(xElement);
+            _salsaMock.Setup(s => s.GetObject("supporter", key.ToString())).Returns(xElement);
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
 
             Assert.AreEqual(supporter, _repository.Get<Supporter>(key));

@@ -104,6 +104,7 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.UpdateLocal(supporterOne);
 
             // Test...
+            sync = new Sync();
             sync.Run();
 
             // Verify...
@@ -144,7 +145,7 @@ namespace SalsaImporterTests.FunctionalTests
             var localRepository = new LocalRepository();
             var localSupporterFromDb = localRepository.Get<Supporter>(localSupporter.Id);
 
-            Debug.Assert(localSupporterFromDb.ExternalId != null, "Supporter " + localSupporter.Id + " has not ExternalId in local db");
+            Debug.Assert(localSupporterFromDb.ExternalId != null, "Supporter " + localSupporter.Id + " has no ExternalId in local db");
 
             var salsaRepository = TestUtils.SalsaRepository;
             var salsaSupporter = salsaRepository.Get<Supporter>((int)localSupporterFromDb.ExternalId);

@@ -21,9 +21,12 @@ namespace SalsaImporter
                     return 1;
                 }
                 Config.Environment = args.Length > 1 ? args[1] : Config.Test;
-                Logger.Info(string.Format("Sync under environment:{0} ({1} {2} {3})", Config.Environment, Config.DbConnectionString, Config.SalsaApiUri, Config.SalsaUserName));
+                Logger.Info(string.Format("Sync under environment:{0} ({1}{2} {3})", 
+                    Config.Environment, 
+                    Config.SalsaWritable ? "" : "READ ONLY ",
+                    Config.SalsaApiUri, 
+                    Config.SalsaUserName));
                 Logger.Info("Start Salsa importer...");
-
 
                 var sync = new Sync();
                 switch (args[0])
@@ -58,7 +61,7 @@ namespace SalsaImporter
             catch (Exception e)
             {
                 Logger.Fatal("Encounter unexpected error.", e);
-                Console.WriteLine(e.Message);
+                Console.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
                 return 1;
             }
             DateTime finished = DateTime.Now;
