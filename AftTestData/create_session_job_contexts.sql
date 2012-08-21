@@ -6,9 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK__SyncEvent__Sessi__084B3915]') AND parent_object_id = OBJECT_ID(N'[dbo].[SyncEvents]'))
-ALTER TABLE [dbo].[SyncEvents] DROP CONSTRAINT [FK__SyncEvent__Sessi__084B3915]
-GO
+
 
 IF  EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[DF_SyncEvents_TimeStamp]') AND type = 'D')
 BEGIN
@@ -24,9 +22,7 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SyncE
 DROP TABLE [dbo].[SyncEvents]
 GO
 
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK__JobContex__Sessi__286302EC]') AND parent_object_id = OBJECT_ID(N'[dbo].[JobContexts]'))
-ALTER TABLE [dbo].[JobContexts] DROP CONSTRAINT [FK__JobContex__Sessi__286302EC]
-GO
+
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[JobContexts]') AND type in (N'U'))
 DROP TABLE [dbo].[JobContexts]

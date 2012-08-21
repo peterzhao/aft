@@ -33,6 +33,18 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
+        public void ShouldAddAndGetSupporter()
+        {
+            var repository = new LocalRepository();
+            var name = Guid.NewGuid().ToString().Substring(0, 6);
+            var supporter = new Supporter {Email = name + "@abc.com", First_Name = name, Last_Name = "testing"};
+            var key = repository.Add(supporter);
+            var retrived = repository.Get<Supporter>(key);
+
+            Assert.IsTrue(supporter.EqualValues(retrived));
+        }
+
+        [Test]
         public void ShouldAddSupporterAndRetrieveSupporterByExternalId()
         {
             var localRepository = new LocalRepository();
@@ -133,11 +145,11 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(2, batch2.Count);
             Assert.AreEqual(1, batch3.Count);
 
-            Assert.AreEqual(supporterOne, batch1.First());
-            Assert.AreEqual(supporterTwo, batch1.Last());
-            Assert.AreEqual(supporterThree, batch2.First());
-            Assert.AreEqual(supporterFour, batch2.Last());
-            Assert.AreEqual(supporterFive, batch3.First());
+            Assert.IsTrue(supporterOne.EqualValues(batch1.First()));
+            Assert.IsTrue(supporterTwo.EqualValues(batch1.Last()));
+            Assert.IsTrue(supporterThree.EqualValues(batch2.First()));
+            Assert.IsTrue(supporterFour.EqualValues(batch2.Last()));
+            Assert.IsTrue(supporterFive.EqualValues(batch3.First()));
         }
 
         [Test]

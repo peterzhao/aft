@@ -30,7 +30,7 @@ namespace SalsaImporter.Synchronization
                     var destinationKey = _destinationRepository.Add(destinationObject);
                     AfterCreateNew(destinationKey, sourceObject);
                 }
-                else if (!destinationObject.Equals(existingDestinationObject))
+                else if (!destinationObject.EqualValues(existingDestinationObject))
                 {
                     destinationObject.Id = existingDestinationObject.Id;
                     Logger.Trace(String.Format("Updating {0}: existing: {1}, \n new: {2}", _destinationRepository, existingDestinationObject, destinationObject) );

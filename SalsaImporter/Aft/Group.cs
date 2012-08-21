@@ -8,6 +8,7 @@ namespace SalsaImporter.Aft
     {
         public int Id { get; set; }
         public int? ExternalId { get; set; }
+       
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime? ModifiedDate { get; set; }
@@ -22,6 +23,13 @@ namespace SalsaImporter.Aft
 
         public string Notes { get; set; }
 
+        public ISyncObject Clone()
+        {
+            var cloner = new SyncObjectCloner();
+            return cloner.Clone(this);
+
+        }
+
         protected bool Equals(Group other)
         {
             return string.Equals(Name, other.Name) && string.Equals(ReferenceName, other.ReferenceName) &&
@@ -30,10 +38,15 @@ namespace SalsaImporter.Aft
 
         public override bool Equals(object obj)
         {
+            return EqualValues(obj);
+        }
+
+        public bool EqualValues(object obj)
+        {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Group) obj);
+            return Equals((Group)obj);
         }
 
         public override int GetHashCode()

@@ -41,12 +41,12 @@ namespace SalsaImporter.Repositories
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
         }
 
-        public T GetByExternalKey<T>(int key) where T: class, ISyncObject
+        public T GetByExternalKey<T>(int key) where T : class, ISyncObject
         {
             throw new NotImplementedException();
         }
 
-        public T Get<T>(int key) where T: class, ISyncObject
+        public T Get<T>(int key) where T : class, ISyncObject
         {
             var mapper = GetMapper<T>();
             var objectType = mapper.SalsaType;

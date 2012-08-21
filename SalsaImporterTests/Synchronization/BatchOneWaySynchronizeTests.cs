@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
@@ -20,6 +21,7 @@ namespace SalsaImporterTests.Synchronization
         [SetUp]
         public void SetUp()
         {
+            Config.Environment = Config.Test;
             _sourceMock = new Mock<ISyncObjectRepository>();
             _destinationMock = new Mock<IObjectUpdater>();
             _jobContext = new JobContextStub();

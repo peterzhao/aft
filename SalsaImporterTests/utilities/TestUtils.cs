@@ -56,8 +56,9 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand("truncate table Supporters");
                 db.Database.ExecuteSqlCommand("truncate table Groups");
+                db.Database.ExecuteSqlCommand("delete from SupporterCustomFieldValues");
+                db.Database.ExecuteSqlCommand("delete from Supporters");
             }
         }
 

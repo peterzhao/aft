@@ -60,6 +60,8 @@
     <Compile Include="Aft\SupporterGroupTests.cs" />
     <Compile Include="Aft\GroupTests.cs" />
     <Compile Include="Mappers\GroupMapperTests.cs" />
+    <Compile Include="Aft\CustomFieldValuesTests.cs" />
+    <Compile Include="Aft\SupporterCustomFieldTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
     <Compile Include="Synchronization\SyncObjectClonerTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />

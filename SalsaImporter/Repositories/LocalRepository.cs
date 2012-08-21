@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text;
 using SalsaImporter.Aft;
@@ -18,11 +19,9 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Set<T>()
-                    .Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id > startKey)
-                    .OrderBy(s => s.Id)
-                    .Take(batchSize)
-                    .ToList();
+                DbQuery<T> queryable = db.Set<T>();
+                queryable = IncludeRelations(queryable);
+                return queryable.Where(s => s.ModifiedDate >= minimumModifiedDate && s.Id > startKey).OrderBy(s => s.Id).Take(batchSize).ToList();
             }
         }
 
@@ -54,7 +53,9 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Set<T>().SingleOrDefault(s => s.ExternalId == key);
+                DbQuery<T> query = db.Set<T>();
+                query = IncludeRelations(query);
+                return query.SingleOrDefault(s => s.ExternalId == key);
             }
         }
 
@@ -62,8 +63,20 @@ namespace SalsaImporter.Repositories
         {
             using (var db = new AftDbContext())
             {
-                return db.Set<T>().SingleOrDefault(s => s.Id == key);
+                DbQuery<T> query = db.Set<T>();
+                query = IncludeRelations(query);
+
+                return query.SingleOrDefault(s => s.Id == key);
             }
+        }
+
+        private static DbQuery<T> IncludeRelations<T>(DbQuery<T> query) where T : class, ISyncObject
+        {
+            var attribute = typeof (T).GetCustomAttributes(false).ToList()
+                                .FirstOrDefault(a => a is IncludeRelationAttribute) as IncludeRelationAttribute;
+            if (attribute != null)
+                attribute.Relations.ForEach(r => query = query.Include(r));
+            return query;
         }
 
         public DateTime CurrentTime

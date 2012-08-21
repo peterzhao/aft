@@ -5,6 +5,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SupporterCustomFieldValues]') AND type in (N'U'))
+DROP TABLE [dbo].[SupporterCustomFieldValues]
+GO
+
 IF OBJECT_ID('dbo.Supporters', 'U') IS NOT NULL  
 DROP TABLE dbo.Supporters
 GO

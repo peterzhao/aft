@@ -1,6 +1,7 @@
 ﻿
 using System;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 
 namespace SalsaImporterTests.Aft
@@ -8,7 +9,22 @@ namespace SalsaImporterTests.Aft
     [TestFixture]
     public class SupporterTests
     {
-       
+
+        [SetUp]
+        public void SetUp()
+        {
+            Config.Environment = Config.Test;
+        }
+
+        [Test]
+        public void ShouldClone()
+        {
+            var origin = new Supporter {Email = "jj@abc.com", First_Name = "Jack", Last_Name = "Joono"};
+            origin.CustomField["CustomString0"] = "foo";
+            var cloned = origin.Clone();
+
+            Assert.AreEqual(origin, cloned);
+        }
 
         [Test]
         public void ShouldCompareSupportersExcludingSomeProperties()
@@ -53,5 +69,22 @@ namespace SalsaImporterTests.Aft
              Assert.AreEqual(supporter1, supporter4);
              Assert.AreNotEqual(supporter1, supporter5);
          }
+
+        [Test]
+        public void ShouldCompaireCustomFieldValues()
+        {
+            var supporter1 = new Supporter {Email = "foo@abc.com"};
+            var supporter2 = new Supporter {Email = "foo@abc.com"};
+
+            supporter1.CustomField["CustomString0"] = "doo";
+            supporter2.CustomField["CustomString0"] = "foo";
+            Assert.AreNotEqual(supporter1, supporter2);
+            
+            supporter1.CustomField["CustomString0"] = "doo";
+            supporter2.CustomField["CustomString0"] = "doo";
+            Assert.AreEqual(supporter1, supporter2);
+        }
+
+      
     }
 }

@@ -11,33 +11,71 @@ namespace SalsaImporterTests
     [TestFixture]
     public class AftDbContextTests
     {
-        private AftDbContext db;
         [SetUp]
         public void SetUp()
         {
             Config.Environment = Config.Test;
-            db = new AftDbContext();
         }
         [Test]
         public void ShouldCreateSupporterInAftDb()
         {
             var name = Guid.NewGuid().ToString().Substring(0, 6);
             var supporter = new Supporter { Email = name + "@abc.com", First_Name = name, Last_Name = "Test"};
-            db.Supporters.Add(supporter);
-            db.SaveChanges();
+            Db(db => { db.Supporters.Add(supporter);
+                         db.SaveChanges();
+            });
             Assert.Greater(supporter.Id, 0);
         }
 
-       
-
-        [TearDown]
-        public void TearDown()
+        [Category("IntegrationTest")]
+        [Test]
+        public void ShouldSetAndGetCustomFields()
         {
-            var supporters = db.Supporters.Where(s => s.Last_Name == "Test");
+            var name1 = Guid.NewGuid().ToString().Substring(0, 6);
+            var name2 = Guid.NewGuid().ToString().Substring(0, 6);
+            var supporter1 = new Supporter { Email = name1 + "@example.com", First_Name = name1, Last_Name = "Zhao" };
+            var supporter2 = new Supporter { Email = name2 + "@example.com", First_Name = name2, Last_Name = "Zhao" };
+            supporter1.CustomField["CustomString0"]= "Hi";
+            supporter2.CustomField["CustomString0"]= "Good";
 
-            supporters.ToList().ForEach(s => db.Supporters.Remove(s));
-            db.SaveChanges();
-            db.Dispose();
+            Db(db => { 
+                db.Supporters.Add(supporter1);
+                db.SaveChanges();
+            });
+
+            Db(db => { //using different db contest to make sure SupporterCustomField not go to different contexts(use Id indead)
+                db.Supporters.Add(supporter2);
+                db.SaveChanges();
+            });
+
+            Assert.AreEqual("Hi", supporter1.CustomField["CustomString0"]);
+            Assert.AreEqual("Good", supporter2.CustomField["CustomString0"]);
+
+            Db(db =>
+                   {
+                       Assert.AreEqual("Hi", db.Supporters.Single(s => s.Email == supporter1.Email).CustomField["CustomString0"]);
+                       Assert.AreEqual("Good", db.Supporters.Single(s => s.Email == supporter2.Email).CustomField["CustomString0"]);
+
+                   });
+        }
+
+        [Category("IntegrationTest")]
+        [Test]
+        [ExpectedException(typeof(ApplicationException))]
+        public void ShouldGetErrorWhenTryToSetCustomFieldWhichIsNotDefined()
+        {
+            var name = Guid.NewGuid().ToString().Substring(0, 6);
+            var supporter = new Supporter { Email = name + "@example.com", First_Name = name, Last_Name = "Zhao" };
+            supporter.CustomField["somthingNotDefined"] = "Hi";
+        }
+
+
+        public void Db(Action<AftDbContext> action)
+        {
+            using(var db = new AftDbContext())
+            {
+                action(db);
+            }
         }
     }
 }

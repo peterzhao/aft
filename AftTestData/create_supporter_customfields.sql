@@ -4,15 +4,21 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Supporter_CustomFields]') AND type in (N'U'))
-DROP TABLE [dbo].[Supporter_CustomFields]
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SupporterCustomFieldValues]') AND type in (N'U'))
+DROP TABLE [dbo].[SupporterCustomFieldValues]
 GO
 
-CREATE TABLE [dbo].[Supporter_CustomFields](
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SupporterCustomFields]') AND type in (N'U'))
+DROP TABLE [dbo].[SupporterCustomFields]
+GO
+
+CREATE TABLE [dbo].[SupporterCustomFields](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nchar](255) NOT NULL,
-	[Type] [nchar](50) NOT NULL,
- CONSTRAINT [PK_Supporter_CustomFields] PRIMARY KEY CLUSTERED 
+	[Name] [nvarchar](255) NOT NULL,
+	[Type] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_SupporterCustomFields] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
@@ -21,21 +27,26 @@ CREATE TABLE [dbo].[Supporter_CustomFields](
 GO
 
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Supporter_CustomField_Values]') AND type in (N'U'))
-DROP TABLE [dbo].[Supporter_CustomField_Values]
-GO
-
-CREATE TABLE [dbo].[Supporter_CustomField_Values](
+CREATE TABLE [dbo].[SupporterCustomFieldValues](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Supporter_Id] [int] NOT NULL,
-	[Supporter_Custom_Field_Id] [int] NOT NULL,
+	[SupporterCustomField_Id] [int] NOT NULL,
 	[Value] [nvarchar](max) NOT NULL,
- CONSTRAINT [PK_Supporter_CustomField_Values] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_SupporterCustomFieldValues] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+GO
+
+ALTER TABLE [dbo].[SupporterCustomFieldValues]  WITH CHECK ADD FOREIGN KEY([SupporterCustomField_Id])
+REFERENCES [dbo].[SupporterCustomFields] ([Id])
+GO
+
+
+ALTER TABLE [dbo].[SupporterCustomFieldValues]  WITH CHECK ADD FOREIGN KEY([Supporter_Id])
+REFERENCES [dbo].[Supporters] ([Id])
 GO
 
 

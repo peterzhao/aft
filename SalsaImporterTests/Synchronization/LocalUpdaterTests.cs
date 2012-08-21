@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
@@ -17,6 +18,7 @@ namespace SalsaImporterTests.Synchronization
         [SetUp]
         public void SetUp()
         {
+            Config.Environment = Config.Test;
             _localRepositoryMock = new Mock<ISyncObjectRepository>();
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
             _localUpdater = new LocalUpdater(_localRepositoryMock.Object, _errorHandlerMock.Object);

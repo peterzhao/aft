@@ -1,13 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Aft
 {
+    [IncludeRelation("SupporterCustomFieldValues")]
     public class Supporter: ISyncObject
     {
+        private CustomFieldValues _customField;
+
+        [NotClone]
+        public virtual ICollection<SupporterCustomFieldValue> SupporterCustomFieldValues { get; set; }
+
+        [NotClone]
+        [NotMapped]
+        public CustomFieldValues CustomField
+        {
+            get
+            {
+                if (SupporterCustomFieldValues == null) SupporterCustomFieldValues = new Collection<SupporterCustomFieldValue>();
+                if(_customField == null)
+                {
+                    _customField = new CustomFieldValues(SupporterCustomField.All, SupporterCustomFieldValues);
+                }
+                return _customField;
+            }
+        }
+
         public int Id { get; set; }
         public int? ExternalId { get; set; }
 
@@ -90,54 +114,65 @@ namespace SalsaImporter.Aft
         public bool CustomBoolean9 { get; set; }
         public DateTime? CustomDateTime0 { get; set; }
 
+     
+      
+
+       
+
         public override bool Equals(object obj)
+        {
+            return EqualValues(obj);
+        }
+
+        public bool EqualValues(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Supporter) obj);
+            return EqualValues((Supporter)obj);
         }
 
-        protected bool Equals(Supporter other)
+        public bool EqualValues(Supporter other)
         {
             return StringUtility.EqualsIncludingNullEmpty(Title, other.Title)
-                && StringUtility.EqualsIncludingNullEmpty(First_Name, other.First_Name) && StringUtility.EqualsIncludingNullEmpty(MI, other.MI) && StringUtility.EqualsIncludingNullEmpty(Last_Name, other.Last_Name)
-                && StringUtility.EqualsIncludingNullEmpty(Suffix, other.Suffix) && StringUtility.EqualsIncludingNullEmpty(Email, other.Email)
-                && StringUtility.EqualsIncludingNullEmpty(Email_Preference, other.Email_Preference) && StringUtility.EqualsIncludingNullEmpty(Phone, other.Phone)
-                && StringUtility.EqualsIncludingNullEmpty(Cell_Phone, other.Cell_Phone) && StringUtility.EqualsIncludingNullEmpty(Phone_Provider, other.Phone_Provider)
-                && StringUtility.EqualsIncludingNullEmpty(Work_Phone, other.Work_Phone) && StringUtility.EqualsIncludingNullEmpty(Pager, other.Pager)
-                && StringUtility.EqualsIncludingNullEmpty(Home_Fax, other.Home_Fax) && StringUtility.EqualsIncludingNullEmpty(Work_Fax, other.Work_Fax)
-                && StringUtility.EqualsIncludingNullEmpty(Street, other.Street) && StringUtility.EqualsIncludingNullEmpty(Street_2, other.Street_2)
-                && StringUtility.EqualsIncludingNullEmpty(Street_3, other.Street_3) && StringUtility.EqualsIncludingNullEmpty(City, other.City)
-                && StringUtility.EqualsIncludingNullEmpty(State, other.State) && StringUtility.EqualsIncludingNullEmpty(Zip, other.Zip)
-                && StringUtility.EqualsIncludingNullAndSpecifiedvalue(PRIVATE_Zip_Plus_4, other.PRIVATE_Zip_Plus_4, "0000") 
-                && StringUtility.EqualsIncludingNullEmpty(County, other.County)
-                && StringUtility.EqualsIncludingNullEmpty(District, other.District) && StringUtility.EqualsIncludingNullEmpty(Country, other.Country)
-                && Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude)
-                && StringUtility.EqualsIncludingNullEmpty(Organization, other.Organization) && StringUtility.EqualsIncludingNullEmpty(Department, other.Department)
-                && StringUtility.EqualsIncludingNullEmpty(Occupation, other.Occupation) && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Service, other.Instant_Messenger_Service)
-                && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Name, other.Instant_Messenger_Name) && StringUtility.EqualsIncludingNullEmpty(Web_Page, other.Web_Page)
-                && StringUtility.EqualsIncludingNullEmpty(Alternative_Email, other.Alternative_Email) && StringUtility.EqualsIncludingNullEmpty(Other_Data_1, other.Other_Data_1)
-                && StringUtility.EqualsIncludingNullEmpty(Other_Data_2, other.Other_Data_2) && StringUtility.EqualsIncludingNullEmpty(Other_Data_3, other.Other_Data_3)
-                && StringUtility.EqualsIncludingNullEmpty(Notes, other.Notes) 
-//                && StringUtility.EqualsIncludingNullEmpty(Source, other.Source)
-//                && StringUtility.EqualsIncludingNullEmpty(Source_Details, other.Source_Details) && StringUtility.EqualsIncludingNullEmpty(Source_Tracking_Code, other.Source_Tracking_Code)
-                && StringUtility.EqualsIncludingNullEmpty(Tracking_Code, other.Tracking_Code)
-                && StringUtility.EqualsIncludingNullEmpty(Status, other.Status) && StringUtility.EqualsIncludingNullEmpty(Timezone, other.Timezone)
-                && StringUtility.EqualsIncludingNullEmpty(Language_Code, other.Language_Code) && StringUtility.EqualsIncludingNullEmpty(CustomString0, other.CustomString0)
-                && StringUtility.EqualsIncludingNullEmpty(CustomString1, other.CustomString1) && StringUtility.EqualsIncludingNullEmpty(CustomString2, other.CustomString2)
-                && StringUtility.EqualsIncludingNullEmpty(CustomString3, other.CustomString3) && StringUtility.EqualsIncludingNullEmpty(CustomString4, other.CustomString4)
-                && StringUtility.EqualsIncludingNullEmpty(CustomString5, other.CustomString5) && StringUtility.EqualsIncludingNullEmpty(CustomString6, other.CustomString6)
-                && StringUtility.EqualsIncludingNullEmpty(CustomString7, other.CustomString7) && StringUtility.EqualsIncludingNullEmpty(CustomString8, other.CustomString8)
-                && StringUtility.EqualsIncludingNullEmpty(CustomString9, other.CustomString9) && CustomInteger0 == other.CustomInteger0
-                && CustomInteger1 == other.CustomInteger1 && CustomInteger2 == other.CustomInteger2
-                && CustomInteger3 == other.CustomInteger3 && CustomInteger4 == other.CustomInteger4
-                && CustomBoolean0.Equals(other.CustomBoolean0) && CustomBoolean1.Equals(other.CustomBoolean1)
-                && CustomBoolean2.Equals(other.CustomBoolean2) && CustomBoolean3.Equals(other.CustomBoolean3)
-                && CustomBoolean4.Equals(other.CustomBoolean4) && CustomBoolean5.Equals(other.CustomBoolean5)
-                && CustomBoolean6.Equals(other.CustomBoolean6) && CustomBoolean7.Equals(other.CustomBoolean7)
-                && CustomBoolean8.Equals(other.CustomBoolean8) && CustomBoolean9.Equals(other.CustomBoolean9)
-                && CustomDateTime0.EqualsIgnoreMillionSeconds(other.CustomDateTime0);
+                   && StringUtility.EqualsIncludingNullEmpty(First_Name, other.First_Name) && StringUtility.EqualsIncludingNullEmpty(MI, other.MI) && StringUtility.EqualsIncludingNullEmpty(Last_Name, other.Last_Name)
+                   && StringUtility.EqualsIncludingNullEmpty(Suffix, other.Suffix) && StringUtility.EqualsIncludingNullEmpty(Email, other.Email)
+                   && StringUtility.EqualsIncludingNullEmpty(Email_Preference, other.Email_Preference) && StringUtility.EqualsIncludingNullEmpty(Phone, other.Phone)
+                   && StringUtility.EqualsIncludingNullEmpty(Cell_Phone, other.Cell_Phone) && StringUtility.EqualsIncludingNullEmpty(Phone_Provider, other.Phone_Provider)
+                   && StringUtility.EqualsIncludingNullEmpty(Work_Phone, other.Work_Phone) && StringUtility.EqualsIncludingNullEmpty(Pager, other.Pager)
+                   && StringUtility.EqualsIncludingNullEmpty(Home_Fax, other.Home_Fax) && StringUtility.EqualsIncludingNullEmpty(Work_Fax, other.Work_Fax)
+                   && StringUtility.EqualsIncludingNullEmpty(Street, other.Street) && StringUtility.EqualsIncludingNullEmpty(Street_2, other.Street_2)
+                   && StringUtility.EqualsIncludingNullEmpty(Street_3, other.Street_3) && StringUtility.EqualsIncludingNullEmpty(City, other.City)
+                   && StringUtility.EqualsIncludingNullEmpty(State, other.State) && StringUtility.EqualsIncludingNullEmpty(Zip, other.Zip)
+                   && StringUtility.EqualsIncludingNullAndSpecifiedvalue(PRIVATE_Zip_Plus_4, other.PRIVATE_Zip_Plus_4, "0000")
+                   && StringUtility.EqualsIncludingNullEmpty(County, other.County)
+                   && StringUtility.EqualsIncludingNullEmpty(District, other.District) && StringUtility.EqualsIncludingNullEmpty(Country, other.Country)
+                   && Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude)
+                   && StringUtility.EqualsIncludingNullEmpty(Organization, other.Organization) && StringUtility.EqualsIncludingNullEmpty(Department, other.Department)
+                   && StringUtility.EqualsIncludingNullEmpty(Occupation, other.Occupation) && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Service, other.Instant_Messenger_Service)
+                   && StringUtility.EqualsIncludingNullEmpty(Instant_Messenger_Name, other.Instant_Messenger_Name) && StringUtility.EqualsIncludingNullEmpty(Web_Page, other.Web_Page)
+                   && StringUtility.EqualsIncludingNullEmpty(Alternative_Email, other.Alternative_Email) && StringUtility.EqualsIncludingNullEmpty(Other_Data_1, other.Other_Data_1)
+                   && StringUtility.EqualsIncludingNullEmpty(Other_Data_2, other.Other_Data_2) && StringUtility.EqualsIncludingNullEmpty(Other_Data_3, other.Other_Data_3)
+                   && StringUtility.EqualsIncludingNullEmpty(Notes, other.Notes)
+                   //                && StringUtility.EqualsIncludingNullEmpty(Source, other.Source)
+                   //                && StringUtility.EqualsIncludingNullEmpty(Source_Details, other.Source_Details) && StringUtility.EqualsIncludingNullEmpty(Source_Tracking_Code, other.Source_Tracking_Code)
+                   && StringUtility.EqualsIncludingNullEmpty(Tracking_Code, other.Tracking_Code)
+                   && StringUtility.EqualsIncludingNullEmpty(Status, other.Status) && StringUtility.EqualsIncludingNullEmpty(Timezone, other.Timezone)
+                   && StringUtility.EqualsIncludingNullEmpty(Language_Code, other.Language_Code) && StringUtility.EqualsIncludingNullEmpty(CustomString0, other.CustomString0)
+                   && StringUtility.EqualsIncludingNullEmpty(CustomString1, other.CustomString1) && StringUtility.EqualsIncludingNullEmpty(CustomString2, other.CustomString2)
+                   && StringUtility.EqualsIncludingNullEmpty(CustomString3, other.CustomString3) && StringUtility.EqualsIncludingNullEmpty(CustomString4, other.CustomString4)
+                   && StringUtility.EqualsIncludingNullEmpty(CustomString5, other.CustomString5) && StringUtility.EqualsIncludingNullEmpty(CustomString6, other.CustomString6)
+                   && StringUtility.EqualsIncludingNullEmpty(CustomString7, other.CustomString7) && StringUtility.EqualsIncludingNullEmpty(CustomString8, other.CustomString8)
+                   && StringUtility.EqualsIncludingNullEmpty(CustomString9, other.CustomString9) && CustomInteger0 == other.CustomInteger0
+                   && CustomInteger1 == other.CustomInteger1 && CustomInteger2 == other.CustomInteger2
+                   && CustomInteger3 == other.CustomInteger3 && CustomInteger4 == other.CustomInteger4
+                   && CustomBoolean0.Equals(other.CustomBoolean0) && CustomBoolean1.Equals(other.CustomBoolean1)
+                   && CustomBoolean2.Equals(other.CustomBoolean2) && CustomBoolean3.Equals(other.CustomBoolean3)
+                   && CustomBoolean4.Equals(other.CustomBoolean4) && CustomBoolean5.Equals(other.CustomBoolean5)
+                   && CustomBoolean6.Equals(other.CustomBoolean6) && CustomBoolean7.Equals(other.CustomBoolean7)
+                   && CustomBoolean8.Equals(other.CustomBoolean8) && CustomBoolean9.Equals(other.CustomBoolean9)
+                   && CustomDateTime0.EqualsIgnoreMillionSeconds(other.CustomDateTime0)
+                   && CustomField.Equals(other.CustomField);
         }
 
         public override int GetHashCode()
@@ -214,16 +249,34 @@ namespace SalsaImporter.Aft
                 hashCode = (hashCode * 397) ^ CustomBoolean8.GetHashCode();
                 hashCode = (hashCode * 397) ^ CustomBoolean9.GetHashCode();
                 hashCode = (hashCode * 397) ^ CustomDateTime0.GetHashCode();
+                hashCode = (hashCode * 397) ^ CustomField.GetHashCode();
                 return hashCode;
             }
         }
+
+
+        public ISyncObject Clone()
+        {
+            var cloned = new Supporter();
+             foreach (var property in this.GetType().GetProperties())
+             {
+                 if (!property.CanWrite || !property.CanRead 
+                     || property.GetCustomAttributes(false).Any(a => a is NotCloneAttribute)) continue;
+                 var value = property.GetValue(this, null);
+                 property.SetValue(cloned, value, null);
+             }
+            CustomField.Names.ToList().ForEach(f => cloned.CustomField[f] = CustomField[f]);
+            return cloned;
+        }
+
+       
 
         public override string ToString()
         {
             var builder = new StringBuilder();
             foreach (var property in this.GetType().GetProperties())
             {
-                if ( !property.CanRead) continue;
+                if (!property.CanRead || property.Name == "SupporterCustomFieldValues") continue;
                 var value = property.GetValue(this, null);
                 if(value != null)
                     builder.AppendFormat(" {0}:{1}", property.Name, value);
