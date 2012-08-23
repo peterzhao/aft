@@ -24,7 +24,7 @@ namespace SalsaImporter
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
             _localRepository = new LocalRepository();
-            _salsaRepository = new SalsaRepository(_salsaClient, new MapperFactory());
+            _salsaRepository = new SalsaRepository(_salsaClient, new MapperFactory(), _errorHandler);
             _localConditionalUpdater = new LocalUpdater(_localRepository, _errorHandler);
             _salsaConditionalUpdater = new ExternalUpdater(_salsaRepository, _localRepository, _errorHandler);
 

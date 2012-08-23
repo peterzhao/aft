@@ -67,8 +67,12 @@ namespace SalsaImporterTests.Repositories
 
             Assert.IsNotNull(syncEventArgs);
             Assert.AreEqual(localRepository, syncEventArgs.Destination);
-            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
             Assert.AreEqual(SyncEventType.Add, syncEventArgs.EventType);
+
+            Assert.AreEqual(externalId, syncEventArgs.ExternalId);
+            Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
+
+
         }
 
         [Test]
@@ -92,9 +96,13 @@ namespace SalsaImporterTests.Repositories
             var retrieved = localRepository.Get<Supporter>(supporter.Id);
             Assert.AreEqual(expectedCustomStringValue, retrieved.CustomString0);
             Assert.IsNotNull(syncEventArgs);
+
             Assert.AreEqual(localRepository, syncEventArgs.Destination);
-            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
             Assert.AreEqual(SyncEventType.Update, syncEventArgs.EventType);
+            Assert.AreEqual("Supporter", syncEventArgs.ObjectType);
+            Assert.AreEqual(supporter.Id, syncEventArgs.ObjectId);
+
+            
         }
 
         private static Supporter GenerateSupporter(int externalId)

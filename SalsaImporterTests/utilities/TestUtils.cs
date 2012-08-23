@@ -19,7 +19,7 @@ namespace SalsaImporterTests.Utilities
 
         public static SalsaRepository SalsaRepository
         {
-            get { return new SalsaRepository(SalsaClient, new MapperFactory()); }
+            get { return new SalsaRepository(SalsaClient, new MapperFactory(), new SyncErrorHandler(10)); }
         }
 
         public static LocalRepository LocalRepository

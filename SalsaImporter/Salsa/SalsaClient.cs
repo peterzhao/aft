@@ -31,7 +31,7 @@ namespace SalsaImporter.Salsa
         public string Create(string objectType, NameValueCollection data)
         {
             data.Set("key", "0"); // this is to indicate creation  
-            return SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
+            return Try<string, InvalidSalsaResponseException>(() =>
             {
                 string response = Post("save", objectType, data);
                 return VerifySaveResponse(response, data);
@@ -48,7 +48,7 @@ namespace SalsaImporter.Salsa
                     subSetData[k] = data[k];
             });
 
-            SyncErrorHandler.Try<string, InvalidSalsaResponseException>(() =>
+            Try<string, InvalidSalsaResponseException>(() =>
             {
                 string response = Post("save", objectType, subSetData);
                 VerifySaveResponse(response, data);
@@ -67,7 +67,7 @@ namespace SalsaImporter.Salsa
         public CookieContainer Login()
         {
             var cookieContainer = new CookieContainer();
-            var response = SyncErrorHandler.Try<HttpWebResponse, WebException>(() =>
+            var response = Try<HttpWebResponse, WebException>(() =>
             {
                 var webRequest =
                     WebRequest.Create(_salsaUrl + "api/authenticate.sjs?email=" +
@@ -78,12 +78,13 @@ namespace SalsaImporter.Salsa
                 webRequest.ContentType = "application/x-www-form-urlencoded";
                 return (HttpWebResponse)webRequest.GetResponse();
             }, 3);
-            string content = new StreamReader(response.GetResponseStream()).ReadToEnd();
+            string content = new StreamReader((Stream) response.GetResponseStream()).ReadToEnd();
             Logger.Trace("response: " + content);
-            VerifyLoginResult(content);
+            VerifyLoginResult(_salsaUrl, Config.SalsaUserName, content);
             return cookieContainer;
         }
 
+        
 
         public void DeleteAllObjects(string objectType, int blockSize, bool fetchOnlyKeys)
         {
@@ -137,22 +138,23 @@ namespace SalsaImporter.Salsa
             if (conditionName != null && conditionValue != null && comparator != null)
             {
                 string condition = String.Format("{0}{1}{2}", conditionName, comparator, conditionValue);
-                return string.Format("api/getCount.sjs?object={0}&condition={1}&countColumn={0}_KEY", objectType,
+                return String.Format("api/getCount.sjs?object={0}&condition={1}&countColumn={0}_KEY", objectType,
                                      condition);
             }
-            return string.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType);
+            return String.Format("api/getCount.sjs?object={0}&countColumn={0}_KEY", objectType);
         }
 
-        public List<XElement> GetObjects(string objectType, int batchSize, string startKey, DateTime lastPulledDate, IEnumerable<String> fieldsToReturn = null)
+        public List<XElement> GetObjects(string objectType, int batchSize, string startKey, DateTime lastPulledDate, IEnumerable<string> fieldsToReturn = null)
         {
             var formats = "yyyy-MM-dd HH:mm:ss";
+
             var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={1}_KEY>{2}&condition=Last_Modified>{4}&limit={3}&orderBy={1}_KEY",
                                        _salsaUrl, objectType, startKey, batchSize, lastPulledDate.ToString(formats));
 
             if (fieldsToReturn != null)
                 url += "&include=" + String.Join(",", fieldsToReturn);
 
-            return SyncErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(
+            return Try<List<XElement>, InvalidSalsaResponseException>(
                 () =>
                 {
                     var response = Get(url);
@@ -183,17 +185,19 @@ namespace SalsaImporter.Salsa
                 return (DateTime)currentTime;
             }
         }
-        
-        private static void VerifyLoginResult(string content)
+
+
+
+        private void VerifyLoginResult(string salsaUrl, string salsaUserName, string content)
         {
             try
             {
                 if (XDocument.Parse(content).Root.StringValueOrNull("message") != "Successful Login")
-                    throw new ApplicationException("Login failed.");
+                    throw new ApplicationException(string.Format("Login to {0} as {1} failed.", salsaUrl, salsaUserName));
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Login failed.", ex);
+                throw new ApplicationException(string.Format("Login to {0} as {1} failed.", salsaUrl, salsaUserName), ex);
             }
         }
 
@@ -207,7 +211,7 @@ namespace SalsaImporter.Salsa
                 url += "&include=" + objectType + "_KEY";
             }
 
-            return SyncErrorHandler.Try<List<XElement>, InvalidSalsaResponseException>(() =>
+            return Try<List<XElement>, InvalidSalsaResponseException>(() =>
             {
                 string response = Get(url);
                 List<XElement> items = ParseGetObjectResponseFromServer(response, objectType);
@@ -240,7 +244,7 @@ namespace SalsaImporter.Salsa
             }
             catch (Exception ex)
             {
-                throw new InvalidSalsaResponseException(string.Format("Failed to get object key from server response:{0}.", response), ex);
+                throw new InvalidSalsaResponseException(String.Format("Failed to get object key from server response:{0}.", response), ex);
             }
 
             return key;
@@ -251,7 +255,7 @@ namespace SalsaImporter.Salsa
             EnsureWriteAccess(); 
 
             var cookieContainer = Login();
-            return SyncErrorHandler.Try<string, WebException>(() =>
+            return Try<string, WebException>(() =>
             {
                 string response;
                 using (var client1 = new ExtentedWebClient(cookieContainer))
@@ -273,7 +277,7 @@ namespace SalsaImporter.Salsa
         {
             Logger.Trace("Geting: " + url);
             CookieContainer cookieContainer = Login();
-            string response = SyncErrorHandler.Try<string, WebException>(() =>
+            string response = Try<string, WebException>(() =>
             {
                 using (var webClient = new ExtentedWebClient(cookieContainer))
                 {
@@ -294,7 +298,7 @@ namespace SalsaImporter.Salsa
             }
             catch (Exception ex)
             {
-                throw new InvalidSalsaResponseException(string.Format("Get invalid response from server when get objects:{0}.", response), ex);
+                throw new InvalidSalsaResponseException(String.Format("Get invalid response from server when get objects:{0}.", response), ex);
             }
         }
 
@@ -302,11 +306,36 @@ namespace SalsaImporter.Salsa
         {
             if (!_writeAccessEnabled)
             {
-                throw new AccessViolationException(string.Format("{0} is in read-only mode", GetType().Name));
+                throw new AccessViolationException(String.Format("{0} is in read-only mode", GetType().Name));
             }
         }
 
-
-
+        public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
+        {
+            int count = 0;
+            while (true)
+            {
+                try
+                {
+                    return func();
+                }
+                catch (TException exception)
+                {
+                    string exceptionName = exception.GetType().Name;
+                    count += 1;
+                    if (count >= tryTimes)
+                    {
+                        string message = String.Format("Rethrow {0} after try {1} times. Error: {2} ", exceptionName, tryTimes, exception.Message);
+                        Logger.Error(message, exception);
+                        throw new ApplicationException(message);
+                    }
+                    else
+                    {
+                        string message = String.Format("Caught {0} on attempt {1}. Trying again. Error: {2}", exceptionName, count, exception.Message);
+                        Logger.Warn(message, exception);
+                    }
+                }
+            }
+        }
     }
 }

@@ -16,15 +16,17 @@ namespace SalsaImporter.Synchronization
                 var context = db.SessionContexts.Find(sessionContext.Id);
                 var syncEvent = new SyncEvent
                 {
-                    Data = args.SyncObject.ToString(),
                     Destination = args.Destination.GetType().Name,
                     Error = args.Error == null ? null : args.Error.ToString(),
-                    ObjectId = args.SyncObject.Id,
-                    ExternalId = args.SyncObject.ExternalId.HasValue ? args.SyncObject.ExternalId.Value : 0,
                     EventType = args.EventType,
-                    ObjectType = args.SyncObject.GetType().Name,
-                    SessionContext = context,
 
+                    Data = args.Data,
+                    ObjectType = args.ObjectType, 
+
+                    ObjectId = args.ObjectId, 
+                    ExternalId = args.ExternalId,
+
+                    SessionContext = context
                 };
                 db.SyncEvents.Add(syncEvent);
                 db.SaveChanges();

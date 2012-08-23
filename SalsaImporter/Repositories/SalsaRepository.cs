@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using SalsaImporter.Mappers;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
@@ -11,18 +12,34 @@ namespace SalsaImporter.Repositories
     {
         private readonly ISalsaClient _salsa;
         private readonly IMapperFactory _mapperFactory;
+        private readonly ISyncErrorHandler _syncErrorHandler;
 
-        public SalsaRepository(ISalsaClient salsa, IMapperFactory mapperFactory)
+        public SalsaRepository(ISalsaClient salsa, IMapperFactory mapperFactory, ISyncErrorHandler syncErrorHandler)
         {
             _salsa = salsa;
             _mapperFactory = mapperFactory;
+            _syncErrorHandler = syncErrorHandler;
         }
 
         public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
         {
             var mapper = GetMapper<T>();
-            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate, null);
-            return xElements.Select(element => (T) mapper.ToObject(element));
+            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
+            var batchOfObjects = new List<T>();
+            foreach (var element in xElements)
+            {
+                try
+                {
+                    var syncObject = (T) mapper.ToObject(element);
+                    batchOfObjects.Add(syncObject);
+                } 
+                catch (Exception ex )
+                {
+                    Logger.Error(string.Format("Could not map {0}", element), ex); 
+                    _syncErrorHandler.HandleMappingFailure(typeof(T).Name, element, this, ex);
+                }
+            }
+            return batchOfObjects;
         }
 
         public int Add<T>(T syncObject) where T : class, ISyncObject

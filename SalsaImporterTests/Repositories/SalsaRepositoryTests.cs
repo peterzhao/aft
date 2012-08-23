@@ -13,7 +13,6 @@ using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
-using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Repositories
 {
@@ -22,8 +21,9 @@ namespace SalsaImporterTests.Repositories
     {
         private SalsaRepository _repository;
         private Mock<ISalsaClient> _salsaMock;
-        private Mock<IMapperFactory> _mapperFacotryMock;
+        private Mock<IMapperFactory> _mapperFactoryMock;
         private Mock<IMapper> _mapperMock;
+        private Mock<ISyncErrorHandler> _errorHandlerMock;
         private SyncEventArgs syncEventArgs;
 
         [SetUp]
@@ -32,10 +32,13 @@ namespace SalsaImporterTests.Repositories
             Config.Environment = Config.Test;
             
             _salsaMock = new Mock<ISalsaClient>();
-            _mapperFacotryMock = new Mock<IMapperFactory>();
             _mapperMock = new Mock<IMapper>();
-            _repository = new SalsaRepository(_salsaMock.Object, _mapperFacotryMock.Object);
-            _mapperFacotryMock.Setup(f => f.GetMapper<Supporter>()).Returns(_mapperMock.Object);
+            _errorHandlerMock = new Mock<ISyncErrorHandler>();
+            
+            _mapperFactoryMock = new Mock<IMapperFactory>();
+            _mapperFactoryMock.Setup(f => f.GetMapper<Supporter>()).Returns(_mapperMock.Object);
+
+            _repository = new SalsaRepository(_salsaMock.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
 
             _repository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
         }
@@ -71,6 +74,48 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
+        public void ShouldSkipBadDataFromSalsa()
+        {
+            var supporter = new Supporter { Email = "boo@abc.com" };
+            var xElement = XElement.Parse("<item/>");
+            var xElements = new List<XElement> { xElement, xElement };
+            var dateTime = new DateTime(2012, 7, 20);
+
+            _salsaMock.Setup(s => s.GetObjects("supporter", 10, "200", dateTime, null)).Returns(xElements);
+
+            _mapperMock.SetupSequence(m => m.ToObject(xElement))
+               .Returns(supporter)
+               .Throws(new FormatException("test exception"));
+
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
+
+            IEnumerable<Supporter> batchOfObjects = _repository.GetBatchOfObjects<Supporter>(10, 200, dateTime).ToList();
+            Assert.AreEqual(1, batchOfObjects.Count());
+            Assert.AreEqual(supporter, batchOfObjects.First());
+        }
+
+        [Test]
+        public void ShouldLogBadDataFromSalsa()
+        {
+            var expectedException = new FormatException("test exception");
+            var xUnmappableElement = XElement.Parse("<item/>");
+            var xElements = new List<XElement> {  xUnmappableElement };
+            var dateTime = new DateTime(2012, 7, 20);
+
+            _salsaMock.Setup(s => s.GetObjects("supporter", 10, "200", dateTime, null)).Returns(xElements);
+
+            _mapperMock.Setup(m => m.ToObject(xUnmappableElement))
+               .Throws(expectedException);
+
+            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
+
+            _repository.GetBatchOfObjects<Supporter>(10, 200, dateTime).ToList();
+
+            _errorHandlerMock.Verify(handler => 
+                handler.HandleMappingFailure("Supporter", xUnmappableElement, _repository, expectedException));
+        }
+
+        [Test]
         public void ShouldCreateObject()
         {
             var key = 1234;
@@ -85,8 +130,10 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(key, _repository.Add(supporter));
             Assert.IsNotNull(syncEventArgs);
             Assert.AreEqual(_repository, syncEventArgs.Destination);
-            Assert.AreEqual(supporter, syncEventArgs.SyncObject);
             Assert.AreEqual(SyncEventType.Add, syncEventArgs.EventType);
+            Assert.AreEqual(key, syncEventArgs.ObjectId);
+            Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
+            
         }
 
         [Test]
@@ -103,8 +150,9 @@ namespace SalsaImporterTests.Repositories
 
            Assert.IsNotNull(syncEventArgs);
            Assert.AreEqual(_repository, syncEventArgs.Destination);
-           Assert.AreEqual(newObject, syncEventArgs.SyncObject);
            Assert.AreEqual(SyncEventType.Update, syncEventArgs.EventType);
+
+           Assert.AreEqual(newObject.ToString(), syncEventArgs.Data);
         }
 
         [Test]
@@ -140,7 +188,7 @@ namespace SalsaImporterTests.Repositories
                                     Organization = " LCBO  ", //salsa will trim 
                                     CustomDateTime0 = new DateTime(2007, 3, 11, 1, 21, 17, 137), //million second will be ignored by salsa; 
                                 };
-            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory());
+            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory(), new SyncErrorHandler(10));
 
 
             var supporterId = repository.Add(supporter);
@@ -172,7 +220,7 @@ namespace SalsaImporterTests.Repositories
                 Email = name + "@abc.com",
                 CustomDateTime0 = new DateTime(2007, 3, 11, 2, 21, 0), //2007/3/11 2:00 - 2:59 does not exist, will be convert to 3:00-3:59
             };
-            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory());
+            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory(), new SyncErrorHandler(10));
 
 
             var supporterId = repository.Add(supporter);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
@@ -27,8 +28,6 @@ namespace SalsaImporterTests.Salsa
         {
             client = new SalsaClient();
         }
-
-
 
         [Test]
         public void ShouldAllowDeletingDeletedSupporter()
@@ -63,8 +62,6 @@ namespace SalsaImporterTests.Salsa
             client.DeleteAllObjects("supporter", 4, true);
             Assert.AreEqual(0, client.CountObjects("supporter"));
         }
-
-      
 
         [Test]
         public void ShouldDeleteObject()
@@ -234,6 +231,57 @@ namespace SalsaImporterTests.Salsa
             client.DeleteObject("supporter", remoteId);
         }
 
+
+        [Test]
+        public void ShouldAllowRetrySpecificTimes()
+        {
+            int countOfCalled;
+            countOfCalled = 0;
+            Func<string> func = () =>
+            {
+                countOfCalled += 1;
+                Console.WriteLine(countOfCalled);
+                if (countOfCalled <= 2)
+                    throw new InvalidDataException("testing error");
+
+                return "OK";
+            };
+            Assert.DoesNotThrow(() => SalsaClient.Try<string, InvalidDataException>(func, 3));
+        }
+
+        [Test]
+        public void ShoulOnlyAllowRetryForSpecificError()
+        {
+            int ountOfCalled;
+            ountOfCalled = 0;
+            Func<string> func = () =>
+            {
+                ountOfCalled += 1;
+                Console.WriteLine(ountOfCalled);
+                if (ountOfCalled <= 2)
+                    throw new InvalidDataException("testing error");
+
+                return "OK";
+            };
+            Assert.Throws<InvalidDataException>(() => SalsaClient.Try<string, InvalidOperationException>(func, 3));
+        }
+
+        [Test]
+        public void ShouldRethrowTheErrorAferRetrySpecificTimesButStillGetError()
+        {
+            int ountOfCalled;
+            ountOfCalled = 0;
+            Func<string> func = () =>
+            {
+                ountOfCalled += 1;
+                Console.WriteLine(ountOfCalled);
+                if (ountOfCalled <= 3)
+                    throw new InvalidDataException("testing error");
+
+                return "OK";
+            };
+            Assert.Throws<ApplicationException>(() => SalsaClient.Try<string, InvalidDataException>(func, 3));
+        }
       
         private bool DoesSupporterExist(string id)
         {
