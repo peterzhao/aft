@@ -1,27 +1,22 @@
 ﻿using System;
-using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Mappers
 {
     public class MapperFactory : IMapperFactory
     {
-
-        public IMapper GetMapper<T>() where T : ISyncObject
+        public IMapper GetMapper(string name)
         {
-            string mapperTypeName = "";
             try
             {
-                Type objectType = typeof (T);
-                string mappernamespace = typeof (SupporterMapper).Namespace;
-                mapperTypeName = mappernamespace + "." + objectType.Name + "Mapper";
+                string mappernamespace = typeof(SupporterMapper).Namespace;
+                string mapperTypeName = mappernamespace + "." + name + "Mapper";
                 Type mapperType = Type.GetType(mapperTypeName);
                 return Activator.CreateInstance(mapperType) as IMapper;
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Fail to find mapper:" + mapperTypeName, ex);
+                throw new ApplicationException("Fail to find mapper for " + name, ex);
             }
         }
-
     }
 }

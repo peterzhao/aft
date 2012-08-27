@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Linq;
+using SalsaImporter.Aft;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
@@ -13,9 +14,9 @@ namespace SalsaImporter.Mappers
 
         public virtual string SalsaType { get {  return typeof(T).Name.ToLower(); } }
 
+
         public NameValueCollection ToNameValues(ISyncObject syncObject)
         {
-
             var result = new NameValueCollection();
             foreach (var property in syncObject.GetType().GetProperties())
             {
@@ -34,7 +35,6 @@ namespace SalsaImporter.Mappers
             }
             return result;
         }
-
 
         public ISyncObject ToObject(XElement element)
         {
@@ -61,6 +61,11 @@ namespace SalsaImporter.Mappers
                     property.SetValue(syncObject, propertyValue, null);
             }
             return syncObject;
+        }
+
+        public DynamicSyncObject ToDynamicObject(XElement element)
+        {
+            return new DynamicSyncObject();
         }
     }
 }

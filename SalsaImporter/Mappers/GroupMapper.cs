@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
+﻿using System.Collections.Generic;
 using SalsaImporter.Aft;
-using SalsaImporter.Synchronization;
-using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
 {

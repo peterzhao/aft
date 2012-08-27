@@ -36,7 +36,7 @@ namespace SalsaImporterTests.Repositories
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
             
             _mapperFactoryMock = new Mock<IMapperFactory>();
-            _mapperFactoryMock.Setup(f => f.GetMapper<Supporter>()).Returns(_mapperMock.Object);
+            _mapperFactoryMock.Setup(f => f.GetMapper("Supporter")).Returns(_mapperMock.Object);
 
             _repository = new SalsaRepository(_salsaMock.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
 

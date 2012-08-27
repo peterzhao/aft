@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
 using SalsaImporter.Aft;
-using SalsaImporter.Mappers;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories

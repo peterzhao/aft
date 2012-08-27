@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SalsaImporter.Repositories;
@@ -34,7 +33,7 @@ namespace SalsaImporter.Synchronization
                 currentBatch = _source.GetBatchOfObjects<T>(_batchSize,
                     jobContext.CurrentRecord,
                     jobContext.MinimumModificationDate);
-                var tasks = currentBatch.Select(obj => Task.Factory.StartNew(arg => _destination.Update<T>(obj), null));
+                var tasks = currentBatch.Select(obj => Task.Factory.StartNew(arg => _destination.Update(obj), null));
                 Task.WaitAll(tasks.ToArray());
 
                 if (currentBatch.Any())

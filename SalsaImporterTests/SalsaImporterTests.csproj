@@ -59,6 +59,7 @@
     <Compile Include="Aft\AftDbContextTests.cs" />
     <Compile Include="Aft\SupporterGroupTests.cs" />
     <Compile Include="Aft\GroupTests.cs" />
+    <Compile Include="FunctionalTests\QueueTests.cs" />
     <Compile Include="Mappers\GroupMapperTests.cs" />
     <Compile Include="Aft\CustomFieldValuesTests.cs" />
     <Compile Include="Aft\SupporterCustomFieldTests.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
@@ -23,7 +22,7 @@ namespace SalsaImporter.Repositories
 
         public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
         {
-            var mapper = GetMapper<T>();
+            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
             var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
             var batchOfObjects = new List<T>();
             foreach (var element in xElements)
@@ -42,9 +41,30 @@ namespace SalsaImporter.Repositories
             return batchOfObjects;
         }
 
+        public IEnumerable<DynamicSyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate) 
+        {
+            var mapper = _mapperFactory.GetMapper(objectType);
+            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
+            var batchOfObjects = new List<DynamicSyncObject>();
+            foreach (var element in xElements)
+            {
+                try
+                {
+                    var syncObject = mapper.ToDynamicObject(element);
+                    batchOfObjects.Add(syncObject);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(string.Format("Could not map {0}", element), ex);
+                    _syncErrorHandler.HandleMappingFailure(objectType, element, this, ex);
+                }
+            }
+            return batchOfObjects;
+        }
+
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
-            IMapper mapper = GetMapper<T>();
+            IMapper mapper = _mapperFactory.GetMapper(typeof (T).Name);
             var id = int.Parse(_salsa.Create(mapper.SalsaType, mapper.ToNameValues(syncObject)));
             syncObject.Id = id;
             NotifySyncEvent(this, new SyncEventArgs{EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject});
@@ -53,8 +73,8 @@ namespace SalsaImporter.Repositories
 
         public void Update<T>(T newData) where T : class, ISyncObject
         {
-            var mapper = GetMapper<T>();
-            _salsa.Update(mapper.SalsaType, GetMapper<T>().ToNameValues(newData));
+            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
+            _salsa.Update(mapper.SalsaType, _mapperFactory.GetMapper(typeof (T).Name).ToNameValues(newData));
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
         }
 
@@ -65,7 +85,7 @@ namespace SalsaImporter.Repositories
 
         public T Get<T>(int key) where T : class, ISyncObject
         {
-            var mapper = GetMapper<T>();
+            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
             var objectType = mapper.SalsaType;
             var xElement = _salsa.GetObject(objectType, key.ToString());
             return (T)mapper.ToObject(xElement);
@@ -77,11 +97,5 @@ namespace SalsaImporter.Repositories
         }
 
         public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
-
-        private IMapper GetMapper<T>() where T : ISyncObject
-        {
-            return _mapperFactory.GetMapper<T>();
-        }
-        
     }
 }

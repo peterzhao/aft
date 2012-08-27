@@ -57,6 +57,7 @@
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\SupporterGroup.cs" />
     <Compile Include="Aft\Group.cs" />
+    <Compile Include="Aft\DynamicSyncObject.cs" />
     <Compile Include="Synchronization\SyncObjectCloner.cs" />
     <Compile Include="Mappers\GenericMapper.cs" />
     <Compile Include="Mappers\GroupMapper.cs" />
