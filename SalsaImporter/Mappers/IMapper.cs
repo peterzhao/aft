@@ -12,5 +12,6 @@ namespace SalsaImporter.Mappers
         string SalsaType { get; }
 
         DynamicSyncObject ToDynamicObject(XElement element);
+
     }
 }
