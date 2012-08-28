@@ -8,7 +8,7 @@ namespace SalsaImporter.Synchronization
 {
     public class QueuePusher :ISyncJob 
     {
-        private readonly ISyncObjectRepository _source;
+        private readonly ISalsaRepository _source;
         private readonly QueueRepository _destination;
         private readonly int _batchSize;
         private readonly string _objectType;
@@ -16,7 +16,7 @@ namespace SalsaImporter.Synchronization
         public string Name { get; set; }
 
 
-        public QueuePusher(ISyncObjectRepository source, QueueRepository destination, int batchSize, string name, string objectType)
+        public QueuePusher(ISalsaRepository source, QueueRepository destination, int batchSize, string name, string objectType)
         {
             Name = name;
             _objectType = objectType;

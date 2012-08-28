@@ -73,8 +73,8 @@ namespace SalsaImporterTests.FunctionalTests
         private SyncObject CreateRandomSupporter()
         {
             string random = Guid.NewGuid().ToString().Substring(0, 5);
-            var supporter = new SyncObject();
-            _fields.ForEach(f => supporter.Add(f, random + f));
+            var supporter = new SyncObject("supporter");
+            _fields.ForEach(f => supporter.Set(f, random + f));
             _dbContext.InsertToQueue(supporter, QueueName, _fields);
             return supporter;
         }

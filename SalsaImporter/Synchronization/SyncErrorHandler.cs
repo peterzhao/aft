@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
+using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Repositories;
 
@@ -23,14 +24,14 @@ namespace SalsaImporter.Synchronization
         }
 
     
-        public void HandleSyncObjectFailure(ISyncObject obj, ISyncObjectRepository destination, Exception ex)
+        public void HandleSyncObjectFailure(SyncObject obj, ISalsaRepository destination, Exception ex)
         {
             Logger.Error(String.Format("Failed to sync object: {0}", obj), ex);
             var syncEventArgs = new SyncEventArgs { Destination = destination, EventType = SyncEventType.Error, SyncObject = obj, Error = ex };
             HandleFailure(obj, ex, syncEventArgs);
         }
 
-        public void HandleMappingFailure(string objectType, XElement obj, ISyncObjectRepository source, Exception ex)
+        public void HandleMappingFailure(string objectType, XElement obj, ISalsaRepository source, Exception ex)
         {
             Logger.Error(String.Format("Failed to map object: {0}", obj), ex);
             var syncEventArgs = new SyncEventArgs { 

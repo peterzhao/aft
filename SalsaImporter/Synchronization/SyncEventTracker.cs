@@ -19,13 +19,9 @@ namespace SalsaImporter.Synchronization
                     Destination = args.Destination.GetType().Name,
                     Error = args.Error == null ? null : args.Error.ToString(),
                     EventType = args.EventType,
-
-                    Data = args.Data,
                     ObjectType = args.ObjectType, 
-
-                    ObjectId = args.ObjectId, 
-                    ExternalId = args.ExternalId,
-
+                    ObjectId = args.ObjectId,
+                    Data = args.Data,
                     SessionContext = context
                 };
                 db.SyncEvents.Add(syncEvent);

@@ -45,7 +45,7 @@ namespace SalsaImporter.Aft
             
             if (sqlConnection.State != ConnectionState.Open) sqlConnection.Open();
 
-            var item = new SyncObject();
+            var item = new SyncObject("supporter");
 
             var reader = sc.ExecuteReader();
             if (! reader.Read() )
@@ -53,7 +53,7 @@ namespace SalsaImporter.Aft
 
             item.Id = (int)reader[IdColumnName];
 
-            fields.ForEach(field => item.Add(field, (string)reader[field]));
+            fields.ForEach(field => item.Set(field, (string)reader[field]));
 
             if (sqlConnection.State != ConnectionState.Closed) sqlConnection.Close();
 

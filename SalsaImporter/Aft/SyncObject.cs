@@ -1,23 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft
 {
-    public class SyncObject : ISyncObject 
+    public class SyncObject
     {
+        private readonly string _objectType;
         public int Id { get; set; }
         public DateTime? ModifiedDate { get; private set; }
-        public int? ExternalId { get; set; }
+
+        public string ObjectType
+        {
+            get { return _objectType; }
+        }
+
         private IDictionary<string, string> _dictionary;
 
-        public SyncObject()
+        public SyncObject(string objectType)
         {
+            _objectType = objectType;
             _dictionary = new Dictionary<string, string>();
         }
 
-        public void Add(String fieldName, String value)
+        public object this[string fieldName]
+        {
+            get { return null; }
+            set
+            {
+                
+            }
+        }
+
+        public void Set(String fieldName, String value)
         {
             _dictionary.Add(fieldName, value);
         }
@@ -27,23 +42,12 @@ namespace SalsaImporter.Aft
             return _dictionary[fieldName];
         }
 
-        public bool EqualValues(object other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISyncObject Clone()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             string dictionaryFields = string.Join(", ", _dictionary.Select(pair => string.Format("{0}: {1}", pair.Key, pair.Value)));
             
-            return string.Format("Id: {0}, ExternalId: {1}, ModifiedDate: {2}, {3}", 
-                Id, 
-                ExternalId, 
+            return string.Format("Id: {0},  ModifiedDate: {1}, {2}", 
+                Id,  
                 ModifiedDate, 
                 dictionaryFields);
         }

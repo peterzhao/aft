@@ -7,7 +7,6 @@ namespace SalsaImporter.Synchronization
     {
         public int Id { get; set; }
         public int ObjectId { get; set; }
-        public int ExternalId { get; set; }
         public string ObjectType { get; set; }
         public string Data { get; set; }
         public string EventType { get; set; }

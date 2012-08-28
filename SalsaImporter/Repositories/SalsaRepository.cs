@@ -7,7 +7,7 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories
 {
-    public class SalsaRepository : ISyncObjectRepository
+    public class SalsaRepository : ISalsaRepository
     {
         private readonly ISalsaClient _salsa;
         private readonly IMapperFactory _mapperFactory;
@@ -22,14 +22,14 @@ namespace SalsaImporter.Repositories
 
         public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
         {
-            var mapper = _mapperFactory.GetMapper(objectType);
-            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
+            var xElements = _salsa.GetObjects(objectType, batchSize, startKey.ToString(), minimumModifiedDate);
             var batchOfObjects = new List<SyncObject>();
             foreach (var element in xElements)
             {
                 try
                 {
-                    var syncObject = mapper.ToSyncObject(element);
+                    var mapper = _mapperFactory.GetMapper(objectType);
+                    var syncObject = mapper.ToObject(element);
                     batchOfObjects.Add(syncObject);
                 }
                 catch (Exception ex)
@@ -41,33 +41,28 @@ namespace SalsaImporter.Repositories
             return batchOfObjects;
         }
 
-        public int Add<T>(T syncObject) where T : class, ISyncObject
+        public int Add(SyncObject syncObject)
         {
-            IMapper mapper = _mapperFactory.GetMapper(typeof (T).Name);
-            var id = int.Parse(_salsa.Create(mapper.SalsaType, mapper.ToNameValues(syncObject)));
+            IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
+            var id = int.Parse(_salsa.Create(syncObject.ObjectType, mapper.ToNameValues(syncObject)));
             syncObject.Id = id;
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject });
             return id;
         }
 
-        public void Update<T>(T newData) where T : class, ISyncObject
+        public void Update(SyncObject newData)
         {
-            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
-            _salsa.Update(mapper.SalsaType, _mapperFactory.GetMapper(typeof (T).Name).ToNameValues(newData));
+            var mapper = _mapperFactory.GetMapper(newData.ObjectType);
+            _salsa.Update(newData.ObjectType, mapper.ToNameValues(newData));
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
         }
 
-        public T GetByExternalKey<T>(int key) where T : class, ISyncObject
+      
+        public SyncObject Get(string objectType, int key)
         {
-            throw new NotImplementedException();
-        }
-
-        public T Get<T>(int key) where T : class, ISyncObject
-        {
-            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
-            var objectType = mapper.SalsaType;
             var xElement = _salsa.GetObject(objectType, key.ToString());
-            return (T)mapper.ToObject(xElement);
+            var mapper = _mapperFactory.GetMapper(objectType);
+            return mapper.ToObject(xElement);
         }
 
         public DateTime CurrentTime

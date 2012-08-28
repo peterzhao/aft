@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Linq;
 using SalsaImporter.Aft;
-using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
 {
-    public abstract class GenericMapper<T> : IMapper where T: class, ISyncObject, new()
+    public class GenericMapper: IMapper
     {
-        protected abstract Dictionary<string, string> Map { get; }
+        private string _objectType;
+        private Dictionary<string, string> _map;
 
-        public virtual string SalsaType { get {  return typeof(T).Name.ToLower(); } }
+        public GenericMapper(string objectType, Dictionary<string, string> map)
+        {
+            _objectType = objectType;
+            _map = map;
+        }
 
+        protected Dictionary<string, string> Map { get { return _map; } }
 
-        public NameValueCollection ToNameValues(ISyncObject syncObject)
+        public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
             foreach (var property in syncObject.GetType().GetProperties())
@@ -36,41 +41,41 @@ namespace SalsaImporter.Mappers
             return result;
         }
 
-        public ISyncObject ToObject(XElement element)
-        {
-            var syncObject = new T();
-            foreach (var property in syncObject.GetType().GetProperties())
-            {
-                string propertyName = property.Name;
-                var propertyType = property.PropertyType;
-                object propertyValue = null;
-                if (!Map.ContainsKey(propertyName)) continue;
-                if (propertyType == typeof(String))
-                    propertyValue = element.StringValueOrNull(Map[propertyName]);
-                else if (propertyType == typeof(int?))
-                    propertyValue = element.IntValueOrNull(Map[propertyName]);
-                else if (propertyType == typeof(int))
-                    propertyValue = element.IntValueOrDefault(Map[propertyName]);
-                else if (propertyType == typeof(float?))
-                    propertyValue = element.FloatValueOrNull(Map[propertyName]);
-                else if (propertyType == typeof(DateTime?))
-                    propertyValue = element.DateTimeValueOrNull(Map[propertyName]);
-                else if (propertyType == typeof(bool))
-                    propertyValue = element.BoolValueOrFalse(Map[propertyName]);
-                if (propertyValue != null)
-                    property.SetValue(syncObject, propertyValue, null);
-            }
-            return syncObject;
-        }
+//        public SyncObject ToObject(XElement element)
+//        {
+//            var syncObject = new SyncObject(_objectType);
+//            foreach (var property in syncObject.GetType().GetProperties())
+//            {
+//                string propertyName = property.Name;
+//                var propertyType = property.PropertyType;
+//                object propertyValue = null;
+//                if (!Map.ContainsKey(propertyName)) continue;
+//                if (propertyType == typeof(String))
+//                    propertyValue = element.StringValueOrNull(Map[propertyName]);
+//                else if (propertyType == typeof(int?))
+//                    propertyValue = element.IntValueOrNull(Map[propertyName]);
+//                else if (propertyType == typeof(int))
+//                    propertyValue = element.IntValueOrDefault(Map[propertyName]);
+//                else if (propertyType == typeof(float?))
+//                    propertyValue = element.FloatValueOrNull(Map[propertyName]);
+//                else if (propertyType == typeof(DateTime?))
+//                    propertyValue = element.DateTimeValueOrNull(Map[propertyName]);
+//                else if (propertyType == typeof(bool))
+//                    propertyValue = element.BoolValueOrFalse(Map[propertyName]);
+//                if (propertyValue != null)
+//                    property.SetValue(syncObject, propertyValue, null);
+//            }
+//            return syncObject;
+//        }
 
-        public SyncObject ToSyncObject(XElement element)
+        public SyncObject ToObject(XElement element)
         {
-            var syncObject = new SyncObject();
+            var syncObject = new SyncObject(_objectType);
             foreach (KeyValuePair<string, string> keyValuePair in Map)
             {
                 string localName = keyValuePair.Key;
                 string salsaName = keyValuePair.Value;
-                syncObject.Add(localName, element.StringValueOrNull(salsaName));
+                syncObject.Set(localName, element.StringValueOrNull(salsaName));
             }
             return syncObject;
         }

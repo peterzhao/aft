@@ -27,12 +27,12 @@ namespace SalsaImporterTests.Utilities
             SalsaClient.DeleteAllObjects(objectType, 100, true);
         }
  
-        public static void CreateSalsa<T>(params T[] objects) where T : class, ISyncObject
+        public static void CreateSalsa(params SyncObject[] objects)
         {
             objects.ToList().ForEach(syncObject => syncObject.Id = SalsaRepository.Add(syncObject));
         }
 
-        public static void UpdateSalsa<T>(params T[] objects) where T : class, ISyncObject
+        public static void UpdateSalsa(params SyncObject[] objects) 
         {
             objects.ToList().ForEach(SalsaRepository.Update);
         }

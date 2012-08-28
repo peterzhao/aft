@@ -14,7 +14,7 @@ namespace SalsaImporter
         private readonly ISyncErrorHandler _errorHandler;
         private readonly ISalsaClient _salsaClient;
         private readonly ISyncEventTracker _syncEventTracker;
-        private readonly ISyncObjectRepository _salsaRepository;
+        private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
 
         public SyncToQueue()
