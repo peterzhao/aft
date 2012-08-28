@@ -4,7 +4,7 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories
 {
-    public class QueueRepository
+    public class QueueRepository : IQueueRepository
     {
         private readonly AftDbContext _db;
         
@@ -13,9 +13,8 @@ namespace SalsaImporter.Repositories
             _db = db;
         }
 
-        public void Push(SyncObject syncObject)
+        public void Push(SyncObject syncObject, string tableName)
         {
-            string tableName = "Supporter_SalsaToAftQueue";
             List<string> fields = new List<string> { "First_Name", "Last_Name", "Email" };
 
             _db.InsertToQueue(syncObject, tableName, fields);

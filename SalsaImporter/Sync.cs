@@ -7,7 +7,7 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
 {
-    public class SyncToQueue
+    public class Sync
     {
         private readonly SyncSession _syncSession;
         private readonly ISyncErrorHandler _errorHandler;
@@ -16,7 +16,7 @@ namespace SalsaImporter
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
 
-        public SyncToQueue()
+        public Sync()
         {
             _errorHandler = new SyncErrorHandler(10);
             _salsaClient = new SalsaClient();
@@ -28,7 +28,7 @@ namespace SalsaImporter
             _syncSession = new SyncSession();
 
             _syncSession
-                .AddJob(new QueuePusher(_salsaRepository, _queueRepository, 100, "SupportersFromSalsa", "Supporter"));
+                .AddJob(new QueuePusher(_salsaRepository, _queueRepository, 100, "SupportersFromSalsa", "supporter", "Supporter_SalsaToAftQueue"));
            }
 
         public void Run()

@@ -1,4 +1,5 @@
 ﻿
+using System.Linq;
 using NUnit.Framework;
 using SalsaImporter.Synchronization;
 
@@ -13,7 +14,7 @@ namespace SalsaImporterTests.Synchronization
             const string fieldName = "first_name";
             const string expectedValue = "tom";
             const string expectedChangedValue = "peter";
-            
+
             var obj = new SyncObject("supporter");
 
             obj[fieldName] = expectedValue;
@@ -21,6 +22,17 @@ namespace SalsaImporterTests.Synchronization
 
             obj[fieldName] = expectedChangedValue;
             Assert.AreEqual(expectedChangedValue, obj[fieldName]);
+        }
+
+        [Test]
+        public void ShouldGetFieldNames()
+        {
+            var obj = new SyncObject("supporter");
+            obj["FirstName"] = "peter";
+            obj["LastName"] = "Zhao";
+            Assert.IsTrue(obj.FieldNames.Any(f => f == "FirstName"));
+            Assert.IsTrue(obj.FieldNames.Any(f => f == "LastName"));
+
         }
 
 

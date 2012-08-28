@@ -8,17 +8,19 @@ namespace SalsaImporter.Synchronization
     public class QueuePusher :ISyncJob 
     {
         private readonly ISalsaRepository _source;
-        private readonly QueueRepository _destination;
+        private readonly IQueueRepository _destination;
         private readonly int _batchSize;
         private readonly string _objectType;
+        private readonly string _queueName;
 
         public string Name { get; set; }
 
 
-        public QueuePusher(ISalsaRepository source, QueueRepository destination, int batchSize, string name, string objectType)
+        public QueuePusher(ISalsaRepository source, IQueueRepository destination, int batchSize, string name, string objectType, string queueName)
         {
             Name = name;
             _objectType = objectType;
+            _queueName = queueName;
             _source = source;
             _destination = destination;
             _batchSize = batchSize;
@@ -26,26 +28,19 @@ namespace SalsaImporter.Synchronization
 
         public void Start(IJobContext jobContext)
         {
-            IEnumerable<SyncObject> currentBatch;
-            int batchCount = 0;
-            do
+            for (int batchCount = 1; ; batchCount++) 
             {
-                batchCount += 1;
                 Logger.Debug("Running batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
-                currentBatch = _source.GetBatchOfObjects(_objectType,
-                    _batchSize,
-                    jobContext.CurrentRecord,
-                    jobContext.MinimumModificationDate).ToList();
-
-                foreach (var obj in currentBatch)
-                {
-                    _destination.Push(obj);
-                }
-                
+                var currentBatch = _source.GetBatchOfObjects(_objectType,
+                                                         _batchSize,
+                                                         jobContext.CurrentRecord,
+                                                         jobContext.MinimumModificationDate).ToList();
+                currentBatch.ForEach(obj => _destination.Push(obj, _queueName));
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().Id);
-                
-            } while (currentBatch.Count() >= _batchSize);
+                else
+                    break;                    
+            };
         }
 
       

@@ -28,7 +28,7 @@ namespace SalsaImporter
                     Config.SalsaUserName));
                 Logger.Info("Start Salsa importer...");
 
-                var sync = new SyncToQueue();
+                var sync = new Sync();
                 switch (args[0])
                 {  
                     case "sync":
