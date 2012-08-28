@@ -8,8 +8,8 @@ namespace SalsaImporter.Synchronization
 {
     public interface ISyncErrorHandler
     {
-        void HandleSyncObjectFailure(SyncObject obj, ISalsaRepository destination, Exception ex);
-        void HandleMappingFailure(string objectType, XElement obj, ISalsaRepository source, Exception ex);
+        void HandleSyncObjectFailure(SyncObject obj, object destination, Exception ex);
+        void HandleMappingFailure(string objectType, XElement obj, object source, Exception ex);
         event EventHandler<SyncEventArgs> NotifySyncEvent;
     }
 }

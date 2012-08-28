@@ -252,13 +252,13 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShoulOnlyAllowRetryForSpecificError()
         {
-            int ountOfCalled;
-            ountOfCalled = 0;
+            int countOfCalled;
+            countOfCalled = 0;
             Func<string> func = () =>
             {
-                ountOfCalled += 1;
-                Console.WriteLine(ountOfCalled);
-                if (ountOfCalled <= 2)
+                countOfCalled += 1;
+                Console.WriteLine(countOfCalled);
+                if (countOfCalled <= 2)
                     throw new InvalidDataException("testing error");
 
                 return "OK";
@@ -267,15 +267,15 @@ namespace SalsaImporterTests.Salsa
         }
 
         [Test]
-        public void ShouldRethrowTheErrorAferRetrySpecificTimesButStillGetError()
+        public void ShouldRethrowTheErrorAfterRetrySpecificTimesButStillGetError()
         {
-            int ountOfCalled;
-            ountOfCalled = 0;
+            int countOfCalled;
+            countOfCalled = 0;
             Func<string> func = () =>
             {
-                ountOfCalled += 1;
-                Console.WriteLine(ountOfCalled);
-                if (ountOfCalled <= 3)
+                countOfCalled += 1;
+                Console.WriteLine(countOfCalled);
+                if (countOfCalled <= 3)
                     throw new InvalidDataException("testing error");
 
                 return "OK";

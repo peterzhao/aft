@@ -23,23 +23,25 @@ namespace SalsaImporter.Synchronization
         }
 
     
-        public void HandleSyncObjectFailure(SyncObject obj, ISalsaRepository destination, Exception ex)
+        public void HandleSyncObjectFailure(SyncObject obj, object destination, Exception ex)
         {
             Logger.Error(String.Format("Failed to sync object: {0}", obj), ex);
-            var syncEventArgs = new SyncEventArgs { Destination = destination, EventType = SyncEventType.Error, SyncObject = obj, Error = ex };
+            var syncEventArgs = new SyncEventArgs { SyncObject = obj, Destination = destination, EventType = SyncEventType.Error, Error = ex };
             HandleFailure(obj, ex, syncEventArgs);
         }
 
-        public void HandleMappingFailure(string objectType, XElement obj, ISalsaRepository source, Exception ex)
+        public void HandleMappingFailure(string objectType, XElement obj, object source, Exception ex)
         {
             Logger.Error(String.Format("Failed to map object: {0}", obj), ex);
-            var syncEventArgs = new SyncEventArgs { 
-                Destination = source, 
-                EventType = SyncEventType.Error, 
-                Error = ex };
-            syncEventArgs.InitializeWithUnmappedObject(objectType, obj);
+            var syncEventArgs = new SyncEventArgs
+                                    {
+                                        Destination = source,
+                                        EventType = SyncEventType.Error,
+                                        Error = ex,
+                                        Data = obj.ToString(),
+                                        ObjectType = objectType
+                                    };
             HandleFailure(obj, ex, syncEventArgs);
-            
         }
 
         private void HandleFailure(object obj, Exception ex, SyncEventArgs syncEventArgs)

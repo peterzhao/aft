@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Moq;
 using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Synchronization;
