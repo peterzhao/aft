@@ -6,19 +6,16 @@ namespace SalsaImporter.Repositories
 {
     public class QueueRepository : IQueueRepository
     {
-        private readonly AftDbContext _db;
+        private readonly IAftDbContext _db;
         
-        public QueueRepository(AftDbContext db)
+        public QueueRepository(IAftDbContext db)
         {
             _db = db;
         }
 
         public void Push(SyncObject syncObject, string tableName)
         {
-            List<string> fields = new List<string> { "First_Name", "Last_Name", "Email" };
-
-            _db.InsertToQueue(syncObject, tableName, fields);
-
+            _db.InsertToQueue(syncObject, tableName, syncObject.FieldNames);
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject });
         }
 

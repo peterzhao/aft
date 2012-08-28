@@ -7,24 +7,23 @@ using System.Linq;
 
 namespace SalsaImporter.Synchronization
 {
-    public class AftDbContext : DbContext
+    public class AftDbContext : DbContext, IAftDbContext
     {
         private const string IdColumnName = "ID";
 
-        public AftDbContext():base(Config.DbConnectionString){}
+        public AftDbContext() : base(Config.DbConnectionString){}
 
         public DbSet<SessionContext> SessionContexts { get; set; }
         public DbSet<JobContext> JobContexts { get; set; }
         public DbSet<SyncEvent> SyncEvents { get; set; }
 
-        public void InsertToQueue(SyncObject syncObject, string tableName, IEnumerable<string> fields)
+        public void InsertToQueue(SyncObject syncObject, string tableName, List<string> fields)
         {
             var columnNames = String.Join(",", fields);
             var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
             var insertStatement = String.Format("INSERT {0} ({1}) VALUES ({2});", tableName, columnNames, parameterPlaceholders);
 
             var parameters = fields.Select(f => new SqlParameter(f, syncObject[f])).ToArray();
-
 
             Database.ExecuteSqlCommand(insertStatement, parameters);
         }
