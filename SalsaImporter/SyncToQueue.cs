@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -7,43 +8,36 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
 {
-    public class Sync
+    public class SyncToQueue
     {
         private readonly SyncSession _syncSession;
         private readonly ISyncErrorHandler _errorHandler;
         private readonly ISalsaClient _salsaClient;
         private readonly ISyncEventTracker _syncEventTracker;
-        private readonly ISyncObjectRepository _localRepository;
         private readonly ISyncObjectRepository _salsaRepository;
-        private readonly IObjectUpdater _localConditionalUpdater;
-        private readonly IObjectUpdater _salsaConditionalUpdater;
+        private readonly QueueRepository _queueRepository;
 
-        public Sync()
+        public SyncToQueue()
         {
             _errorHandler = new SyncErrorHandler(10);
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
-            _localRepository = new LocalRepository();
             _salsaRepository = new SalsaRepository(_salsaClient, new MapperFactory(), _errorHandler);
-            _localConditionalUpdater = new LocalUpdater(_localRepository, _errorHandler);
-            _salsaConditionalUpdater = new ExternalUpdater(_salsaRepository, _localRepository, _errorHandler);
-
+            _queueRepository = new QueueRepository(new AftDbContext());
             _salsaClient.Login();
 
             _syncSession = new SyncSession();
+
             _syncSession
-                .AddJob(new BatchOneWaySyncJob<Supporter>(_salsaRepository, _localConditionalUpdater, 100, "Pulling supporters"))
-                .AddJob(new BatchOneWaySyncJob<Supporter>(_localRepository, _salsaConditionalUpdater, 100, "Push supporters"))
-                .AddJob(new BatchOneWaySyncJob<Group>(_salsaRepository, _localConditionalUpdater, 100, "Pulling groups"))
-                .AddJob(new BatchOneWaySyncJob<Group>(_localRepository, _salsaConditionalUpdater, 100, "Push groups"));
-        }
+                .AddJob(new QueuePusher(_salsaRepository, _queueRepository, 100, "SupportersFromSalsa", "Supporter"));
+           }
 
         public void Run()
         {
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            _localRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-
+            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            
             _syncSession.Start();
             PrintSyncEvents();
         }
@@ -57,11 +51,11 @@ namespace SalsaImporter
             int totalUpdatedinSalsa = 0;
             var currentContext = _syncSession.CurrentContext;
             var salsaDestination = _salsaRepository.GetType().Name;
-            var localDestination = _localRepository.GetType().Name;
+            var queueDestination = _queueRepository.GetType().Name;
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Add && e.Destination == localDestination));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Add && e.Destination == queueDestination));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Add && e.Destination == salsaDestination));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedInLocal = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == localDestination));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedInLocal = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == queueDestination));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalUpdatedinSalsa = events.Count(e => e.EventType == SyncEventType.Update && e.Destination == salsaDestination));
             Logger.Info(string.Format("Total added to local:{0} Total updated in local:{1} Total added to Salsa:{2} Total updated in Salsa:{3} Total errors: {4}", totalAddedToLocal, totalUpdatedInLocal, totalAddedToSalsa, totalUpdatedinSalsa, totalErrors));
         }

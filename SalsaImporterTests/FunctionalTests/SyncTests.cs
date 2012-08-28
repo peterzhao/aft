@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Threading;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Aft;
@@ -25,6 +26,7 @@ namespace SalsaImporterTests.FunctionalTests
 
             TestUtils.RemoveAllLocalModelObjects();
             TestUtils.ClearAllSessions();
+            TestUtils.ClearAllQueues();
 
             TestUtils.RemoveAllSalsa("supporter");
             TestUtils.RemoveAllSalsa("groups");
@@ -60,7 +62,6 @@ namespace SalsaImporterTests.FunctionalTests
             };
 
         }
-
 
         [Test]
         public void ShouldPullNewSupportersToLocalDb()
@@ -213,6 +214,28 @@ namespace SalsaImporterTests.FunctionalTests
             AssertSalsaMatches(_groupOne);
             AssertSalsaMatches(_groupTwo);
         }
+
+        private const string SupporterSalsaToAftQueue = "Supporter_SalsaToAftQueue";
+        private readonly List<string> _fields = new List<string> { "First_Name", "Last_Name", "Email" };
+
+        [Test]
+        public void ShouldPullNewSupportersToQueue()
+        {
+            // Setup...
+            TestUtils.CreateSalsa(_supporterOne, _supporterTwo);
+
+            // Test...
+            var sync = new SyncToQueue();
+            sync.Run();
+
+            // Verify...
+            using (var db = new AftDbContext())
+            {
+                SyncObject fromQueue = db.NextFromQueue(SupporterSalsaToAftQueue, _fields);
+                db.RemoveFromQueue(fromQueue, SupporterSalsaToAftQueue);
+            }
+        }
+
         private void AssertLocalMatches<T>(T salsaObject) where T : class, ISyncObject
         {
             var localRepository = new LocalRepository();

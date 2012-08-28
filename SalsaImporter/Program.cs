@@ -31,6 +31,9 @@ namespace SalsaImporter
                 var sync = new Sync();
                 switch (args[0])
                 {
+                    case "syncq":
+                        new SyncToQueue().Run();
+                        break;
                     case "sync":
                         sync.Run();
                         break;

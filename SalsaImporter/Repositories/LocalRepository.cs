@@ -21,6 +21,11 @@ namespace SalsaImporter.Repositories
             }
         }
 
+        public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Add<T>(T syncObject) where T : class, ISyncObject
         {
             int id;

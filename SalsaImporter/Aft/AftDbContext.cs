@@ -23,7 +23,7 @@ namespace SalsaImporter.Aft
         public DbSet<Group> Groups { get; set; }
         public DbSet<SupporterCustomField> SupporterCustomFields { get; set; }
 
-        public void InsertToQueue(DynamicSyncObject syncObject, string tableName, List<string> fields)
+        public void InsertToQueue(SyncObject syncObject, string tableName, IEnumerable<string> fields)
         {
             var columnNames = String.Join(",", fields);
             var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
@@ -31,10 +31,11 @@ namespace SalsaImporter.Aft
 
             var parameters = fields.Select(f => new SqlParameter(f, syncObject.Get(f))).ToArray();
 
+
             Database.ExecuteSqlCommand(insertStatement, parameters);
         }
 
-        public DynamicSyncObject NextFromQueue(string tableName, List<string> fields)
+        public SyncObject NextFromQueue(string tableName, List<string> fields)
         {
             var fixedFields = new List<string> { IdColumnName }; 
             
@@ -47,13 +48,14 @@ namespace SalsaImporter.Aft
             
             if (sqlConnection.State != ConnectionState.Open) sqlConnection.Open();
 
-            var item = new DynamicSyncObject();
+            var item = new SyncObject();
 
             var reader = sc.ExecuteReader();
             if (! reader.Read() )
                 return null;
 
             item.Id = (int)reader[IdColumnName];
+
             fields.ForEach(field => item.Add(field, (string)reader[field]));
 
             if (sqlConnection.State != ConnectionState.Closed) sqlConnection.Close();
@@ -61,7 +63,7 @@ namespace SalsaImporter.Aft
             return item;
         }
 
-        public void RemoveFromQueue(DynamicSyncObject item, string tableName)
+        public void RemoveFromQueue(SyncObject item, string tableName)
         {
             var deleteStatement = String.Format("DELETE FROM {0} WHERE {1} = @{1};", tableName, IdColumnName);
             var parameters = new SqlParameter[] {new SqlParameter(IdColumnName, item.Id)};

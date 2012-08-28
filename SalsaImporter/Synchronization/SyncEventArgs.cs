@@ -11,7 +11,7 @@ namespace SalsaImporter.Synchronization
         private int _externalId;
         private string _objectType;
         public string EventType { get; set; }
-        public ISyncObjectRepository Destination { get; set; }
+        public object Destination { get; set; }
         public Exception Error { get; set; }
 
         public ISyncObject SyncObject { 

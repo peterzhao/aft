@@ -41,16 +41,16 @@ namespace SalsaImporter.Repositories
             return batchOfObjects;
         }
 
-        public IEnumerable<DynamicSyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate) 
+        public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
         {
             var mapper = _mapperFactory.GetMapper(objectType);
             var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
-            var batchOfObjects = new List<DynamicSyncObject>();
+            var batchOfObjects = new List<SyncObject>();
             foreach (var element in xElements)
             {
                 try
                 {
-                    var syncObject = mapper.ToDynamicObject(element);
+                    var syncObject = mapper.ToSyncObject(element);
                     batchOfObjects.Add(syncObject);
                 }
                 catch (Exception ex)
@@ -67,7 +67,7 @@ namespace SalsaImporter.Repositories
             IMapper mapper = _mapperFactory.GetMapper(typeof (T).Name);
             var id = int.Parse(_salsa.Create(mapper.SalsaType, mapper.ToNameValues(syncObject)));
             syncObject.Id = id;
-            NotifySyncEvent(this, new SyncEventArgs{EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject});
+            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject });
             return id;
         }
 

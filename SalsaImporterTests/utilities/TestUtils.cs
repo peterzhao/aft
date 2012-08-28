@@ -52,6 +52,14 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
+        public static void ClearAllQueues()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("delete from Supporter_SalsaToAftQueue");
+            }
+        }
+
         public static void RemoveAllLocalModelObjects()
         {
             using (var db = new AftDbContext())

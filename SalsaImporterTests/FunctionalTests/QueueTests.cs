@@ -36,7 +36,7 @@ namespace SalsaImporterTests.FunctionalTests
         {
             _dbContext = new AftDbContext();
 
-            DynamicSyncObject item;
+            SyncObject item;
             while (null != (item = _dbContext.NextFromQueue(QueueName, _fields)))
             {
                 _dbContext.RemoveFromQueue(item, QueueName);
@@ -54,7 +54,7 @@ namespace SalsaImporterTests.FunctionalTests
         {
             var supporter = CreateRandomSupporter();
            
-            DynamicSyncObject readFromQueue = _dbContext.NextFromQueue(QueueName, _fields);
+            SyncObject readFromQueue = _dbContext.NextFromQueue(QueueName, _fields);
 
             _fields.ForEach(f => Assert.AreEqual(supporter.Get(f), readFromQueue.Get(f)));
         }
@@ -63,17 +63,17 @@ namespace SalsaImporterTests.FunctionalTests
         public void ShouldDeleteFromQueueAndReturnNullWhenEmpty()
         {   
             CreateRandomSupporter();
-            DynamicSyncObject readFromQueue = _dbContext.NextFromQueue(QueueName, _fields);
+            SyncObject readFromQueue = _dbContext.NextFromQueue(QueueName, _fields);
             
             _dbContext.RemoveFromQueue(readFromQueue, QueueName);
 
             Assert.IsNull(_dbContext.NextFromQueue(QueueName, _fields));
         }
 
-        private DynamicSyncObject CreateRandomSupporter()
+        private SyncObject CreateRandomSupporter()
         {
             string random = Guid.NewGuid().ToString().Substring(0, 5);
-            var supporter = new DynamicSyncObject();
+            var supporter = new SyncObject();
             _fields.ForEach(f => supporter.Add(f, random + f));
             _dbContext.InsertToQueue(supporter, QueueName, _fields);
             return supporter;

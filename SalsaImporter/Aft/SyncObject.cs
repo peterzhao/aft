@@ -5,14 +5,14 @@ using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Aft
 {
-    public class DynamicSyncObject : ISyncObject 
+    public class SyncObject : ISyncObject 
     {
         public int Id { get; set; }
         public DateTime? ModifiedDate { get; private set; }
         public int? ExternalId { get; set; }
         private IDictionary<string, string> _dictionary;
 
-        public DynamicSyncObject()
+        public SyncObject()
         {
             _dictionary = new Dictionary<string, string>();
         }

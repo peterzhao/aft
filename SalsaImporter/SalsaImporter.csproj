@@ -57,7 +57,11 @@
     <Compile Include="Aft\AftDbContext.cs" />
     <Compile Include="Aft\SupporterGroup.cs" />
     <Compile Include="Aft\Group.cs" />
-    <Compile Include="Aft\DynamicSyncObject.cs" />
+    <Compile Include="Aft\SyncObject.cs" />
+    <Compile Include="Repositories\QueueRepository.cs" />
+    <Compile Include="SyncToQueue.cs" />
+    <Compile Include="Repositories\LocalRepository.cs" />
+    <Compile Include="Synchronization\QueuePusher.cs" />
     <Compile Include="Synchronization\SyncObjectCloner.cs" />
     <Compile Include="Mappers\GenericMapper.cs" />
     <Compile Include="Mappers\GroupMapper.cs" />
@@ -86,7 +90,6 @@
     <Compile Include="Exceptions\InvalidSalsaResponseException.cs" />
     <Compile Include="Mappers\IMapper.cs" />
     <Compile Include="Mappers\IMapperFactory.cs" />
-    <Compile Include="Repositories\LocalRepository.cs" />
     <Compile Include="Repositories\SalsaRepository.cs" />
     <Compile Include="Synchronization\ExternalUpdater.cs" />
     <Compile Include="Synchronization\ISyncJob.cs" />

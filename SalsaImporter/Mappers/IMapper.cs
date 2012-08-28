@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Linq;
 using SalsaImporter.Aft;
@@ -11,7 +12,7 @@ namespace SalsaImporter.Mappers
         ISyncObject ToObject(XElement xElement);
         string SalsaType { get; }
 
-        DynamicSyncObject ToDynamicObject(XElement element);
+        SyncObject ToSyncObject(XElement element);
 
     }
 }

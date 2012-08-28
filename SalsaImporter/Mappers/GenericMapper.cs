@@ -63,9 +63,16 @@ namespace SalsaImporter.Mappers
             return syncObject;
         }
 
-        public DynamicSyncObject ToDynamicObject(XElement element)
+        public SyncObject ToSyncObject(XElement element)
         {
-            return new DynamicSyncObject();
+            var syncObject = new SyncObject();
+            foreach (KeyValuePair<string, string> keyValuePair in Map)
+            {
+                string localName = keyValuePair.Key;
+                string salsaName = keyValuePair.Value;
+                syncObject.Add(localName, element.StringValueOrNull(salsaName));
+            }
+            return syncObject;
         }
     }
 }
