@@ -77,6 +77,7 @@ namespace SalsaImporter.Mappers
                 string salsaName = keyValuePair.Value;
                 syncObject[localName] = element.StringValueOrNull(salsaName);
             }
+            syncObject.Id = element.IntValueOrDefault("key");
             return syncObject;
         }
     }

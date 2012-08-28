@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mappers\GenericMapperTests.cs" />
     <Compile Include="Synchronization\AftDbContextTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
     <Compile Include="Synchronization\QueuePusherTests.cs" />
