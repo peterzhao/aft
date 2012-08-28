@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Linq;
-using SalsaImporter.Aft;
+using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
@@ -75,7 +75,7 @@ namespace SalsaImporter.Mappers
             {
                 string localName = keyValuePair.Key;
                 string salsaName = keyValuePair.Value;
-                syncObject.Set(localName, element.StringValueOrNull(salsaName));
+                syncObject[localName] = element.StringValueOrNull(salsaName);
             }
             return syncObject;
         }

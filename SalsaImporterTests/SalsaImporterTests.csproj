@@ -56,10 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aft\AftDbContextTests.cs" />
-    <Compile Include="FunctionalTests\QueueTests.cs" />
+    <Compile Include="Synchronization\AftDbContextTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
+    <Compile Include="Synchronization\SyncObjectTests.cs" />
     <Compile Include="Utilities\CreateTestingCustomColumnsTests.cs" />
     <Compile Include="Mappers\MapperFactoryTests.cs" />
     <Compile Include="ConfigTests.cs" />
@@ -94,6 +94,9 @@
       <Link>environments.xml</Link>
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FunctionalTests\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Linq;
-using SalsaImporter.Aft;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Mappers
 {

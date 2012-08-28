@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using SalsaImporter;
-using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;

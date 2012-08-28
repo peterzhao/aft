@@ -4,11 +4,8 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Xml.Linq;
-using SalsaImporter.Synchronization;
-using SalsaImporter.Utilities;
 
-namespace SalsaImporter.Aft
+namespace SalsaImporter.Synchronization
 {
     public class AftDbContext : DbContext
     {
@@ -26,7 +23,7 @@ namespace SalsaImporter.Aft
             var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
             var insertStatement = String.Format("INSERT {0} ({1}) VALUES ({2});", tableName, columnNames, parameterPlaceholders);
 
-            var parameters = fields.Select(f => new SqlParameter(f, syncObject.Get(f))).ToArray();
+            var parameters = fields.Select(f => new SqlParameter(f, syncObject[f])).ToArray();
 
 
             Database.ExecuteSqlCommand(insertStatement, parameters);
@@ -53,7 +50,7 @@ namespace SalsaImporter.Aft
 
             item.Id = (int)reader[IdColumnName];
 
-            fields.ForEach(field => item.Set(field, (string)reader[field]));
+            fields.ForEach(field => item[field] = (string)reader[field]);
 
             if (sqlConnection.State != ConnectionState.Closed) sqlConnection.Close();
 

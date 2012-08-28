@@ -1,14 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SalsaImporter.Aft
+namespace SalsaImporter.Synchronization
 {
     public class SyncObject
     {
         private readonly string _objectType;
         public int Id { get; set; }
-        public DateTime? ModifiedDate { get; private set; }
 
         public string ObjectType
         {
@@ -23,32 +21,25 @@ namespace SalsaImporter.Aft
             _dictionary = new Dictionary<string, string>();
         }
 
-        public object this[string fieldName]
+        public string this[string fieldName]
         {
-            get { return null; }
+            get
+            {
+                return _dictionary[fieldName];
+            }
             set
             {
-                
+                _dictionary[fieldName] = value;
+    
             }
-        }
-
-        public void Set(String fieldName, String value)
-        {
-            _dictionary.Add(fieldName, value);
-        }
-
-        public string Get(String fieldName)
-        {
-            return _dictionary[fieldName];
         }
 
         public override string ToString()
         {
             string dictionaryFields = string.Join(", ", _dictionary.Select(pair => string.Format("{0}: {1}", pair.Key, pair.Value)));
             
-            return string.Format("Id: {0},  ModifiedDate: {1}, {2}", 
-                Id,  
-                ModifiedDate, 
+            return string.Format("Id: {0}, {1}", 
+                Id,
                 dictionaryFields);
         }
     }

@@ -54,8 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aft\AftDbContext.cs" />
-    <Compile Include="Aft\SyncObject.cs" />
+    <Compile Include="Synchronization\AftDbContext.cs" />
+    <Compile Include="Synchronization\SyncObject.cs" />
     <Compile Include="Repositories\QueueRepository.cs" />
     <Compile Include="SyncToQueue.cs" />
     <Compile Include="Synchronization\QueuePusher.cs" />

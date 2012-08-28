@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SalsaImporter.Aft;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories

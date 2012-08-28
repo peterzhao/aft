@@ -1,6 +1,5 @@
 using System;
 using System.Xml.Linq;
-using SalsaImporter.Aft;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization

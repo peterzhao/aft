@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
-using SalsaImporter.Aft;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Repositories;
 

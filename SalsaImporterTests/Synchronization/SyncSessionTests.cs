@@ -5,7 +5,6 @@ using System.Threading;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter;
-using SalsaImporter.Aft;
 using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
 
