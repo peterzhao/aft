@@ -20,27 +20,6 @@ namespace SalsaImporter.Repositories
             _syncErrorHandler = syncErrorHandler;
         }
 
-        public IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T : class, ISyncObject
-        {
-            var mapper = _mapperFactory.GetMapper(typeof (T).Name);
-            var xElements = _salsa.GetObjects(mapper.SalsaType, batchSize, startKey.ToString(), minimumModifiedDate);
-            var batchOfObjects = new List<T>();
-            foreach (var element in xElements)
-            {
-                try
-                {
-                    var syncObject = (T) mapper.ToObject(element);
-                    batchOfObjects.Add(syncObject);
-                } 
-                catch (Exception ex )
-                {
-                    Logger.Error(string.Format("Could not map {0}", element), ex); 
-                    _syncErrorHandler.HandleMappingFailure(typeof(T).Name, element, this, ex);
-                }
-            }
-            return batchOfObjects;
-        }
-
         public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
         {
             var mapper = _mapperFactory.GetMapper(objectType);

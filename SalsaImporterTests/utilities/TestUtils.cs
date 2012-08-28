@@ -22,11 +22,6 @@ namespace SalsaImporterTests.Utilities
             get { return new SalsaRepository(SalsaClient, new MapperFactory(), new SyncErrorHandler(10)); }
         }
 
-        public static LocalRepository LocalRepository
-        {
-            get { return new LocalRepository(); }
-        }
-
         public static void RemoveAllSalsa(string objectType)
         {
             SalsaClient.DeleteAllObjects(objectType, 100, true);
@@ -60,25 +55,6 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static void RemoveAllLocalModelObjects()
-        {
-            using (var db = new AftDbContext())
-            {
-                db.Database.ExecuteSqlCommand("truncate table Groups");
-                db.Database.ExecuteSqlCommand("delete from SupporterCustomFieldValues");
-                db.Database.ExecuteSqlCommand("delete from Supporters");
-            }
-        }
-
-        public static void CreateLocal<T>(params T[] objects) where T : class, ISyncObject
-        {
-            objects.ToList().ForEach(syncObject => LocalRepository.Add(syncObject));
-        }
-
-        public static void UpdateLocal<T>(params T[] objects) where T : class, ISyncObject
-        {
-            objects.ToList().ForEach(LocalRepository.Update);
-        }
 
          }
 }

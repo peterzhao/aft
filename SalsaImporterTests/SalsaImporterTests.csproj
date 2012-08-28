@@ -57,29 +57,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aft\AftDbContextTests.cs" />
-    <Compile Include="Aft\SupporterGroupTests.cs" />
-    <Compile Include="Aft\GroupTests.cs" />
     <Compile Include="FunctionalTests\QueueTests.cs" />
-    <Compile Include="Mappers\GroupMapperTests.cs" />
-    <Compile Include="Aft\CustomFieldValuesTests.cs" />
-    <Compile Include="Aft\SupporterCustomFieldTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
-    <Compile Include="Synchronization\SyncObjectClonerTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Utilities\CreateTestingCustomColumnsTests.cs" />
     <Compile Include="Mappers\MapperFactoryTests.cs" />
-    <Compile Include="Mappers\SupporterMapperTests.cs" />
-    <Compile Include="Aft\SupporterTests.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="Synchronization\SyncErrorHandlerTests.cs" />
-    <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\LocalRepositoryTests.cs" />
     <Compile Include="Repositories\SalsaRepositoryTests.cs" />
-    <Compile Include="Synchronization\BatchOneWaySynchronizeTests.cs" />
     <Compile Include="Synchronization\SyncJobStub.cs" />
     <Compile Include="Synchronization\SyncSessionTests.cs" />
-    <Compile Include="Synchronization\LocalUpdaterTests.cs" />
     <Compile Include="Synchronization\JobContextStub.cs" />
     <Compile Include="Utilities\DateTimeUtilityTests.cs" />
     <Compile Include="Utilities\StringUtilityTests.cs" />

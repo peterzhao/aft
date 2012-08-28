@@ -7,8 +7,7 @@ namespace SalsaImporter.Repositories
 {
     public interface ISyncObjectRepository
     {
-        IEnumerable<T> GetBatchOfObjects<T>(int batchSize, int startKey, DateTime minimumModifiedDate) where T:class, ISyncObject;
-
+        
         IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey,
                                                          DateTime minimumModifiedDate); 
        

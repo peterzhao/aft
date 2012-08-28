@@ -16,12 +16,9 @@ namespace SalsaImporter.Aft
 
         public AftDbContext():base(Config.DbConnectionString){}
 
-        public DbSet<Supporter> Supporters { get; set; }
         public DbSet<SessionContext> SessionContexts { get; set; }
         public DbSet<JobContext> JobContexts { get; set; }
         public DbSet<SyncEvent> SyncEvents { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<SupporterCustomField> SupporterCustomFields { get; set; }
 
         public void InsertToQueue(SyncObject syncObject, string tableName, IEnumerable<string> fields)
         {

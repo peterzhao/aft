@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using SalsaImporter.Aft;
 using SalsaImporter.Mappers;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporterTests.Mappers
 {
@@ -14,8 +14,7 @@ namespace SalsaImporterTests.Mappers
         [Test]
         public void ShouldGetMapperForSupporter()
         {
-            Type objectType = typeof (Supporter);
-            var mapper  = new MapperFactory().GetMapper(objectType.Name);
+            var mapper  = new MapperFactory().GetMapper("Supporter");
             Assert.AreEqual(typeof(SupporterMapper), mapper.GetType());
         }
     }

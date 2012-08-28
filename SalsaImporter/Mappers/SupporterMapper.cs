@@ -3,7 +3,7 @@ using SalsaImporter.Aft;
 
 namespace SalsaImporter.Mappers
 {
-    public class SupporterMapper : GenericMapper<Supporter>
+    public class SupporterMapper : GenericMapper<SyncObject>
     {
         protected override Dictionary<string, string> Map
         {

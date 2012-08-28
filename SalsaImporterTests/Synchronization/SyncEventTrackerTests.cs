@@ -24,58 +24,58 @@ namespace SalsaImporterTests.Synchronization
             _currentSessionContext = new SyncSession().CurrentContext;
         }
 
-        [Test]
-        public void ShouldTrackSyncEvent()
-        {
-            var start = DateTime.Now;
-            var tracker = new SyncEventTracker();
-            var supporter = new Supporter {Id = 23, ExternalId = 45, First_Name = "peter", Last_Name = "Foo"};
-            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
-            tracker.TrackEvent(new SyncEventArgs{SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Update}, _currentSessionContext);
-            var syncEvent = Db(db =>db.SyncEvents.Include("SessionContext").FirstOrDefault());
-            Assert.IsNotNull(syncEvent);
-            Assert.AreEqual(SyncEventType.Update, syncEvent.EventType);
-            Assert.AreEqual(23, syncEvent.ObjectId);
-            Assert.AreEqual("Supporter", syncEvent.ObjectType);
-            Assert.AreEqual(45, syncEvent.ExternalId);
-            Assert.AreEqual(supporter.ToString(), syncEvent.Data);
-            Assert.AreEqual(salsaRepository.GetType().Name, syncEvent.Destination);
-            Assert.AreEqual(_currentSessionContext.Id, syncEvent.SessionContext.Id);
-            Assert.IsNull(syncEvent.Error);
-
-        }
-        [Test]
-        public void ShouldTrackSyncEventWithError()
-        {
-            var tracker = new SyncEventTracker();
-            var supporter = new Supporter { Id = 23, ExternalId = 45, First_Name = "peter", Last_Name = "Foo" };
-            var error = new ApplicationException("testing error");
-            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
-            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Error, Error = error}, _currentSessionContext);
-            var syncEvent = Db(db => db.SyncEvents.Include("SessionContext").FirstOrDefault());
-            Assert.IsNotNull(syncEvent);
-            Assert.AreEqual(error.ToString(), syncEvent.Error);
-
-        }
-
-        [Test]
-        public void ShouldGetSyncEventsForSession()
-        {
-            var tracker = new SyncEventTracker();
-            var supporter1 = new Supporter { Id = 123, ExternalId = 45, First_Name = "peter", Last_Name = "Foo" };
-            var supporter2 = new Supporter { Id = 124, ExternalId = 46, First_Name = "joe", Last_Name = "Foo" };
-            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
-            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter1, Destination = salsaRepository, EventType = SyncEventType.Add}, _currentSessionContext);
-            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter2, Destination = salsaRepository, EventType = SyncEventType.Update}, _currentSessionContext);
-
-            List<SyncEvent> allEvents = null;
-            tracker.SyncEventsForSession(_currentSessionContext, events => allEvents = events.ToList());
-
-            Assert.AreEqual(2, allEvents.Count());
-
-            Assert.IsTrue(allEvents.Any(e => e.ObjectId == 123));
-            Assert.IsTrue(allEvents.Any(e => e.ObjectId == 124));
-        }
+//        [Test]
+//        public void ShouldTrackSyncEvent()
+//        {
+//            var start = DateTime.Now;
+//            var tracker = new SyncEventTracker();
+//            var supporter = new Supporter {Id = 23, ExternalId = 45, First_Name = "peter", Last_Name = "Foo"};
+//            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
+//            tracker.TrackEvent(new SyncEventArgs{SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Update}, _currentSessionContext);
+//            var syncEvent = Db(db =>db.SyncEvents.Include("SessionContext").FirstOrDefault());
+//            Assert.IsNotNull(syncEvent);
+//            Assert.AreEqual(SyncEventType.Update, syncEvent.EventType);
+//            Assert.AreEqual(23, syncEvent.ObjectId);
+//            Assert.AreEqual("Supporter", syncEvent.ObjectType);
+//            Assert.AreEqual(45, syncEvent.ExternalId);
+//            Assert.AreEqual(supporter.ToString(), syncEvent.Data);
+//            Assert.AreEqual(salsaRepository.GetType().Name, syncEvent.Destination);
+//            Assert.AreEqual(_currentSessionContext.Id, syncEvent.SessionContext.Id);
+//            Assert.IsNull(syncEvent.Error);
+//
+//        }
+//        [Test]
+//        public void ShouldTrackSyncEventWithError()
+//        {
+//            var tracker = new SyncEventTracker();
+//            var supporter = new Supporter { Id = 23, ExternalId = 45, First_Name = "peter", Last_Name = "Foo" };
+//            var error = new ApplicationException("testing error");
+//            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
+//            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter, Destination = salsaRepository, EventType = SyncEventType.Error, Error = error}, _currentSessionContext);
+//            var syncEvent = Db(db => db.SyncEvents.Include("SessionContext").FirstOrDefault());
+//            Assert.IsNotNull(syncEvent);
+//            Assert.AreEqual(error.ToString(), syncEvent.Error);
+//
+//        }
+//
+//        [Test]
+//        public void ShouldGetSyncEventsForSession()
+//        {
+//            var tracker = new SyncEventTracker();
+//            var supporter1 = new Supporter { Id = 123, ExternalId = 45, First_Name = "peter", Last_Name = "Foo" };
+//            var supporter2 = new Supporter { Id = 124, ExternalId = 46, First_Name = "joe", Last_Name = "Foo" };
+//            ISyncObjectRepository salsaRepository = new SalsaRepository(null, null, null);
+//            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter1, Destination = salsaRepository, EventType = SyncEventType.Add}, _currentSessionContext);
+//            tracker.TrackEvent(new SyncEventArgs { SyncObject = supporter2, Destination = salsaRepository, EventType = SyncEventType.Update}, _currentSessionContext);
+//
+//            List<SyncEvent> allEvents = null;
+//            tracker.SyncEventsForSession(_currentSessionContext, events => allEvents = events.ToList());
+//
+//            Assert.AreEqual(2, allEvents.Count());
+//
+//            Assert.IsTrue(allEvents.Any(e => e.ObjectId == 123));
+//            Assert.IsTrue(allEvents.Any(e => e.ObjectId == 124));
+//        }
 
 
         private T Db<T>(Func<AftDbContext, T> func)
