@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Synchronization\AftDbContext.cs" />
-    <Compile Include="Synchronization\IAftDbContext.cs" />
     <Compile Include="Synchronization\SyncObject.cs" />
     <Compile Include="Repositories\QueueRepository.cs" />
     <Compile Include="Sync.cs" />

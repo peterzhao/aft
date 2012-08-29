@@ -12,6 +12,7 @@ GO
 
 CREATE TABLE [dbo].Supporter_SalsaToAftQueue(
         [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SalsaKey] [int] NOT NULL,
         [First_Name] [nvarchar](50) NULL,
         [Last_Name] [nvarchar](50) NULL,
         [Email] [nvarchar](50) NULL,

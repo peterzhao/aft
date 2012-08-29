@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
+using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
@@ -54,6 +60,28 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
+        public static List<Dictionary<string, object>> ReadAllFromQueue(string tableName)
+        {
 
-         }
+            using (var dataAdaptor = new SqlDataAdapter(string.Format("SELECT * FROM {0}", tableName),
+                                                 Config.DbConnectionString))
+            {
+                var dataSet = new DataSet();
+                dataAdaptor.Fill(dataSet);
+                var returnValue = new List<Dictionary<string, object>>();
+
+                DataTable table = dataSet.Tables[0];
+                foreach (DataRow row in table.Rows)
+                {
+                    var data = new Dictionary<string, object>();
+                    foreach (DataColumn column in table.Columns)
+                    {
+                        data[column.ColumnName] = row[column];
+                    }
+                    returnValue.Add(data);
+                }
+                return returnValue;
+            }
+        }
+    }
 }

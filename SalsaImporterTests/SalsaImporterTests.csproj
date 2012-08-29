@@ -46,15 +46,16 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="Mappers\GenericMapperTests.cs" />
-    <Compile Include="Synchronization\AftDbContextTests.cs" />
+    <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
     <Compile Include="Synchronization\QueuePusherTests.cs" />
-    <Compile Include="Synchronization\QueueRepositoryTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Synchronization\SyncObjectTests.cs" />
     <Compile Include="Utilities\CreateTestingCustomColumnsTests.cs" />
@@ -92,9 +93,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FunctionalTests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

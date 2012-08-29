@@ -22,7 +22,7 @@ namespace SalsaImporter
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
             _salsaRepository = new SalsaRepository(_salsaClient, new MapperFactory(), _errorHandler);
-            _queueRepository = new QueueRepository(new AftDbContext());
+            _queueRepository = new QueueRepository();
             _salsaClient.Login();
 
             _syncSession = new SyncSession();
@@ -33,9 +33,9 @@ namespace SalsaImporter
 
         public void Run()
         {
-            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+//            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+//            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+//            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             
             _syncSession.Start();
             PrintSyncEvents();

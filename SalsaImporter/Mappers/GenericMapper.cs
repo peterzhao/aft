@@ -20,26 +20,35 @@ namespace SalsaImporter.Mappers
 
         protected Dictionary<string, string> Map { get { return _map; } }
 
+
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
-            foreach (var property in syncObject.GetType().GetProperties())
-            {
-                var propertyName = property.Name;
-                if (Map.ContainsKey(propertyName))
-                {
-                    object value = property.GetValue(syncObject, null);
-                    if (value != null)
-                    {
-                        var stringValue = value.ToString();
-                        if (property.PropertyType == typeof(bool)) stringValue = value.Equals(true) ? "1" : "0";
-                        if (property.PropertyType == typeof(DateTime?)) stringValue = ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
-                        result.Add(Map[propertyName], stringValue);
-                    }
-                }
-            }
+            result["key"] = syncObject.Id.ToString();
+            syncObject.FieldNames.ForEach(f => result[Map[f]] = syncObject[f]);
             return result;
         }
+
+//        public NameValueCollection ToNameValues(SyncObject syncObject)
+//        {
+//            var result = new NameValueCollection();
+//            foreach (var property in syncObject.GetType().GetProperties())
+//            {
+//                var propertyName = property.Name;
+//                if (Map.ContainsKey(propertyName))
+//                {
+//                    object value = property.GetValue(syncObject, null);
+//                    if (value != null)
+//                    {
+//                        var stringValue = value.ToString();
+//                        if (property.PropertyType == typeof(bool)) stringValue = value.Equals(true) ? "1" : "0";
+//                        if (property.PropertyType == typeof(DateTime?)) stringValue = ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
+//                        result.Add(Map[propertyName], stringValue);
+//                    }
+//                }
+//            }
+//            return result;
+//        }
 
 //        public SyncObject ToObject(XElement element)
 //        {

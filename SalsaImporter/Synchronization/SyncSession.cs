@@ -111,7 +111,7 @@ namespace SalsaImporter.Synchronization
                 Logger.Fatal(message, ex);
                 CurrentContext.State = SessionState.Aborted;
                 _db.SaveChanges();
-                throw new SyncAbortedException(message);
+                throw new SyncAbortedException(message, ex);
             }
         }
     }
