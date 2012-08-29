@@ -14,6 +14,7 @@ namespace SalsaImporterTests.Repositories
     public class QueueRepositoryTests
     {
         private const string TableName = "Supporter_SalsaToAftQueue";
+        private const string ObjectType = "supporter";
         private QueueRepository _repository;
         private SyncObject _syncObject;
 
@@ -23,7 +24,7 @@ namespace SalsaImporterTests.Repositories
             Config.Environment = Config.Test;
 
             _repository = new QueueRepository();
-            _syncObject = new SyncObject("supporter");
+            _syncObject = new SyncObject(ObjectType);
 
             TestUtils.ClearAllQueues();
         }
@@ -103,5 +104,35 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(_repository, eventArgs.Destination);
         }
 
+        [Test]
+        public void ShouldDequeueBatchOfObjects()
+        {
+            Enqueue("foo@abc.com", "peter", "zhao");
+            Enqueue("foo2@abc.com", "peter2", "zhao2");
+            Enqueue("foo3@abc.com", "peter3", "zhao3");
+            var batch1 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, 0);
+            var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().Id);
+
+            Assert.AreEqual(2, batch1.Count);
+            Assert.AreEqual("foo@abc.com", batch1.First()["Email"]);
+            Assert.AreEqual("peter", batch1.First()["First_Name"]);
+            Assert.AreEqual("zhao", batch1.First()["Last_Name"]);
+
+            Assert.AreEqual("foo2@abc.com", batch1.Last()["Email"]);
+            Assert.AreEqual("peter2", batch1.Last()["First_Name"]);
+            Assert.AreEqual("zhao2", batch1.Last()["Last_Name"]);
+
+            Assert.AreEqual(1, batch2.Count);
+            Assert.AreEqual("foo3@abc.com", batch2.First()["Email"]);
+            Assert.AreEqual("peter3", batch2.First()["First_Name"]);
+            Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
+            
+        }
+
+        private void Enqueue(string email, string firstName, string lastName)
+        {
+            TestUtils.ExecuteSql(string.Format("insert into {0} ([First_Name],[Last_Name],[Email], SalsaKey) VALUES('{1}','{2}','{3}', 0)", 
+                TableName, firstName, lastName, email));
+        }
     }
 }

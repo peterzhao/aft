@@ -60,6 +60,14 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
+        public static void ExecuteSql(string sql)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(sql);
+            }
+        }
+
         public static List<Dictionary<string, object>> ReadAllFromQueue(string tableName)
         {
 

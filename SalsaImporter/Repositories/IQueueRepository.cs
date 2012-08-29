@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories
@@ -7,5 +8,6 @@ namespace SalsaImporter.Repositories
     {
         void Push(SyncObject syncObject, string tableName);
         event EventHandler<SyncEventArgs> NotifySyncEvent;
+        List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey);
     }
 }

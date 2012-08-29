@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using SalsaImporter.Synchronization;
@@ -17,6 +18,33 @@ namespace SalsaImporter.Repositories
         }
 
         public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
+
+        public List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
+        {
+            var sql = string.Format("SELECT top {0} * FROM {1} where Id > {2} order by Id", batchSize, tableName, startKey);
+            Logger.Debug(sql);
+            using (var dataAdaptor = new SqlDataAdapter(sql,Config.DbConnectionString))
+            {
+                var dataSet = new DataSet();
+                dataAdaptor.Fill(dataSet);
+                var returnValue = new List<SyncObject>();
+
+                DataTable table = dataSet.Tables[0];
+                foreach (DataRow row in table.Rows)
+                {
+                    var data = new SyncObject(objectType);
+                    foreach (DataColumn column in table.Columns)
+                    {
+                        if (column.ColumnName == "Id")
+                            data.Id = int.Parse(row[column].ToString());
+                        else
+                            data[column.ColumnName] = row[column].ToString();
+                    }
+                    returnValue.Add(data);
+                }
+                return returnValue;
+            }
+        }
 
         private void InsertToQueue(SyncObject syncObject, string tableName, List<string> fields)
         {
