@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SalsaImporter.Mappers
 {
     public class MapperFactory : IMapperFactory
     {
-        private readonly Dictionary<string, string> _dictionary = new Dictionary<string, string>
-                                             {
-                                                 {"First_Name", "First_Name"}, 
-                                                 {"Last_Name", "Last_Name"},  
-                                                 {"Email", "Email"}
-                                             };
-
-        private readonly Dictionary<string, Dictionary<string, string>> _mappers;
+         private List<FieldMapping> _mappings = new List<FieldMapping>
+                                          {
+                                              new FieldMapping{AftField = "First_Name", SalsaField = "First_Name", DataType = "string"},
+                                              new FieldMapping{AftField = "Last_Name", SalsaField = "Last_Name", DataType = "string"},
+                                              new FieldMapping{AftField = "Email", SalsaField = "Email", DataType = "string"},
+                                          };
+         private readonly Dictionary<string, List<FieldMapping>> _mappers;
 
         public MapperFactory()
         {
-            _mappers = new Dictionary<string, Dictionary<string, string>>();
-            _mappers.Add("supporter", _dictionary);
+            _mappers = new Dictionary<string, List<FieldMapping>>();
+            _mappers.Add("supporter", _mappings);
         }
 
         public IMapper GetMapper(string name)

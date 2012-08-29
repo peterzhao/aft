@@ -9,18 +9,28 @@ namespace SalsaImporterTests.Mappers
     [TestFixture]
     public class MapperTests
     {
+        private Mapper _mapper;
+        private List<FieldMapping> _mappings;
 
 
-        [Test]
+        [SetUp]
+        public void SetUp()
+        {
+            _mappings = new List<FieldMapping>
+                                          {
+                                              new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string"},
+                                              new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string"},
+                                          };
+            _mapper = new Mapper("SomeObject", _mappings);
+        }
+
         public void ShouldMapKeyToId()
         {
             var xElement = XElement.Parse(@"<item>
                                                 <key>12345</key>
                                             </item>");
 
-            var mapper = new Mapper("SomeObject", new Dictionary<string, string>());
-
-            SyncObject syncObject = mapper.ToObject(xElement);
+            SyncObject syncObject = _mapper.ToObject(xElement);
 
             Assert.AreEqual(12345, syncObject.Id);
         }
@@ -33,10 +43,8 @@ namespace SalsaImporterTests.Mappers
                                                 <address>main st</address>
                                             </item>");
 
-            var mapping = new Dictionary<string, string> { { "Email", "email" }, { "Address", "address" } };
-            var mapper = new Mapper("SomeObject", mapping);
 
-            SyncObject syncObject = mapper.ToObject(xElement);
+            SyncObject syncObject = _mapper.ToObject(xElement);
 
             Assert.AreEqual("foo@abc.com", syncObject["Email"]);
             Assert.AreEqual("main st", syncObject["Address"]);
@@ -47,15 +55,13 @@ namespace SalsaImporterTests.Mappers
         {
             var xElement = XElement.Parse(@"<item>
                                                 <email>foo@abc.com</email>
-                                                <city/>
+                                                <address/>
                                             </item>");
 
-            var mapping = new Dictionary<string, string> { { "Email", "email" }, { "City", "city" } };
-            var mapper = new Mapper("SomeObject", mapping);
 
-            SyncObject syncObject = mapper.ToObject(xElement);
+            SyncObject syncObject = _mapper.ToObject(xElement);
 
-            Assert.IsFalse(syncObject.FieldNames.Contains("City"));
+            Assert.IsFalse(syncObject.FieldNames.Contains("Address"));
 
         }
 
@@ -67,10 +73,8 @@ namespace SalsaImporterTests.Mappers
             var syncObject = new SyncObject("supporter");
             syncObject.Id = 1234;
             
-            var mapping = new Dictionary<string, string>();
-            var mapper = new Mapper(syncObject.ObjectType, mapping);
 
-            var nameValues = mapper.ToNameValues(syncObject);
+            var nameValues = _mapper.ToNameValues(syncObject);
             
             Assert.AreEqual("1234", nameValues["key"]);
         }
@@ -80,12 +84,10 @@ namespace SalsaImporterTests.Mappers
         {
             var syncObject = new SyncObject("supporter");
             syncObject["Email"] = "foo@abc.com";
-            syncObject["FirstName"] = "boo";
-            var mapping = new Dictionary<string, string> { { "Email", "email" }, { "FirstName", "firstname" } };
-            var mapper = new Mapper(syncObject.ObjectType, mapping);
+            syncObject["Address"] = "boo";
 
-            var nameValues = mapper.ToNameValues(syncObject);
-            Assert.AreEqual("boo", nameValues["firstname"]);
+            var nameValues = _mapper.ToNameValues(syncObject);
+            Assert.AreEqual("boo", nameValues["address"]);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
         }
 

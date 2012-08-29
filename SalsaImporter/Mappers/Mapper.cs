@@ -7,25 +7,25 @@ using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
 {
-    public class GenericMapper: IMapper
+    public class Mapper: IMapper
     {
         private string _objectType;
-        private Dictionary<string, string> _map;
+        private List<FieldMapping> _mappings;
+        private Dictionary<string, FieldMapping> _map = new Dictionary<string, FieldMapping>(); 
 
-        public GenericMapper(string objectType, Dictionary<string, string> map)
+        public Mapper(string objectType, List<FieldMapping>  mappings)
         {
             _objectType = objectType;
-            _map = map;
+            _mappings = mappings;
+            _mappings.ForEach(m => _map.Add(m.AftField, m));
         }
-
-        protected Dictionary<string, string> Map { get { return _map; } }
 
 
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
             result["key"] = syncObject.Id.ToString();
-            syncObject.FieldNames.ForEach(f => result[Map[f]] = syncObject[f]);
+            syncObject.FieldNames.ForEach(f => result[_map[f].SalsaField] = syncObject[f]);
             return result;
         }
 
@@ -80,10 +80,10 @@ namespace SalsaImporter.Mappers
         public SyncObject ToObject(XElement element)
         {
             var syncObject = new SyncObject(_objectType);
-            foreach (KeyValuePair<string, string> keyValuePair in Map)
+            foreach (var mapping in _mappings)
             {
-                string localName = keyValuePair.Key;
-                string salsaName = keyValuePair.Value;
+                string localName = mapping.AftField;
+                string salsaName = mapping.SalsaField;
                 string value = element.StringValueOrNull(salsaName);
                 if (value == null) continue;
                 syncObject[localName] = value;
