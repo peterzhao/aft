@@ -22,7 +22,7 @@ namespace SalsaImporter.Mappers
 
         public IMapper GetMapper(string name)
         {
-            return new GenericMapper(name, _mappers[name]);
+            return new Mapper(name, _mappers[name]);
         }
     }
 }

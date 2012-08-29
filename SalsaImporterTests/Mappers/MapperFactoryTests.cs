@@ -15,7 +15,7 @@ namespace SalsaImporterTests.Mappers
         public void ShouldGetMapperForSupporter()
         {
             var mapper  = new MapperFactory().GetMapper("supporter");
-            Assert.AreEqual(typeof(GenericMapper), mapper.GetType());
+            Assert.AreEqual(typeof(Mapper), mapper.GetType());
         }
     }
 }
