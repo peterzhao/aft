@@ -56,19 +56,15 @@
   </Target>
 
   <Target Name="RebaseDb">
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporter_customfields.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_supporter_customfields.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_groups.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporter_groups.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_supporter_SalsaToAftQueue.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+
   </Target>
 
   <Target Name="DbSeed">
-    <Exec Command="bcp $(Db).dbo.Supporters in FiveHundredSupporters.dat -q -f FiveHundredSupporters.fmt -S localhost -T -a 65535"
-          WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
+    
   </Target>
 
   <Target Name="Db" DependsOnTargets="RebaseDb;DbSeed"/>
