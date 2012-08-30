@@ -6,11 +6,11 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-IF OBJECT_ID('dbo.Supporter_SalsaToAftQueue', 'U') IS NOT NULL
-DROP TABLE dbo.Supporter_SalsaToAftQueue
+IF OBJECT_ID('dbo.AftToSalsaQueue_Supporters', 'U') IS NOT NULL
+DROP TABLE dbo.AftToSalsaQueue_Supporters
 GO
 
-CREATE TABLE [dbo].Supporter_SalsaToAftQueue(
+CREATE TABLE [dbo].AftToSalsaQueue_Supporters(
         [Id] [int] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NOT NULL,
         [First_Name] [nvarchar](50) NULL,

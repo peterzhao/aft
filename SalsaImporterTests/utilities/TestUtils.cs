@@ -56,7 +56,7 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand("delete from Supporter_SalsaToAftQueue");
+                db.Database.ExecuteSqlCommand("delete from SalsaToAftQueue_Supporters");
             }
         }
 
