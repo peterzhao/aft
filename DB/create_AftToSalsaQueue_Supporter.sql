@@ -16,6 +16,9 @@ CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
         [First_Name] [nvarchar](50) NULL,
         [Last_Name] [nvarchar](50) NULL,
         [Email] [nvarchar](50) NULL,
+        [CustomDateTime0] [datetime] NULL,
+        [CustomBoolean0] [bit] NULL,
+        [CustomInteger0] [bit] NULL
 
 PRIMARY KEY CLUSTERED
 (
