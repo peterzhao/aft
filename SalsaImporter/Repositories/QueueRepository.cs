@@ -44,7 +44,7 @@ namespace SalsaImporter.Repositories
                     foreach (DataColumn column in table.Columns)
                     {
                         if (column.ColumnName == "Id")
-                            syncObject.Id = int.Parse(row[column].ToString());
+                            syncObject.QuequId = int.Parse(row[column].ToString());
                         else if (aftFields.Contains( column.ColumnName))
                             syncObject[column.ColumnName] = row[column];
                     }
@@ -52,7 +52,7 @@ namespace SalsaImporter.Repositories
                 }
             }
             if ( returnValue.Count > 0 ) 
-                ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().Id));
+                ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().QuequId));
 
             return returnValue;
 

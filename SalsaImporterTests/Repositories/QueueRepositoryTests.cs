@@ -126,14 +126,14 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual("peter2", batch1.Last()["First_Name"]);
             Assert.AreEqual("zhao2", batch1.Last()["Last_Name"]);
 
-            var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().Id);
+            var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().QuequId);
             Assert.AreEqual(1, batch2.Count);
             Assert.AreEqual("peter3", batch2.First()["First_Name"]);
             Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
 
             Assert.AreEqual(0, TestUtils.ReadAllFromQueue(TableName).Count);
 
-           var batch3 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch2.Last().Id); 
+           var batch3 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch2.Last().QuequId); 
             Assert.AreEqual(0, batch3.Count);
         }
 

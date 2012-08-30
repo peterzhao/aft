@@ -41,7 +41,7 @@ namespace SalsaImporter.Synchronization
                 var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => _destination.Save(syncObject), null));
                 Task.WaitAll(tasks.ToArray());
                 if (currentBatch.Any())
-                    jobContext.SetCurrentRecord(currentBatch.Last().Id);
+                    jobContext.SetCurrentRecord(currentBatch.Last().QuequId);
                 else
                     break;                    
             };
