@@ -21,7 +21,7 @@ namespace SalsaImporterTests.Mappers
                                           {
                                               new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string"},
                                               new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string"},
-                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "Last_Modified", DataType = "datetime"},
+                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "some_date", DataType = "datetime"},
                                           };
             _mapper = new Mapper("SomeObject", _mappings);
         }
@@ -56,7 +56,7 @@ namespace SalsaImporterTests.Mappers
         public void ShouldSetDateTimeFieldsToSyncObject()
         {
             var xElement = XElement.Parse(@"<item>
-                                                <Last_Modified>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</Last_Modified>
+                                                <some_date>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</some_date>
                                             </item>");
 
 
@@ -79,9 +79,8 @@ namespace SalsaImporterTests.Mappers
             Assert.IsFalse(syncObject.FieldNames.Contains("Address"));
         }
        
-
         [Test]
-        public void ShouldGetNameValuePairsFromSyncObject()
+        public void ShouldCreateNameValuePairsFromSyncObject()
         {
             var syncObject = new SyncObject("supporter");
             syncObject["Email"] = "foo@abc.com";
@@ -92,6 +91,17 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(2, nameValues.Keys.Count);
             Assert.AreEqual("boo", nameValues["address"]);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
+        }
+
+        [Test]
+        public void ShouldCreateNameValuePairsFromSyncObjectWithDateTime()
+        {
+            var syncObject = new SyncObject(null);
+            syncObject["SalsaLastModified"] = new DateTime(2012, 08, 29, 12, 34, 56);
+            
+            var nameValues = _mapper.ToNameValues(syncObject);
+            Assert.AreEqual(1, nameValues.Keys.Count);
+            Assert.AreEqual("2012-08-29 12:34:56", nameValues["some_date"]);
         }
 
     }

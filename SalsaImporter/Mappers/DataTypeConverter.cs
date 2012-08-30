@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
@@ -15,12 +16,11 @@ namespace SalsaImporter.Mappers
 
         private static readonly List<DataTypeConverter> DataTypeConverters = new List<DataTypeConverter>
         {
-            new DataTypeConverter("string", 
-                                    (field, element) => element.StringValueOrNull(field),
-                                    value => (string)value),
-            new DataTypeConverter("datetime", 
-                                   (field, element) => element.DateTimeValueOrNull(field),
-                                   value => ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss")) 
+            new DataTypeConverter("boolean", (field, element) => element.BoolValueOrFalse(field), BooleanToString),
+            new DataTypeConverter("datetime", (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
+            new DataTypeConverter("float", (field, element) => element.FloatValueOrNull(field)),
+            new DataTypeConverter("int", (field, element) => element.IntValueOrNull(field)),
+            new DataTypeConverter("string", (field, element) => element.StringValueOrNull(field), value => (string)value)
         };
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue, Func<object, string> makeSalsaValue)
@@ -28,7 +28,12 @@ namespace SalsaImporter.Mappers
             _datatype = datatype;
             _readSalsaValue = readSalsaValue;
             _makeSalsaValue = makeSalsaValue;
-        }  
+        }
+
+        private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue)
+            : this(datatype, readSalsaValue, value => value == null ? null : value.ToString())
+        {
+        }
 
         public object ReadSalsaValue(string field, XElement element)
         {
@@ -42,8 +47,20 @@ namespace SalsaImporter.Mappers
 
         public static DataTypeConverter GetConverter(string datatype)
         {
+            if (DataTypeConverters.All(converter => converter._datatype != datatype))
+                throw new InvalidDataTypeException(datatype);
+
             return DataTypeConverters.First(converter => converter._datatype == datatype);
-            
+        }
+
+        private static string BooleanToString(object value)
+        {
+            return value.Equals(true) ? "1" : "0";
+        }
+
+        private static string DateTimeToString(object value)
+        {
+            return ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }

@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\InvalidDataTypeException.cs" />
     <Compile Include="Mappers\DataTypeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
