@@ -56,12 +56,11 @@
   </Target>
 
   <Target Name="RebaseDb">
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_SalsaToAftQueue_Supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_AftToSalsaQueue_Supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\AftTestData\"/>
-
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_SalsaToAftQueue_Supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_AftToSalsaQueue_Supporters.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
   </Target>
 
   <Target Name="DbSeed">
