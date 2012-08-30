@@ -26,4 +26,17 @@ CREATE TABLE [dbo].[FieldMappings](
 
 GO
 
+ALTER TABLE [dbo].[FieldMappings] ADD CONSTRAINT
+	FK_FieldMappings_ObjectTypes FOREIGN KEY
+	(
+	ObjectType
+	) REFERENCES dbo.ObjectTypes
+	(
+	ObjectType
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
+
 

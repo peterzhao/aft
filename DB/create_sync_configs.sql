@@ -25,4 +25,16 @@ CREATE TABLE [dbo].[SyncConfigs](
 
 GO
 
+ALTER TABLE dbo.SyncConfigs ADD CONSTRAINT
+	FK_SyncConfigs_ObjectTypes FOREIGN KEY
+	(
+	ObjectType
+	) REFERENCES dbo.ObjectTypes
+	(
+	ObjectType
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
 
