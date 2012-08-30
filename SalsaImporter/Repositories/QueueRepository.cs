@@ -23,11 +23,11 @@ namespace SalsaImporter.Repositories
         {
             var sql = string.Format("SELECT top {0} * FROM {1} where Id > {2} order by Id", batchSize, tableName, startKey);
             Logger.Debug(sql);
+            var returnValue = new List<SyncObject>();
             using (var dataAdaptor = new SqlDataAdapter(sql,Config.DbConnectionString))
             {
                 var dataSet = new DataSet();
                 dataAdaptor.Fill(dataSet);
-                var returnValue = new List<SyncObject>();
 
                 DataTable table = dataSet.Tables[0];
                 foreach (DataRow row in table.Rows)
@@ -42,7 +42,19 @@ namespace SalsaImporter.Repositories
                     }
                     returnValue.Add(data);
                 }
-                return returnValue;
+            }
+            ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().Id));
+            return returnValue;
+
+        }
+
+        private void ExecuteSql(string sql)
+        {
+            using(var connection = new SqlConnection(Config.DbConnectionString))
+            {
+                connection.Open();
+                var command = new SqlCommand(sql, connection);
+                command.ExecuteNonQuery();
             }
         }
 

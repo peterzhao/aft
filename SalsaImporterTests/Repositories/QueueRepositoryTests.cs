@@ -111,8 +111,7 @@ namespace SalsaImporterTests.Repositories
             Enqueue("foo2@abc.com", "peter2", "zhao2");
             Enqueue("foo3@abc.com", "peter3", "zhao3");
             var batch1 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, 0);
-            var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().Id);
-
+            Assert.AreEqual(1, TestUtils.ReadAllFromQueue(TableName).Count);
             Assert.AreEqual(2, batch1.Count);
             Assert.AreEqual("foo@abc.com", batch1.First()["Email"]);
             Assert.AreEqual("peter", batch1.First()["First_Name"]);
@@ -122,11 +121,13 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual("peter2", batch1.Last()["First_Name"]);
             Assert.AreEqual("zhao2", batch1.Last()["Last_Name"]);
 
+            var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().Id);
             Assert.AreEqual(1, batch2.Count);
             Assert.AreEqual("foo3@abc.com", batch2.First()["Email"]);
             Assert.AreEqual("peter3", batch2.First()["First_Name"]);
             Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
-            
+
+            Assert.AreEqual(0, TestUtils.ReadAllFromQueue(TableName).Count);
         }
 
         private void Enqueue(string email, string firstName, string lastName)
