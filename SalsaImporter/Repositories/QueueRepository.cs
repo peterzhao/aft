@@ -22,7 +22,6 @@ namespace SalsaImporter.Repositories
         public List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {
             var sql = string.Format("SELECT top {0} * FROM {1} where Id > {2} order by Id", batchSize, tableName, startKey);
-            Logger.Debug(sql);
             var returnValue = new List<SyncObject>();
             using (var dataAdaptor = new SqlDataAdapter(sql,Config.DbConnectionString))
             {
