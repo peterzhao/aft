@@ -57,6 +57,7 @@
 
   <Target Name="RebaseDb">
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_object_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_sync_directions.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
@@ -67,6 +68,7 @@
 
   <Target Name="DbSeed">
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_object_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_directions.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_configs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
     <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
   </Target>

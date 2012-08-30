@@ -38,3 +38,20 @@ ALTER TABLE dbo.SyncConfigs ADD CONSTRAINT
 GO
 
 
+CREATE UNIQUE NONCLUSTERED INDEX IX_SyncConfigs ON dbo.SyncConfigs
+	(
+	[Order]
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+ALTER TABLE dbo.SyncConfigs ADD CONSTRAINT
+	FK_SyncConfigs_SyncDirections FOREIGN KEY
+	(
+	SyncDirection
+	) REFERENCES dbo.SyncDirections
+	(
+	SyncDirection
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
