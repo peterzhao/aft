@@ -38,5 +38,17 @@ ALTER TABLE [dbo].[FieldMappings] ADD CONSTRAINT
 	
 GO
 
+ALTER TABLE dbo.FieldMappings ADD CONSTRAINT
+	FK_FieldMappings_SalsaDataTypes FOREIGN KEY
+	(
+	DataType
+	) REFERENCES dbo.SalsaDataTypes
+	(
+	DataType
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+
 
 
