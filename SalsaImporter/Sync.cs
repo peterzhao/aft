@@ -28,7 +28,8 @@ namespace SalsaImporter
             _syncSession = new SyncSession();
 
             _syncSession
-                .AddJob(new QueuePusher(_salsaRepository, _queueRepository, 100, "SupportersFromSalsa", "supporter", "SalsaToAftQueue_Supporters"));
+                .AddJob(new QueuePusher(_salsaRepository, _queueRepository, 100, "Import Supporters", "supporter", "SalsaToAftQueue_Supporters"))
+                .AddJob(new Exporter(_queueRepository, _salsaRepository, 100, "Export Supporters", "supporter", "AftToSalsaQueue_Supporters"));
            }
 
         public void Run()

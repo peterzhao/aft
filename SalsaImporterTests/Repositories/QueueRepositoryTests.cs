@@ -128,6 +128,9 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
 
             Assert.AreEqual(0, TestUtils.ReadAllFromQueue(TableName).Count);
+
+           var batch3 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch2.Last().Id); 
+            Assert.AreEqual(0, batch3.Count);
         }
 
         private void Enqueue(string email, string firstName, string lastName)

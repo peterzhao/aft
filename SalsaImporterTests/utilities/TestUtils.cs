@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Mappers;
@@ -32,7 +33,7 @@ namespace SalsaImporterTests.Utilities
             SalsaClient.DeleteAllObjects(objectType, 100, true);
         }
  
-        public static void CreateSalsa(params SyncObject[] objects)
+        public static void InsertToSalsa(params SyncObject[] objects)
         {
             objects.ToList().ForEach(syncObject => SalsaRepository.Save(syncObject));
         }
@@ -90,6 +91,21 @@ namespace SalsaImporterTests.Utilities
                 }
                 return returnValue;
             }
+        }
+
+        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporters ( Email, First_Name, Last_Name, SalsaKey) VALUES ('{0}', '{1}', '{2}', 0)", email, firstName, lastName));
+            }
+        }
+
+        public static List<XElement> GetAllFromSalsa(string objectType)
+        {
+
+            var salsa = new SalsaClient();
+            return salsa.GetObjects(objectType, 100, "0", new DateTime(1991,1,1));
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Synchronization;
+using SalsaImporter.Utilities;
 using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.FunctionalTests
@@ -36,9 +38,9 @@ namespace SalsaImporterTests.FunctionalTests
         }
 
         [Test]
-        public void ShouldPullSupportersFromSalsaToLocalQueue()
+        public void ShouldImportSupporters()
         {
-            TestUtils.CreateSalsa(_supporterOne, _supporterTwo);
+            TestUtils.InsertToSalsa(_supporterOne, _supporterTwo);
 
             var sync = new Sync();
             sync.Run();
@@ -49,6 +51,27 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterTwo["Email"])));
 
           
+        }
+
+        [Test]
+        public void ShouldExportSupporters()
+        {
+            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1");
+            TestUtils.InsertSupporterToExportQueue("foo2@abc.com", "boo2", "joo2");
+
+            var sync = new Sync();
+            sync.Run();
+
+            List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
+            Assert.AreEqual(2, supportersOnSalsa.Count);
+            Assert.AreEqual("foo1@abc.com", supportersOnSalsa.First().StringValueOrNull("Email"));
+            Assert.AreEqual("boo1", supportersOnSalsa.First().StringValueOrNull("First_Name"));
+            Assert.AreEqual("joo1", supportersOnSalsa.First().StringValueOrNull("Last_Name"));
+
+            Assert.AreEqual("foo2@abc.com", supportersOnSalsa.Last().StringValueOrNull("Email"));
+            Assert.AreEqual("boo2", supportersOnSalsa.Last().StringValueOrNull("First_Name"));
+            Assert.AreEqual("joo2", supportersOnSalsa.Last().StringValueOrNull("Last_Name"));
+
         }
     }
 }

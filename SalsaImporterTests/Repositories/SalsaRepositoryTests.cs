@@ -129,6 +129,25 @@ namespace SalsaImporterTests.Repositories
             
         }
 
+        [Test]
+        public void ShouldHandleExceptionWhenSavingObject()
+        {
+            var key = 1234;
+            var id = 7890;
+            var supporter = new SyncObject(ObjectType) { Id = id };
+            supporter["Email"] = "foo@abc.com";
+            var nameValues = new NameValueCollection();
+            _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
+            var error = new Exception("test error");
+            _salsaMock.Setup(s => s.Save("supporter", nameValues)).Throws(error);
+
+
+            _repository.Save(supporter);
+
+           _errorHandlerMock.Verify(errorHandler => errorHandler.HandleSyncObjectFailure(supporter, _repository, error));
+
+        }
+
       
 //
 //        [Test]

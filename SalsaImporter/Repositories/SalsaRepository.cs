@@ -42,9 +42,16 @@ namespace SalsaImporter.Repositories
 
         public void Save(SyncObject syncObject)
         {
-            IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
-            syncObject.Id = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToNameValues(syncObject)));
-            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Export, Destination = this, SyncObject = syncObject});
+            try
+            {
+                IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
+                syncObject.Id = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToNameValues(syncObject)));
+                NotifySyncEvent(this, new SyncEventArgs {EventType = SyncEventType.Export, Destination = this, SyncObject = syncObject});
+            }
+            catch(Exception ex)
+            {
+                _syncErrorHandler.HandleSyncObjectFailure(syncObject, this, ex);
+            }
         }
 
      

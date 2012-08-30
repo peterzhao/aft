@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Xml.Linq;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
@@ -24,8 +25,8 @@ namespace SalsaImporter.Mappers
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
-            result["key"] = syncObject.Id.ToString();
-            syncObject.FieldNames.ForEach(f => result[_map[f].SalsaField] = syncObject[f]);
+            _map.Keys.ToList().ForEach(key=>result[_map[key].SalsaField] = syncObject[key]);
+            //syncObject.FieldNames.ForEach(f => result[_map[f].SalsaField] = syncObject[f]);
             return result;
         }
 

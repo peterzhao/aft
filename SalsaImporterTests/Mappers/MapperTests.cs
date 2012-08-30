@@ -64,20 +64,7 @@ namespace SalsaImporterTests.Mappers
             Assert.IsFalse(syncObject.FieldNames.Contains("Address"));
 
         }
-
-
-
-        [Test]
-        public void ShouldSetKeyFromSyncObject()
-        {
-            var syncObject = new SyncObject("supporter");
-            syncObject.Id = 1234;
-            
-
-            var nameValues = _mapper.ToNameValues(syncObject);
-            
-            Assert.AreEqual("1234", nameValues["key"]);
-        }
+       
 
         [Test]
         public void ShouldGetNameValuePairsFromSyncObject()
@@ -85,8 +72,10 @@ namespace SalsaImporterTests.Mappers
             var syncObject = new SyncObject("supporter");
             syncObject["Email"] = "foo@abc.com";
             syncObject["Address"] = "boo";
+            syncObject["somethingShouldNotBeMapped"] = "hi";
 
             var nameValues = _mapper.ToNameValues(syncObject);
+            Assert.AreEqual(2, nameValues.Keys.Count);
             Assert.AreEqual("boo", nameValues["address"]);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
         }
