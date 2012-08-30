@@ -52,10 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionalTests\SyncTests.cs" />
+    <Compile Include="Mappers\DataTypeConverterTests.cs" />
     <Compile Include="Mappers\MapperTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
-    <Compile Include="Synchronization\ExporterTests.cs" />
     <Compile Include="Synchronization\QueuePusherTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Synchronization\SyncObjectTests.cs" />

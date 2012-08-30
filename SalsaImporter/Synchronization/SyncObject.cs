@@ -5,13 +5,13 @@ namespace SalsaImporter.Synchronization
 {
     public class SyncObject
     {
-        private readonly IDictionary<string, string> _dictionary;
+        private readonly IDictionary<string, object> _dictionary;
         private readonly string _objectType;
 
         public SyncObject(string objectType)
         {
             _objectType = objectType;
-            _dictionary = new Dictionary<string, string>();
+            _dictionary = new Dictionary<string, object>();
         }
 
         public int Id { get; set; }
@@ -26,7 +26,7 @@ namespace SalsaImporter.Synchronization
             get { return _dictionary.Keys.ToList(); }
         }
 
-        public string this[string fieldName]
+        public object this[string fieldName]
         {
             get { return _dictionary[fieldName]; }
             set { _dictionary[fieldName] = value; }
@@ -36,7 +36,7 @@ namespace SalsaImporter.Synchronization
         {
             string dictionaryFields = string.Join(", ",
                                                   _dictionary.Select(
-                                                      pair => string.Format("{0}: {1}", pair.Key, pair.Value)));
+                                                      pair => string.Format("{0}: {1}", pair.Key, pair.Value.ToString())));
 
             return string.Format("Id: {0}, {1}",
                                  Id,

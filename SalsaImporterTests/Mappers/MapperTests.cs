@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Mappers;
@@ -20,6 +21,7 @@ namespace SalsaImporterTests.Mappers
                                           {
                                               new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string"},
                                               new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string"},
+                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "Last_Modified", DataType = "datetime"},
                                           };
             _mapper = new Mapper("SomeObject", _mappings);
         }
@@ -51,6 +53,19 @@ namespace SalsaImporterTests.Mappers
         }
 
         [Test]
+        public void ShouldSetDateTimeFieldsToSyncObject()
+        {
+            var xElement = XElement.Parse(@"<item>
+                                                <Last_Modified>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</Last_Modified>
+                                            </item>");
+
+
+            SyncObject syncObject = _mapper.ToObject(xElement);
+
+            Assert.AreEqual(new DateTime(2012, 08, 30, 11, 19, 43), syncObject["SalsaLastModified"]);
+        }
+
+        [Test]
         public void ShouldNotSetNullToSyncObject()
         {
             var xElement = XElement.Parse(@"<item>
@@ -62,7 +77,6 @@ namespace SalsaImporterTests.Mappers
             SyncObject syncObject = _mapper.ToObject(xElement);
 
             Assert.IsFalse(syncObject.FieldNames.Contains("Address"));
-
         }
        
 

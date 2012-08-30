@@ -10,9 +10,9 @@ namespace SalsaImporter.Mappers
 {
     public class Mapper: IMapper
     {
-        private string _objectType;
-        private List<FieldMapping> _mappings;
-        private Dictionary<string, FieldMapping> _map = new Dictionary<string, FieldMapping>(); 
+        private readonly string _objectType;
+        private readonly List<FieldMapping> _mappings;
+        private readonly Dictionary<string, FieldMapping> _map = new Dictionary<string, FieldMapping>(); 
 
         public Mapper(string objectType, List<FieldMapping>  mappings)
         {
@@ -21,14 +21,64 @@ namespace SalsaImporter.Mappers
             _mappings.ForEach(m => _map.Add(m.AftField, m));
         }
 
-
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
-            _map.Keys.ToList().ForEach(key=>result[_map[key].SalsaField] = syncObject[key]);
-            //syncObject.FieldNames.ForEach(f => result[_map[f].SalsaField] = syncObject[f]);
+            syncObject.FieldNames.Where(key => _map.ContainsKey(key))
+                                .ToList()
+                                .ForEach(key =>
+                                              {
+                                                  var fieldMapping = _map[key];
+                                                  var salsaField = fieldMapping.SalsaField;
+                                                  var fieldValue = syncObject[key];
+                                                  var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
+                                                    
+                                                  result[salsaField] = converter.MakeSalsaValue(fieldValue);
+                                              });
             return result;
         }
+
+        public SyncObject ToObject(XElement element)
+        {
+            var syncObject = new SyncObject(_objectType);
+            
+            foreach (var mapping in _mappings)
+            {
+                string localName = mapping.AftField;
+                string salsaName = mapping.SalsaField;
+                var converter = DataTypeConverter.GetConverter(mapping.DataType);
+                
+                string value = element.StringValueOrNull(salsaName);
+                if (value == null) continue;
+                syncObject[localName] = converter.ReadSalsaValue(salsaName, element);
+            }
+
+            syncObject.Id = element.IntValueOrDefault("key");
+            return syncObject;
+        }
+
+        public List<FieldMapping> Mappings { get { return _mappings; } }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //        public NameValueCollection ToNameValues(SyncObject syncObject)
 //        {
@@ -77,22 +127,3 @@ namespace SalsaImporter.Mappers
 //            }
 //            return syncObject;
 //        }
-
-        public SyncObject ToObject(XElement element)
-        {
-            var syncObject = new SyncObject(_objectType);
-            foreach (var mapping in _mappings)
-            {
-                string localName = mapping.AftField;
-                string salsaName = mapping.SalsaField;
-                string value = element.StringValueOrNull(salsaName);
-                if (value == null) continue;
-                syncObject[localName] = value;
-            }
-            syncObject.Id = element.IntValueOrDefault("key");
-            return syncObject;
-        }
-
-        public List<FieldMapping> Mappings { get { return _mappings; } }
-    }
-}
