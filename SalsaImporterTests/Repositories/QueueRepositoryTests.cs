@@ -13,7 +13,7 @@ namespace SalsaImporterTests.Repositories
     [Category("IntegrationTest")]
     public class QueueRepositoryTests
     {
-        private const string TableName = "SalsaToAftQueue_Supporters";
+        private const string TableName = "SalsaToAftQueue_Supporter";
         private const string ObjectType = "supporter";
         private QueueRepository _repository;
         private SyncObject _syncObject;
@@ -75,7 +75,7 @@ namespace SalsaImporterTests.Repositories
 //
 //            var fields = new List<string>() { "First_Name" };
 //
-//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporters", fields);
+//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporter", fields);
 //
 //        }
 //
@@ -87,7 +87,7 @@ namespace SalsaImporterTests.Repositories
 //
 //            var fields = new List<string>() { "First_Name" };
 //
-//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporters", fields);
+//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporter", fields);
 //
 //        }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
@@ -20,7 +21,7 @@ namespace SalsaImporterTests.FunctionalTests
         public void SetUp()
         {
             Config.Environment = Config.Test;
-
+            TestUtils.ClearAllSessions();
             TestUtils.RemoveAllSalsa("supporter");
             TestUtils.ClearAllQueues();
 
@@ -41,11 +42,10 @@ namespace SalsaImporterTests.FunctionalTests
         public void ShouldImportSupporters()
         {
             TestUtils.InsertToSalsa(_supporterOne, _supporterTwo);
-
             var sync = new Sync();
             sync.Run();
 
-            var queue = TestUtils.ReadAllFromQueue("SalsaToAftQueue_Supporters");
+            var queue = TestUtils.ReadAllFromQueue("SalsaToAftQueue_Supporter");
 
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterOne["Email"])));
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterTwo["Email"])));

@@ -57,7 +57,8 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand("delete from SalsaToAftQueue_Supporters");
+                db.Database.ExecuteSqlCommand("delete from SalsaToAftQueue_Supporter");
+                db.Database.ExecuteSqlCommand("delete from AftToSalsaQueue_Supporter");
             }
         }
 
@@ -97,7 +98,7 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporters ( Email, First_Name, Last_Name, SalsaKey) VALUES ('{0}', '{1}', '{2}', 0)", email, firstName, lastName));
+                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, SalsaKey) VALUES ('{0}', '{1}', '{2}', 0)", email, firstName, lastName));
             }
         }
 
