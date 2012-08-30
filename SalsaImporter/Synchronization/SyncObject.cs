@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,6 +6,7 @@ namespace SalsaImporter.Synchronization
 {
     public class SyncObject
     {
+        public const string SalsaKeyColumnName = "SalsaKey";
         private readonly IDictionary<string, object> _dictionary;
         private readonly string _objectType;
 
@@ -12,6 +14,7 @@ namespace SalsaImporter.Synchronization
         {
             _objectType = objectType;
             _dictionary = new Dictionary<string, object>();
+            this[SalsaKeyColumnName] = 0;
         }
 
         public int Id { get; set; }
@@ -19,6 +22,15 @@ namespace SalsaImporter.Synchronization
         public string ObjectType
         {
             get { return _objectType; }
+        }
+
+        public int SalsaKey
+        {
+            get
+            {
+                return (int)this[SalsaKeyColumnName];
+            }
+            set { this[SalsaKeyColumnName] = value; }
         }
 
         public List<string> FieldNames
@@ -34,13 +46,14 @@ namespace SalsaImporter.Synchronization
 
         public override string ToString()
         {
-            string dictionaryFields = string.Join(", ",
+            string dictionaryFields = String.Join(", ",
                                                   _dictionary.Select(
-                                                      pair => string.Format("{0}: {1}", pair.Key, pair.Value.ToString())));
+                                                      pair => String.Format("{0}: {1}", pair.Key, pair.Value.ToString())));
 
-            return string.Format("Id: {0}, {1}",
+            return String.Format("Id: {0}, {1}",
                                  Id,
                                  dictionaryFields);
         }
+
     }
 }

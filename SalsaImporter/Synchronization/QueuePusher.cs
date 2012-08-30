@@ -39,7 +39,7 @@ namespace SalsaImporter.Synchronization
                                                          jobContext.MinimumModificationDate).ToList();
                 currentBatch.ForEach(obj => _destination.Push(obj, _queueName));
                 if (currentBatch.Any())
-                    jobContext.SetCurrentRecord(currentBatch.Last().Id);
+                    jobContext.SetCurrentRecord(currentBatch.Last().SalsaKey);
                 else
                     break;                    
             };

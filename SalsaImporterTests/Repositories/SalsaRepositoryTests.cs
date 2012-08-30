@@ -124,7 +124,7 @@ namespace SalsaImporterTests.Repositories
             Assert.IsNotNull(syncEventArgs);
             Assert.AreEqual(_repository, syncEventArgs.Destination);
             Assert.AreEqual(SyncEventType.Export, syncEventArgs.EventType);
-            Assert.AreEqual(key, syncEventArgs.ObjectId);
+            Assert.AreEqual(key, supporter.SalsaKey);
             Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
             
         }

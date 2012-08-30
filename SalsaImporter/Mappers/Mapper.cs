@@ -35,6 +35,7 @@ namespace SalsaImporter.Mappers
                                                     
                                                   result[salsaField] = converter.MakeSalsaValue(fieldValue);
                                               });
+            result["key"] = syncObject.SalsaKey.ToString();
             return result;
         }
 
@@ -53,7 +54,7 @@ namespace SalsaImporter.Mappers
                 syncObject[localName] = converter.ReadSalsaValue(salsaName, element);
             }
 
-            syncObject.Id = element.IntValueOrDefault("key");
+            syncObject.SalsaKey = element.IntValueOrDefault("key");
             return syncObject;
         }
 

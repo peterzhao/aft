@@ -10,7 +10,6 @@ namespace SalsaImporter.Repositories
 {
     public class QueueRepository : IQueueRepository
     {
-        private const string SalsaKeyColumnName = "SalsaKey";
         private IMapperFactory _mapperFactory;
 
         public QueueRepository(IMapperFactory mapperFactory)
@@ -76,7 +75,6 @@ namespace SalsaImporter.Repositories
             {
                 connection.Open();
 
-                fields.Add(SalsaKeyColumnName);
                 
                 var columnNames = String.Join(",", fields);
                 var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
@@ -86,10 +84,8 @@ namespace SalsaImporter.Repositories
                 var command = new SqlCommand(insertStatement, connection);
 
                 var parameters = fields
-                    .Where(f => f!=SalsaKeyColumnName)
                     .Select(f => new SqlParameter(f, syncObject[f])).ToList();
               
-                parameters.Add(new SqlParameter(SalsaKeyColumnName, syncObject.Id));
 
                 command.Parameters.AddRange(parameters.ToArray());
 

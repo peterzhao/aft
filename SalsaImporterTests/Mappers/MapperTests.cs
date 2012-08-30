@@ -43,6 +43,7 @@ namespace SalsaImporterTests.Mappers
             var xElement = XElement.Parse(@"<item>
                                                 <email>foo@abc.com</email>
                                                 <address>main st</address>
+                                                <key>5678</key>
                                             </item>");
 
 
@@ -50,6 +51,7 @@ namespace SalsaImporterTests.Mappers
 
             Assert.AreEqual("foo@abc.com", syncObject["Email"]);
             Assert.AreEqual("main st", syncObject["Address"]);
+            Assert.AreEqual(5678, syncObject.SalsaKey);
         }
 
         [Test]
@@ -80,7 +82,7 @@ namespace SalsaImporterTests.Mappers
         }
        
         [Test]
-        public void ShouldCreateNameValuePairsFromSyncObject()
+        public void ShouldGetNameValuePairsFromSyncObjectWithoutSalsaKey()
         {
             var syncObject = new SyncObject("supporter");
             syncObject["Email"] = "foo@abc.com";
@@ -88,9 +90,23 @@ namespace SalsaImporterTests.Mappers
             syncObject["somethingShouldNotBeMapped"] = "hi";
 
             var nameValues = _mapper.ToNameValues(syncObject);
-            Assert.AreEqual(2, nameValues.Keys.Count);
+            Assert.AreEqual(3, nameValues.Keys.Count);
             Assert.AreEqual("boo", nameValues["address"]);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
+            Assert.AreEqual("0", nameValues["key"]);
+        }
+
+        [Test]
+        public void ShouldGetNameValuePairsFromSyncObjectWithSalsaKey()
+        {
+            var syncObject = new SyncObject("supporter");
+            syncObject.SalsaKey = 4567;
+            syncObject["Email"] = "foo@abc.com";
+
+            var nameValues = _mapper.ToNameValues(syncObject);
+            Assert.AreEqual(2, nameValues.Keys.Count);
+            Assert.AreEqual("foo@abc.com", nameValues["email"]);
+            Assert.AreEqual("4567", nameValues["key"]);
         }
 
         [Test]
@@ -100,7 +116,7 @@ namespace SalsaImporterTests.Mappers
             syncObject["SalsaLastModified"] = new DateTime(2012, 08, 29, 12, 34, 56);
             
             var nameValues = _mapper.ToNameValues(syncObject);
-            Assert.AreEqual(1, nameValues.Keys.Count);
+            Assert.AreEqual(2, nameValues.Keys.Count);
             Assert.AreEqual("2012-08-29 12:34:56", nameValues["some_date"]);
         }
 

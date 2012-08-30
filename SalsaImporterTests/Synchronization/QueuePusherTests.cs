@@ -42,14 +42,14 @@ namespace SalsaImporterTests.Synchronization
             _jobContext.MinimumModificationDate = minimumModificationDate;
             _jobContext.SetCurrentRecord(currentRecord);
 
-            var syncObject1 = new SyncObject(ObjectType) { Id = 4561 };
-            var syncObject2 = new SyncObject(ObjectType) { Id = 4562 };
-            var syncObject3 = new SyncObject(ObjectType) { Id = 4563 };
+            var syncObject1 = new SyncObject(ObjectType) { SalsaKey = 4561 };
+            var syncObject2 = new SyncObject(ObjectType) { SalsaKey = 4562 };
+            var syncObject3 = new SyncObject(ObjectType) { SalsaKey = 4563 };
             IEnumerable<SyncObject> pulledObjects1 = new List<SyncObject> { syncObject1, syncObject2 };
             IEnumerable<SyncObject> pulledObjects2 = new List<SyncObject> { syncObject3 };
 
             _sourceMock.Setup(source => source.GetBatchOfObjects(ObjectType, BatchSize, currentRecord, minimumModificationDate)).Returns(pulledObjects1);
-            _sourceMock.Setup(source => source.GetBatchOfObjects(ObjectType, BatchSize, syncObject2.Id, minimumModificationDate)).Returns(pulledObjects2);
+            _sourceMock.Setup(source => source.GetBatchOfObjects(ObjectType, BatchSize, syncObject2.SalsaKey, minimumModificationDate)).Returns(pulledObjects2);
 
             _pusher.Start(_jobContext);
 

@@ -37,7 +37,7 @@ namespace SalsaImporterTests.Repositories
         [Test]
         public void ShouldSetSalsaKey()
         {
-            _syncObject.Id = 1234;
+            _syncObject.SalsaKey = 1234;
             _syncObject["Email"] = "test@example.com";
             
             _repository.Push(_syncObject, TableName);
@@ -120,7 +120,6 @@ namespace SalsaImporterTests.Repositories
             var batch1 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, 0);
             Assert.AreEqual(1, TestUtils.ReadAllFromQueue(TableName).Count);
             Assert.AreEqual(2, batch1.Count);
-            Assert.AreEqual(2, batch1.First().FieldNames.Count);
             Assert.AreEqual("peter", batch1.First()["First_Name"]);
             Assert.AreEqual("zhao", batch1.First()["Last_Name"]);
 
