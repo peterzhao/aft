@@ -1,18 +1,16 @@
-
-/****** Object:  Table [dbo].[FieldMappings]    Script Date: 08/29/2012 13:29:54 ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FieldMappings]') AND type in (N'U'))
-DROP TABLE [dbo].[FieldMappings]
-GO
-
-USE [Aft]
-GO
-
 /****** Object:  Table [dbo].[FieldMappings]    Script Date: 08/29/2012 13:29:55 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+/****** Object:  Table [dbo].[FieldMappings]    Script Date: 08/29/2012 13:29:54 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FieldMappings]') AND type in (N'U'))
+DROP TABLE [dbo].[FieldMappings]
+GO
+
+
+
 
 CREATE TABLE [dbo].[FieldMappings](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
