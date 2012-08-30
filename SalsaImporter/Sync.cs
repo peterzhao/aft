@@ -22,8 +22,9 @@ namespace SalsaImporter
             _errorHandler = new SyncErrorHandler(10);
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
-            _salsaRepository = new SalsaRepository(_salsaClient, new MapperFactory(), _errorHandler);
-            _queueRepository = new QueueRepository();
+            var mapperFactory = new MapperFactory();
+            _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
+            _queueRepository = new QueueRepository(mapperFactory);
             _salsaClient.Login();
 
             _syncSession = new SyncSession();

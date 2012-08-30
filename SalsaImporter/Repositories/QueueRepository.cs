@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using SalsaImporter.Mappers;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Repositories
@@ -10,6 +11,12 @@ namespace SalsaImporter.Repositories
     public class QueueRepository : IQueueRepository
     {
         private const string SalsaKeyColumnName = "SalsaKey";
+        private IMapperFactory _mapperFactory;
+
+        public QueueRepository(IMapperFactory mapperFactory)
+        {
+            _mapperFactory = mapperFactory;
+        }
 
         public void Push(SyncObject syncObject, string tableName)
         {
@@ -21,6 +28,9 @@ namespace SalsaImporter.Repositories
 
         public List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {
+            var mapper = _mapperFactory.GetMapper(objectType);
+            var aftFields = mapper.Mappings.Select(m => m.AftField).ToList();
+
             var sql = string.Format("SELECT top {0} * FROM {1} where Id > {2} order by Id", batchSize, tableName, startKey);
             var returnValue = new List<SyncObject>();
             using (var dataAdaptor = new SqlDataAdapter(sql, Config.DbConnectionString))
@@ -36,7 +46,7 @@ namespace SalsaImporter.Repositories
                     {
                         if (column.ColumnName == "Id")
                             syncObject.Id = int.Parse(row[column].ToString());
-                        else
+                        else if (aftFields.Contains( column.ColumnName))
                             syncObject[column.ColumnName] = row[column].ToString();
                     }
                     returnValue.Add(syncObject);

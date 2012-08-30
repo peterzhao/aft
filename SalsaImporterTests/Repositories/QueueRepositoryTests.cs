@@ -3,6 +3,7 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
@@ -17,13 +18,17 @@ namespace SalsaImporterTests.Repositories
         private const string ObjectType = "supporter";
         private QueueRepository _repository;
         private SyncObject _syncObject;
-
+        private Mock<IMapperFactory> _mapperFactoryMock;
+        private IMapper _mapper;
         [SetUp]
         public void SetUp()
         {
             Config.Environment = Config.Test;
-
-            _repository = new QueueRepository();
+            _mapperFactoryMock = new Mock<IMapperFactory>();
+            var fieldMapping1 = new FieldMapping {AftField = "First_Name", SalsaField = "First_Name", DataType = "string"};
+            var fieldMapping2 = new FieldMapping {AftField = "Last_Name", SalsaField = "Last_Name", DataType = "string"};
+            _mapper = new Mapper(ObjectType, new List<FieldMapping>{fieldMapping1, fieldMapping2});
+            _repository = new QueueRepository(_mapperFactoryMock.Object);
             _syncObject = new SyncObject(ObjectType);
 
             TestUtils.ClearAllQueues();
@@ -107,23 +112,23 @@ namespace SalsaImporterTests.Repositories
         [Test]
         public void ShouldDequeueBatchOfObjects()
         {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
             Enqueue("foo@abc.com", "peter", "zhao");
             Enqueue("foo2@abc.com", "peter2", "zhao2");
             Enqueue("foo3@abc.com", "peter3", "zhao3");
+
             var batch1 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, 0);
             Assert.AreEqual(1, TestUtils.ReadAllFromQueue(TableName).Count);
             Assert.AreEqual(2, batch1.Count);
-            Assert.AreEqual("foo@abc.com", batch1.First()["Email"]);
+            Assert.AreEqual(2, batch1.First().FieldNames.Count);
             Assert.AreEqual("peter", batch1.First()["First_Name"]);
             Assert.AreEqual("zhao", batch1.First()["Last_Name"]);
 
-            Assert.AreEqual("foo2@abc.com", batch1.Last()["Email"]);
             Assert.AreEqual("peter2", batch1.Last()["First_Name"]);
             Assert.AreEqual("zhao2", batch1.Last()["Last_Name"]);
 
             var batch2 = _repository.DequequBatchOfObjects(ObjectType, TableName, 2, batch1.Last().Id);
             Assert.AreEqual(1, batch2.Count);
-            Assert.AreEqual("foo3@abc.com", batch2.First()["Email"]);
             Assert.AreEqual("peter3", batch2.First()["First_Name"]);
             Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
 
