@@ -47,7 +47,7 @@ namespace SalsaImporter.Repositories
                         if (column.ColumnName == "Id")
                             syncObject.Id = int.Parse(row[column].ToString());
                         else if (aftFields.Contains( column.ColumnName))
-                            syncObject[column.ColumnName] = row[column].ToString();
+                            syncObject[column.ColumnName] = row[column];
                     }
                     returnValue.Add(syncObject);
                 }
