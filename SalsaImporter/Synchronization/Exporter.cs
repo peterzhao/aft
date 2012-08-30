@@ -26,6 +26,9 @@ namespace SalsaImporter.Synchronization
             _batchSize = batchSize;
         }
 
+        public string ObjectType { get { return _objectType; } }
+
+
         public void Start(IJobContext jobContext)
         {
             for (int batchCount = 1; ; batchCount++) 

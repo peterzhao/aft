@@ -11,6 +11,7 @@ namespace SalsaImporterTests.Synchronization
         private readonly Action<IJobContext> _startAction;
 
         public string Name { get; private set; }
+        public string ObjectType { get { return ""; } }
 
         public SyncJobStub(string name, Action<IJobContext> startAction)
         {

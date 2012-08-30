@@ -64,13 +64,13 @@ namespace SalsaImporterTests.FunctionalTests
 
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(2, supportersOnSalsa.Count);
-            Assert.AreEqual("foo1@abc.com", supportersOnSalsa.First().StringValueOrNull("Email"));
-            Assert.AreEqual("boo1", supportersOnSalsa.First().StringValueOrNull("First_Name"));
-            Assert.AreEqual("joo1", supportersOnSalsa.First().StringValueOrNull("Last_Name"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("Email") == "foo1@abc.com"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("First_Name") == "boo1"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("Last_Name") == "joo1"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("Email") == "foo2@abc.com"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("First_Name") == "boo2"));
+            Assert.IsTrue(supportersOnSalsa.Any(s => s.StringValueOrNull("Last_Name") == "joo2"));
 
-            Assert.AreEqual("foo2@abc.com", supportersOnSalsa.Last().StringValueOrNull("Email"));
-            Assert.AreEqual("boo2", supportersOnSalsa.Last().StringValueOrNull("First_Name"));
-            Assert.AreEqual("joo2", supportersOnSalsa.Last().StringValueOrNull("Last_Name"));
 
         }
     }

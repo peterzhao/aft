@@ -59,6 +59,11 @@ namespace SalsaImporter.Synchronization
             get { return _currentContext; }
         }
 
+        public List<ISyncJob> Jobs
+        {
+            get { return _jobs; }
+        }
+
         public SyncSession AddJob(ISyncJob job)
         {
             if (string.IsNullOrWhiteSpace(job.Name))

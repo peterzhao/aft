@@ -34,9 +34,9 @@ namespace SalsaImporter
 
         public void Run()
         {
-//            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-//            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-//            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             
             _syncSession.Start();
             PrintSyncEvents();
@@ -44,14 +44,19 @@ namespace SalsaImporter
 
         private void PrintSyncEvents()
         {
+            _syncSession.Jobs.GroupBy( job=>job.ObjectType).ToList().ForEach(g => PrintSyncEventsFor(g.Key));
+        }
+
+        private void PrintSyncEventsFor(string objectType)
+        {
             int totalErrors = 0;
             int totalAddedToLocal = 0;
             int totalAddedToSalsa = 0;
             var currentContext = _syncSession.CurrentContext;
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Import));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Export));
-            Logger.Info(string.Format("Total imported from Salsa:{0} Total exported to Salsa:{1} Total errors: {2}", totalAddedToLocal, totalAddedToSalsa, totalErrors));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error && e.ObjectType == objectType));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Import && e.ObjectType == objectType));
+            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Export && e.ObjectType == objectType));
+            Logger.Info(string.Format("{0}: Total imported from Salsa:{1} Total exported to Salsa:{2} Total errors: {3}", objectType, totalAddedToLocal, totalAddedToSalsa, totalErrors));
         }
 
         public void DeleteAllSupporters()
