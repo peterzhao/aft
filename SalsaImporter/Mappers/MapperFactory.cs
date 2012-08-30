@@ -1,26 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Mappers
 {
     public class MapperFactory : IMapperFactory
     {
-         private List<FieldMapping> _mappings = new List<FieldMapping>
-                                          {
-                                              new FieldMapping{AftField = "First_Name", SalsaField = "First_Name", DataType = "string"},
-                                              new FieldMapping{AftField = "Last_Name", SalsaField = "Last_Name", DataType = "string"},
-                                              new FieldMapping{AftField = "Email", SalsaField = "Email", DataType = "string"},
-                                          };
-         private readonly Dictionary<string, List<FieldMapping>> _mappers;
 
-        public MapperFactory()
+        public IMapper GetMapper(string objectType)
         {
-            _mappers = new Dictionary<string, List<FieldMapping>>();
-            _mappers.Add("supporter", _mappings);
+            using (var db = new AftDbContext())
+            {
+                return new Mapper(objectType, db.FieldMappings.Where(map => map.ObjectType == objectType).ToList());
+            }
         }
 
-        public IMapper GetMapper(string name)
-        {
-            return new Mapper(name, _mappers[name]);
-        }
     }
 }

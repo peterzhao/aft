@@ -36,7 +36,7 @@ namespace SalsaImporter.Mappers
 //            foreach (var property in syncObject.GetType().GetProperties())
 //            {
 //                var propertyName = property.Name;
-//                if (Map.ContainsKey(propertyName))
+//                if (Mappings.ContainsKey(propertyName))
 //                {
 //                    object value = property.GetValue(syncObject, null);
 //                    if (value != null)
@@ -44,7 +44,7 @@ namespace SalsaImporter.Mappers
 //                        var stringValue = value.ToString();
 //                        if (property.PropertyType == typeof(bool)) stringValue = value.Equals(true) ? "1" : "0";
 //                        if (property.PropertyType == typeof(DateTime?)) stringValue = ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
-//                        result.Add(Map[propertyName], stringValue);
+//                        result.Add(Mappings[propertyName], stringValue);
 //                    }
 //                }
 //            }
@@ -59,19 +59,19 @@ namespace SalsaImporter.Mappers
 //                string propertyName = property.Name;
 //                var propertyType = property.PropertyType;
 //                object propertyValue = null;
-//                if (!Map.ContainsKey(propertyName)) continue;
+//                if (!Mappings.ContainsKey(propertyName)) continue;
 //                if (propertyType == typeof(String))
-//                    propertyValue = element.StringValueOrNull(Map[propertyName]);
+//                    propertyValue = element.StringValueOrNull(Mappings[propertyName]);
 //                else if (propertyType == typeof(int?))
-//                    propertyValue = element.IntValueOrNull(Map[propertyName]);
+//                    propertyValue = element.IntValueOrNull(Mappings[propertyName]);
 //                else if (propertyType == typeof(int))
-//                    propertyValue = element.IntValueOrDefault(Map[propertyName]);
+//                    propertyValue = element.IntValueOrDefault(Mappings[propertyName]);
 //                else if (propertyType == typeof(float?))
-//                    propertyValue = element.FloatValueOrNull(Map[propertyName]);
+//                    propertyValue = element.FloatValueOrNull(Mappings[propertyName]);
 //                else if (propertyType == typeof(DateTime?))
-//                    propertyValue = element.DateTimeValueOrNull(Map[propertyName]);
+//                    propertyValue = element.DateTimeValueOrNull(Mappings[propertyName]);
 //                else if (propertyType == typeof(bool))
-//                    propertyValue = element.BoolValueOrFalse(Map[propertyName]);
+//                    propertyValue = element.BoolValueOrFalse(Mappings[propertyName]);
 //                if (propertyValue != null)
 //                    property.SetValue(syncObject, propertyValue, null);
 //            }
@@ -92,5 +92,7 @@ namespace SalsaImporter.Mappers
             syncObject.Id = element.IntValueOrDefault("key");
             return syncObject;
         }
+
+        public List<FieldMapping> Mappings { get { return _mappings; } }
     }
 }

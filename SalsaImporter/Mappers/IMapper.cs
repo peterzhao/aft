@@ -9,6 +9,7 @@ namespace SalsaImporter.Mappers
     {
         NameValueCollection ToNameValues(SyncObject obj);
         SyncObject ToObject(XElement xElement);
-     
+
+        List<FieldMapping> Mappings { get; }
     }
 }
