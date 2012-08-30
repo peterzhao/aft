@@ -69,7 +69,6 @@ GO
 CREATE TABLE [dbo].[SyncEvents](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[ObjectId] [int] NOT NULL,
-	[ExternalId] [int] NOT NULL,
 	[ObjectType] [nvarchar](250) NOT NULL,
 	[Destination] [nvarchar](250) NOT NULL,
 	[EventType] [nvarchar](50) NOT NULL,

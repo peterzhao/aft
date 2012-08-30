@@ -10,8 +10,7 @@ namespace SalsaImporter.Repositories
         IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey,
                                                          DateTime minimumModifiedDate);
 
-        int Add(SyncObject syncObject);
-        void Update(SyncObject newData);
+        void Save(SyncObject syncObject);
         SyncObject Get(string objectType, int key);
 
         DateTime CurrentTime { get; }

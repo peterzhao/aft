@@ -8,8 +8,7 @@ namespace SalsaImporter.Salsa
 {
     public interface ISalsaClient
     {
-        string Create(string objectType, NameValueCollection data);
-        void Update(string objectType, NameValueCollection data, string[] fields = null);
+        string Save(string objectType, NameValueCollection data);
         XElement GetObject(string objectType, string key);
         CookieContainer Login();
 

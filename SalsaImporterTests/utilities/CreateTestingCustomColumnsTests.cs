@@ -34,7 +34,7 @@ namespace SalsaImporterTests.Utilities
 
             var salsaClient = new SalsaClient();
 
-            string newSupporterId = salsaClient.Create("supporter", new NameValueCollection {{"email", "customcolumn@test.com"}});
+            string newSupporterId = salsaClient.Save("supporter", new NameValueCollection {{"email", "customcolumn@test.com"}});
 
             XElement newSupporterXml = salsaClient.GetObject("supporter", newSupporterId);
 

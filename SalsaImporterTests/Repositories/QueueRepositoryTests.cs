@@ -100,7 +100,7 @@ namespace SalsaImporterTests.Repositories
 
             Assert.IsNotNull(eventArgs);
             Assert.AreEqual(_syncObject.ObjectType, eventArgs.ObjectType);
-            Assert.AreEqual(SyncEventType.Add, eventArgs.EventType);
+            Assert.AreEqual(SyncEventType.Import, eventArgs.EventType);
             Assert.AreEqual(_repository, eventArgs.Destination);
         }
 

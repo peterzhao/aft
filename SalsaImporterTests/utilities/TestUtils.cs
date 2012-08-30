@@ -34,12 +34,12 @@ namespace SalsaImporterTests.Utilities
  
         public static void CreateSalsa(params SyncObject[] objects)
         {
-            objects.ToList().ForEach(syncObject => syncObject.Id = SalsaRepository.Add(syncObject));
+            objects.ToList().ForEach(syncObject => SalsaRepository.Save(syncObject));
         }
 
         public static void UpdateSalsa(params SyncObject[] objects) 
         {
-            objects.ToList().ForEach(SalsaRepository.Update);
+            objects.ToList().ForEach(SalsaRepository.Save);
         }
 
         public static void ClearAllSessions()

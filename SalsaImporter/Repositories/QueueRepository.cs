@@ -14,7 +14,7 @@ namespace SalsaImporter.Repositories
         public void Push(SyncObject syncObject, string tableName)
         {
             InsertToQueue(syncObject, tableName, syncObject.FieldNames);
-            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject });
+            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Import, Destination = this, SyncObject = syncObject });
         }
 
         public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };

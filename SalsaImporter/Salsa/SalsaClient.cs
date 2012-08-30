@@ -28,31 +28,14 @@ namespace SalsaImporter.Salsa
             ServicePointManager.ServerCertificateValidationCallback = delegate { return (true); };
         }
 
-        public string Create(string objectType, NameValueCollection data)
+        public string Save(string objectType, NameValueCollection data)
         {
-            data.Set("key", "0"); // this is to indicate creation  
+            if(!data.AllKeys.Contains("key"))
+             data.Set("key", "0"); // this is to indicate creation  
             return Try<string, InvalidSalsaResponseException>(() =>
             {
                 string response = Post("save", objectType, data);
                 return VerifySaveResponse(response, data);
-            }, 3);
-
-        }
-
-        public void Update(string objectType, NameValueCollection data, string[] fields = null)
-        {
-            var subSetData = new NameValueCollection();
-            data.AllKeys.ToList().ForEach(k =>
-            {
-                if (fields == null || fields.Contains(k) || k == "key")
-                    subSetData[k] = data[k];
-            });
-
-            Try<string, InvalidSalsaResponseException>(() =>
-            {
-                string response = Post("save", objectType, subSetData);
-                VerifySaveResponse(response, data);
-                return null;
             }, 3);
 
         }
@@ -178,7 +161,7 @@ namespace SalsaImporter.Salsa
                 const string currentTimeObjectType = "bad_word";
                 const string currentTimeObjectTypeDateField = "Date_Created";
 
-                var newId = Create(currentTimeObjectType, new NameValueCollection());
+                var newId = Save(currentTimeObjectType, new NameValueCollection());
                 var newObject = GetObject(currentTimeObjectType, newId);
                 var currentTime = newObject.DateTimeValueOrNull(currentTimeObjectTypeDateField);
                 DeleteObject(currentTimeObjectType, newId);

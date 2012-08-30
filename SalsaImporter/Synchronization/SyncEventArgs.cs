@@ -21,6 +21,7 @@ namespace SalsaImporter.Synchronization
             set { 
                 ObjectType = value.ObjectType;
                 Data = value.ToString();
+                ObjectId = value.Id;
             }
         }
     }

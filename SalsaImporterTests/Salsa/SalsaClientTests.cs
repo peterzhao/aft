@@ -32,7 +32,7 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShouldAllowDeletingDeletedSupporter()
         {
-            string id = client.Create("supporter", GenerateSupporter());
+            string id = client.Save("supporter", GenerateSupporter());
             client.DeleteObject("supporter", id);
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
@@ -42,7 +42,7 @@ namespace SalsaImporterTests.Salsa
         public void ShouldCreateObject()
         {
             string objectType = "supporter";
-            string id = client.Create(objectType, GenerateSupporter());
+            string id = client.Save(objectType, GenerateSupporter());
             Assert.AreNotEqual(0, id);
             XElement xml = client.GetObject(objectType, id);
             Assert.AreEqual(id, xml.Element("supporter_KEY").Value);
@@ -67,7 +67,7 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShouldDeleteObject()
         {
-            string id = client.Create("supporter", GenerateSupporter());
+            string id = client.Save("supporter", GenerateSupporter());
             client.DeleteObject("supporter", id);
             Assert.IsFalse(DoesSupporterExist(id));
         }
@@ -75,7 +75,7 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShouldGetCountOfSupporters()
         {
-            client.Create("supporter", GenerateSupporter());
+            client.Save("supporter", GenerateSupporter());
             Assert.Greater(client.CountObjects("supporter"), 0);
         }
 
@@ -100,7 +100,7 @@ namespace SalsaImporterTests.Salsa
             {
                 NameValueCollection supporter = GenerateSupporter();
                 newSupporters.Add(supporter);
-                supporter["supporter_KEY"] = client.Create(objectType, supporter);
+                supporter["supporter_KEY"] = client.Save(objectType, supporter);
             }
             Thread.Sleep(2000);
 
@@ -117,7 +117,7 @@ namespace SalsaImporterTests.Salsa
         public void ShouldGetSupporterById()
         {
             string firstName = NewName();
-            string id = client.Create("supporter", GenerateSupporter(firstName));
+            string id = client.Save("supporter", GenerateSupporter(firstName));
             XElement support = client.GetObject("supporter", id);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
@@ -140,7 +140,7 @@ namespace SalsaImporterTests.Salsa
             NameValueCollection supporter = GenerateSupporter();
             supporter.Add(name, valueOnSupporter);
 
-            string supporterId = client.Create("supporter", supporter);
+            string supporterId = client.Save("supporter", supporter);
             XElement supporterFromSalsa = client.GetObject("supporter", supporterId);
 
             Assert.AreEqual(valueOnSupporter, supporterFromSalsa.Element(name).Value);
@@ -155,11 +155,11 @@ namespace SalsaImporterTests.Salsa
             NameValueCollection supporter = GenerateSupporter();
             string oldFirstName = supporter["First_Name"];
             string oldEmail = supporter["EMail"];
-            string id = client.Create(objectType, supporter);
+            string id = client.Save(objectType, supporter);
             supporter["First_Name"] = NewName();
             supporter["Email"] = NewName() + "@abc.com";
             supporter["key"] = id;
-            client.Update(objectType, supporter);
+            client.Save(objectType, supporter);
             XElement xml = client.GetObject(objectType, id);
             Assert.AreEqual(supporter["First_Name"], xml.Element("First_Name").Value);
             Assert.AreEqual(supporter["Email"], xml.Element("Email").Value);
@@ -167,27 +167,7 @@ namespace SalsaImporterTests.Salsa
             Assert.AreNotEqual(oldEmail, xml.Element("Email").Value);
         }
 
-        [Test]
-        public void ShouldUpdateObjectWithSpecificFields()
-        {
-            string objectType = "supporter";
-            NameValueCollection supporter = GenerateSupporter();
-            string oldFirstName = supporter["First_Name"];
-            string oldLastName = supporter["Last_Name"];
-
-            string id = client.Create(objectType, supporter);
-
-            supporter["First_Name"] = NewName();
-            supporter["Last_Name"] = NewName() + " Foo";
-            supporter["key"] = id;
-
-            client.Update(objectType, supporter, new[] {"First_Name"});
-
-            XElement xml = client.GetObject(objectType, id);
-            Assert.AreEqual(supporter["First_Name"], xml.Element("First_Name").Value);
-            Assert.AreNotEqual(oldFirstName, xml.Element("First_Name").Value);
-            Assert.AreEqual(oldLastName, xml.Element("Last_Name").Value);
-        }
+      
 
         [Test]
         public void ShouldHaveAnIncrementingCurrentTime()
@@ -221,7 +201,7 @@ namespace SalsaImporterTests.Salsa
         public void ShouldBeAbleToCountSupporterObjectsMatchingAQuery()
         {
             var name = NewName();
-            var remoteId = client.Create("supporter", GenerateSupporter(name));
+            var remoteId = client.Save("supporter", GenerateSupporter(name));
 
             var actual = client.CountObjectsMatchingQuery("supporter", "First_Name", Comparator.Equality, name);
             var expected = 1;
@@ -317,7 +297,7 @@ namespace SalsaImporterTests.Salsa
             {
                 var supporter = GenerateSupporter();
                 supporters.Add(supporter);
-                supporter["supporter_KEY"] = client.Create("supporter", supporter);
+                supporter["supporter_KEY"] = client.Save("supporter", supporter);
             }
             return supporters;
         }

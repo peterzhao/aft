@@ -40,21 +40,14 @@ namespace SalsaImporter.Repositories
             return batchOfObjects;
         }
 
-        public int Add(SyncObject syncObject)
+        public void Save(SyncObject syncObject)
         {
             IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
-            var id = int.Parse(_salsa.Create(syncObject.ObjectType, mapper.ToNameValues(syncObject)));
-            syncObject.Id = id;
-            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Add, Destination = this, SyncObject = syncObject });
-            return id;
+            syncObject.Id = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToNameValues(syncObject)));
+            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Export, Destination = this, SyncObject = syncObject});
         }
 
-        public void Update(SyncObject newData)
-        {
-            var mapper = _mapperFactory.GetMapper(newData.ObjectType);
-            _salsa.Update(newData.ObjectType, mapper.ToNameValues(newData));
-            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Update, Destination = this, SyncObject = newData });
-        }
+     
 
       
         public SyncObject Get(string objectType, int key)

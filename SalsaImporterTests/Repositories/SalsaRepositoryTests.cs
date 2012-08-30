@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Xml.Linq;
 using Moq;
@@ -106,46 +107,29 @@ namespace SalsaImporterTests.Repositories
             _errorHandlerMock.Verify(handler => 
                 handler.HandleMappingFailure(ObjectType, xUnmappableElement, _repository, expectedException));
         }
-//
-//        [Test]
-//        public void ShouldCreateObject()
-//        {
-//            var key = 1234;
-//            var supporter = new Supporter { Email = "boo@abc.com" };
-//            var nameValues = new NameValueCollection();
-//
-//            _salsaMock.Setup(s => s.Create("supporter", nameValues)).Returns(key.ToString);
-//            _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
-//            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
-//
-//
-//            Assert.AreEqual(key, _repository.Add(supporter));
-//            Assert.IsNotNull(syncEventArgs);
-//            Assert.AreEqual(_repository, syncEventArgs.Destination);
-//            Assert.AreEqual(SyncEventType.Add, syncEventArgs.EventType);
-//            Assert.AreEqual(key, syncEventArgs.ObjectId);
-//            Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
-//            
-//        }
-//
-//        [Test]
-//        public void ShouldUpdateSupporter()
-//        {
-//            var newObject = new Supporter { Email = "boo@abc.com", Phone = "4359088234"};
-//            var nameValues = new NameValueCollection();
-//
-//            _mapperMock.Setup(m => m.ToNameValues(newObject)).Returns(nameValues);
-//            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
-//
-//           _repository.Update(newObject);
-//           _salsaMock.Verify(s => s.Update("supporter", nameValues, null));
-//
-//           Assert.IsNotNull(syncEventArgs);
-//           Assert.AreEqual(_repository, syncEventArgs.Destination);
-//           Assert.AreEqual(SyncEventType.Update, syncEventArgs.EventType);
-//
-//           Assert.AreEqual(newObject.ToString(), syncEventArgs.Data);
-//        }
+
+        [Test]
+        public void ShouldCreateObject()
+        {
+            var key = 1234;
+            var id = 7890;
+            var supporter = new SyncObject(ObjectType) {Id = id};
+            supporter["Email"] = "foo@abc.com";
+            var nameValues = new NameValueCollection();
+            _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
+            _salsaMock.Setup(s => s.Save("supporter", nameValues)).Returns(key.ToString);
+
+
+             _repository.Save(supporter);
+            Assert.IsNotNull(syncEventArgs);
+            Assert.AreEqual(_repository, syncEventArgs.Destination);
+            Assert.AreEqual(SyncEventType.Export, syncEventArgs.EventType);
+            Assert.AreEqual(key, syncEventArgs.ObjectId);
+            Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
+            
+        }
+
+      
 //
 //        [Test]
 //        public void ShouldReturnSalsaClientCurrentTime()
