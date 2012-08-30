@@ -31,15 +31,15 @@ namespace SalsaImporter.Repositories
                 DataTable table = dataSet.Tables[0];
                 foreach (DataRow row in table.Rows)
                 {
-                    var data = new SyncObject(objectType);
+                    var syncObject = new SyncObject(objectType);
                     foreach (DataColumn column in table.Columns)
                     {
                         if (column.ColumnName == "Id")
-                            data.Id = int.Parse(row[column].ToString());
+                            syncObject.Id = int.Parse(row[column].ToString());
                         else
-                            data[column.ColumnName] = row[column].ToString();
+                            syncObject[column.ColumnName] = row[column].ToString();
                     }
-                    returnValue.Add(data);
+                    returnValue.Add(syncObject);
                 }
             }
             if ( returnValue.Count > 0 ) 
