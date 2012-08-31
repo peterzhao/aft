@@ -30,3 +30,4 @@ DB/create_database.sql
 DB/db-migrate.sql
 DB/db-migrate-undo.sql
 DB/remove_database.sql
+artifact/

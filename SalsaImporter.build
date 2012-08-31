@@ -10,6 +10,10 @@
     <DbDir>$(MSBuildProjectDirectory)\DB\</DbDir>
     <NUnitDirectory Condition="Exists('$(MSBuildProjectDirectory)\Dependencies\nunit')">$(MSBuildProjectDirectory)\Dependencies\nunit</NUnitDirectory>
     <MSBuildCommunityTasksPath Condition="$(MSBuildCommunityTasksPath) == ''">$(MSBuildProjectDirectory)\Dependencies\msbuild-community-tasks</MSBuildCommunityTasksPath>
+    <ArtifactDirectory>$(MSBuildProjectDirectory)\artifact</ArtifactDirectory>
+    <ArtifactName>SalsaImporter.zip</ArtifactName>
+    <ArtifactPath>$(ArtifactDirectory)\$(ArtifactName)</ArtifactPath>
+    <PackageDirectory>$(MSBuildProjectDirectory)\package</PackageDirectory>
   </PropertyGroup>
 
   <ItemGroup>
@@ -113,6 +117,24 @@
                  OutputFilename="$(DbDir)create_database.sql"
                  Tokens="@(Tokens)" />
     <Exec Command="sqlcmd.exe -S . -E -d master -i create_database.sql" WorkingDirectory="$(DbDir)" />
+  </Target>
+
+  <Target Name="Artifact">
+    <ItemGroup>
+      <DbFiles Include="$(MSBuildProjectDirectory)\db\**\*.*"/>
+      <ToolFiles Include="$(MSBuildProjectDirectory)\dependencies\**\*.*"/>
+      <BuildFiles Include="$(MSBuildProjectDirectory)\*.build"/>
+      <BinFiles Include="$(MSBuildProjectDirectory)\SalsaImporter\bin\debug\*.*"/>
+      <BatchFiles Include="$(MSBuildProjectDirectory)\*.bat"/>
+    </ItemGroup>
+    <Copy SourceFiles="@(DbFiles)" DestinationFiles="@(DbFiles->'$(PackageDirectory)\db\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(ToolFiles)" DestinationFiles="@(ToolFiles->'$(PackageDirectory)\dependencies\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(BinFiles)" DestinationFiles="@(BinFiles->'$(PackageDirectory)\bin\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(BuildFiles)" DestinationFiles="@(BuildFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(BatchFiles)" DestinationFiles="@(BatchFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <MakeDir Directories="$(ArtifactDirectory)"/>
+    <Exec Command="$(MSBuildProjectDirectory)\dependencies\7-zip\7z.exe a -r $(ArtifactPath) $(PackageDirectory)\*.* "/>
+    <RemoveDir Directories="$(PackageDirectory)" />
   </Target>
   
 </Project>
