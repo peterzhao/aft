@@ -13,20 +13,22 @@ namespace SalsaImporter.Service
         private string _recipient;
         private string _subject;
         private ISmtpClient _mailer;
-
-        //TODO: get these from config.
-        public NotificationService(MailConfig mailConfig, ISmtpClient mailer)
+        private bool _secureFlag;
+        private string _password;
+        public NotificationService(ISmtpClient mailer)
         {
-            _sender = mailConfig.Sender;
-            _recipient = mailConfig.Recipient;
-            _subject = mailConfig.Subject;
+            _sender = Config.SmtpFromAddress;
+            _recipient = Config.SmtpNotificationRecipient;
+            _secureFlag = Config.SmtpRequireSsl;
+            _subject = "Salsa Sync Notification";
             _mailer = mailer;
+            _password = Config.SmtpFromPassword;
         }
 
         public void SendNotification(string notification)
         {
             var msg = new MailMessage(_sender, _recipient, _subject, notification);
-            
+            _mailer.EnableSsl(_secureFlag);
             _mailer.Send(msg);
         }
     }

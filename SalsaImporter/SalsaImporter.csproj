@@ -55,8 +55,8 @@
     <Compile Include="Mappers\DataTypeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
+    <Compile Include="Service\EmailService.cs" />
     <Compile Include="Service\ISmtpClient.cs" />
-    <Compile Include="Service\MailConfig.cs" />
     <Compile Include="Service\NotificationService.cs" />
     <Compile Include="Synchronization\AftDbContext.cs" />
     <Compile Include="Synchronization\Exporter.cs" />

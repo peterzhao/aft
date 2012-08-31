@@ -8,6 +8,13 @@
     -->
     <salsaWritable/>
     <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true</dbConnectionString>
+    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <smtpNotificationRecipient>khodgson@thoughtworks.com</smtpNotificationRecipient>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpPort>587</smtpPort>
+    <smtpRequireSsl>True</smtpRequireSsl>
+    <smtpRequireLogin>True</smtpRequireLogin>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>

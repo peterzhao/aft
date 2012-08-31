@@ -18,11 +18,6 @@ namespace SalsaImporterTests.MailService
         private Mock<ISmtpClient> _mockMailer;
         private NotificationService _targetNotificationService;
         private string _notification;
-        private string _sender;
-        private string _recipient;
-        private string _subject;
-        private string _host;
-        private int _port;
 
         [SetUp]
         public void Setup()
@@ -31,13 +26,7 @@ namespace SalsaImporterTests.MailService
             _mockMailer = new Mock<ISmtpClient>();
             
             _notification = "Test notification for NotificationService testing.";
-            _sender = "kyle.hodgson@gmail.com";
-            _recipient = "khdogson@thoughtworks.com";
-            _subject = "SalsaSync Notification";
-            _host = "smtp.gmail.com";
-            _port = 25;
-
-            _targetNotificationService = new NotificationService(new MailConfig(_sender, _recipient, _subject, _host, _port), _mockMailer.Object);
+            _targetNotificationService = new NotificationService(_mockMailer.Object);
         }
 
         [Test]
@@ -47,5 +36,14 @@ namespace SalsaImporterTests.MailService
             _targetNotificationService.SendNotification(_notification);
             _mockMailer.Verify();
         }
+
+        [Test]
+        [Category("IntegrationTest")]
+        public void ShouldSendSecureMailMessage()
+        {
+            var notificationService = new NotificationService(new EmailService());
+            notificationService.SendNotification(_notification);   
+        }
+
     }
 }

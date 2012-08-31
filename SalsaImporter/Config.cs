@@ -64,6 +64,55 @@ namespace SalsaImporter
             get { return XDocument.Load("environments.xml").Element("environments").Elements().Select(e => e.Name.LocalName); }
         }
 
+        public static string SmtpFromAddress
+        {
+            get { return GetSetting("smtpFromAddress"); }
+        }
+
+        public static string SmtpNotificationRecipient
+        {
+            get { return GetSetting("smtpNotificationRecipient"); }
+        }
+
+        public static string SmtpHost
+        {
+            get { return GetSetting("smtpHost"); }
+        }
+
+        public static int SmtpPort
+        {
+            get { return int.Parse(GetSetting("smtpPort")); }
+        }
+
+        public static bool SmtpRequireSsl
+        {
+            get { 
+                string setting = GetSetting("smtpRequireSsl");
+                if (!String.IsNullOrEmpty(setting) && setting.ToLower() == "true")
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public static string SmtpFromPassword
+        {
+            get { return GetSetting("smtpFromPassword"); }
+        }
+
+        public static bool SmtpRequireLogin
+        {
+            get { 
+                string setting = GetSetting("smtpRequireLogin");
+                if(!String.IsNullOrEmpty(setting) && setting.ToLower()=="true")
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         private static void AddDbTargetToNLog()
         {
             string name = "db";
