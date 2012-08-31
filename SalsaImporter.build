@@ -100,14 +100,14 @@
     <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="RemoveDb">
+  <Target Name="RemoveDb" Condition="Exists('$(DbFilePath)')">
     <TemplateFile Template="$(DbDir)remove_database.sql.template"
                  OutputFilename="$(DbDir)remove_database.sql"
                  Tokens="@(Tokens)" />
     <Exec Command="sqlcmd.exe -S . -E -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="CreateDb"  DependsOnTargets="RemoveDb">
+  <Target Name="CreateDb"  Condition="Exists('$(DbFilePath)')" DependsOnTargets="RemoveDb">
     <MakeDir Directories="$(DbFilePath)" ContinueOnError="true"/>
     <TemplateFile Template="$(DbDir)create_database.sql.template"
                  OutputFilename="$(DbDir)create_database.sql"
