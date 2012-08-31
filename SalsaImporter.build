@@ -6,18 +6,31 @@
     <UnitTestProject Condition="Exists('$(ProjectName)Tests')">$(ProjectName)Tests</UnitTestProject>
     <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
     <Db Condition="$(Db) == ''">Aft</Db>
+    <DbFilePath Condition="$(DbFilePath) == ''">C:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA</DbFilePath>
+    <DbDir>$(MSBuildProjectDirectory)\DB\</DbDir>
     <NUnitDirectory Condition="Exists('$(MSBuildProjectDirectory)\Dependencies\nunit')">$(MSBuildProjectDirectory)\Dependencies\nunit</NUnitDirectory>
     <MSBuildCommunityTasksPath Condition="$(MSBuildCommunityTasksPath) == ''">$(MSBuildProjectDirectory)\Dependencies\msbuild-community-tasks</MSBuildCommunityTasksPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Tokens Include="DbName">
+      <ReplacementValue>$(Db)</ReplacementValue>
+    </Tokens>
+    <Tokens Include="DbFilePath">
+      <ReplacementValue>$(DbFilePath)</ReplacementValue>
+    </Tokens>
+  </ItemGroup>
   
    <Target Name="Build" DependsOnTargets="
       Compile;
       UnitTest;
       IntegrationTest;
      "/>
-  
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
- 
+  <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\Dependencies\dbdeploy.net\MSBuild.Dbdeploy.Task.dll" TaskName="MSBuild.Dbdeploy.Task.Dbdeploy" />
+  
   <Target Name="Clean">
     <ItemGroup>
       <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\bin\$(Configuration)\**\*" />
@@ -55,26 +68,51 @@
     WorkingDirectory="$(MSBuildProjectDirectory)\$(UnitTestProject)\bin\$(Configuration)"/>
   </Target>
 
-  <Target Name="RebaseDb">
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_object_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_sync_directions.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_salsa_data_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_session_job_contexts.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_importerlogs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_sync_configs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_SalsaToAftQueue_Supporter.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-  </Target>
-
+ 
   <Target Name="DbSeed">
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_object_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_directions.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_salsa_data_types.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_configs.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_field_mappings.sql" WorkingDirectory="$(MSBuildProjectDirectory)\DB\"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_field_mappings.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_configs.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_SalsaToAftQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="Db" DependsOnTargets="RebaseDb;DbSeed"/>
+  <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
+
+  <Target Name="DbChangeLog">
+    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
+  </Target>
+
+  <Target Name="MigrateScript" DependsOnTargets="DbChangelog" >
+    <Dbdeploy
+			DbType="mssql"
+			DbConnection="Server=.;Initial Catalog=$(Db);Integrated Security=True;"
+			Dir="$(DbDir)Migrations"
+			OutputFile="$(DbDir)db-migrate.sql"
+			UndoOutputFile="$(DbDir)db-migrate-undo.sql"
+		/>
+  </Target>
+
+  <Target Name="DbMigrate" DependsOnTargets="MigrateScript">
+    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
+  </Target>
+
+  <Target Name="DbMigrateUndo" DependsOnTargets="MigrateScript">
+    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
+  </Target>
+
+  <Target Name="RemoveDb">
+    <TemplateFile Template="$(DbDir)remove_database.sql.template"
+                 OutputFilename="$(DbDir)remove_database.sql"
+                 Tokens="@(Tokens)" />
+    <Exec Command="sqlcmd.exe -S . -E -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
+  </Target>
+
+  <Target Name="CreateDb"  DependsOnTargets="RemoveDb">
+    <MakeDir Directories="$(DbFilePath)" ContinueOnError="true"/>
+    <TemplateFile Template="$(DbDir)create_database.sql.template"
+                 OutputFilename="$(DbDir)create_database.sql"
+                 Tokens="@(Tokens)" />
+    <Exec Command="sqlcmd.exe -S . -E -d master -i create_database.sql" WorkingDirectory="$(DbDir)" />
+  </Target>
   
 </Project>

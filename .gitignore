@@ -25,5 +25,8 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-
 MillionSupporters.*
+DB/create_database.sql
+DB/db-migrate.sql
+DB/db-migrate-undo.sql
+DB/remove_database.sql

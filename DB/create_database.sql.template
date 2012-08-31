@@ -1,0 +1,11 @@
+USE [master]
+GO
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'${DbName}')
+	CREATE DATABASE [${DbName}] ON  PRIMARY 
+	( NAME = N'${DbName}', FILENAME = N'${DbFilePath}\${DbName}.mdf' , SIZE = 4096KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+	 LOG ON 
+	( NAME = N'${DbName}_log', FILENAME = N'${DbFilePath}\${DbName}_log.ldf' , SIZE = 4096KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+
+
+

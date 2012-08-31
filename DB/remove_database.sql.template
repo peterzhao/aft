@@ -1,0 +1,22 @@
+USE [master]
+GO
+DECLARE @dbname sysname
+
+SET @dbname = '${DbName}'
+
+DECLARE @spid int
+SELECT @spid = min(spid) from master.dbo.sysprocesses where dbid = db_id(@dbname)
+WHILE @spid IS NOT NULL
+BEGIN
+EXECUTE ('KILL ' + @spid)
+SELECT @spid = min(spid) from master.dbo.sysprocesses where dbid = db_id(@dbname) AND spid > @spid
+END
+
+GO
+
+
+IF  EXISTS (SELECT name FROM sys.databases WHERE name = N'${DbName}')
+DROP DATABASE [${DbName}]
+GO
+
+
