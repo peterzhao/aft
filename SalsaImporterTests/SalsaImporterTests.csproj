@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionalTests\SyncTests.cs" />
+    <Compile Include="MailService\MailServiceTests.cs" />
     <Compile Include="Mappers\DataTypeConverterTests.cs" />
     <Compile Include="Mappers\MapperTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
