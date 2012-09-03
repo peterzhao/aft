@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
+using Moq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Service;
 using SalsaImporter.Synchronization;
 using SalsaImporterTests.Utilities;
 
@@ -18,17 +21,22 @@ namespace SalsaImporterTests.Synchronization
         private JobContext _jobContext22;
         private SessionContext _context1;
         private SessionContext _context2;
+        
+        private NotificationService _notificationService;
+        private readonly Mock<ISmtpClient> _mockMailer = new Mock<ISmtpClient>();
+
         [SetUp]
         public void SetUp()
         {
             Config.Environment = Config.Test;
             TestUtils.ClearAllSessions();
+            _notificationService = new NotificationService(_mockMailer.Object);
         }
 
         [Test]
         public void ShouldStartANewSessionIfThereIsNoPreviousSessionBefore()
         {
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             Assert.AreEqual(SessionState.New, session.CurrentContext.State);
             Assert.AreEqual(new DateTime(1991, 1, 1), session.CurrentContext.MinimumModifiedDate);
             Assert.IsNull(session.CurrentContext.JobContexts);
@@ -43,7 +51,7 @@ namespace SalsaImporterTests.Synchronization
         {
             CreateTwoSessions(SessionState.Aborted);
 
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             Assert.AreEqual(SessionState.InProgress, session.CurrentContext.State);
             Assert.AreEqual(new DateTime(2012, 7, 1), session.CurrentContext.MinimumModifiedDate);
             Assert.IsNotNull(session.CurrentContext.JobContexts);
@@ -55,7 +63,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldCreateANewContextWhenTheLastSessionWasFinished()
         {
             CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             Assert.AreEqual(SessionState.New, session.CurrentContext.State);
             Assert.AreEqual(_context2.StartTime, session.CurrentContext.MinimumModifiedDate);
             Assert.IsNull(session.CurrentContext.JobContexts);
@@ -65,7 +73,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldCreateNewJobContextForNewJobIfThereIsNoExistingOne()
         {
             CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job31 = new SyncJobStub("job21", (jobContext) => { });
             var job32 = new SyncJobStub("job22", (jobContext) => { });
             session.AddJob(job31).AddJob(job32);
@@ -80,7 +88,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldUseExistingJobContextForJobIfThereIsExistingOne()
         {
             CreateTwoSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job31 = new SyncJobStub("job21", (jobContext) => { });
             var job32 = new SyncJobStub("job22", (jobContext) => { });
             session.AddJob(job31).AddJob(job32);
@@ -95,7 +103,7 @@ namespace SalsaImporterTests.Synchronization
         {
             var start = DateTime.Now;
             CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job1Called = false;
             var job2Called = false;
             var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; jobContext.SetCurrentRecord(200);});
@@ -119,11 +127,12 @@ namespace SalsaImporterTests.Synchronization
         }
 
         [Test]
-        public void ShouldAbortSyncSessionWhenGotError()
+        public void ShouldAbortSyncSessionAndNotifyWhenGotError()
         {
             var start = DateTime.Now;
             CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession(); 
+
+            var session = new SyncSession(_notificationService); 
             var job1Called = false;
             var job2Called = false;
             var job31 = new SyncJobStub("job21", (jobContext) =>{job1Called = true; throw new ApplicationException("error here");});
@@ -142,6 +151,7 @@ namespace SalsaImporterTests.Synchronization
             Assert.IsTrue(session.CurrentContext.JobContexts.First().StartTime >= start);
             Assert.IsNull(session.CurrentContext.JobContexts.Last().StartTime);
             Assert.IsNull(session.CurrentContext.JobContexts.First().FinishedTime);
+            _mockMailer.Verify();
 
         }
 
@@ -149,7 +159,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGetErrorWhenGivenJobHasNoName()
         {
             CreateTwoSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job31 = new SyncJobStub("", (jobContext) => { });
             Assert.Throws <ApplicationException> (() => session.AddJob(job31));
         }
@@ -158,7 +168,7 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldGetErrorWhenGivenJobNameIsNotUnique()
         {
             CreateTwoSessions(SessionState.Aborted);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job31 = new SyncJobStub("job31", (jobContext) => { });
             var job32 = new SyncJobStub("job31", (jobContext) => { });
             session.AddJob(job31);
@@ -169,12 +179,12 @@ namespace SalsaImporterTests.Synchronization
         public void ShouldSendEmail()
         {
             CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession();
+            var session = new SyncSession(_notificationService);
             var job = new SyncJobStub("email_test_job", (jobcontest) => { });
             session.AddJob(job);
-
-            throw new NotImplementedException("What I need to do is get the NotificationService and an accompanying mocked ISmtpClient in to SyncSession so I can assert that the NotificationService is called.");
-
+            session.Start();
+            _mockMailer.Verify();
+            
         }
 
         private void CreateTwoSessions(string stateOfSecondSession)

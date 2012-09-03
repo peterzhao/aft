@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SalsaImporter.Exceptions;
+using SalsaImporter.Service;
 
 namespace SalsaImporter.Synchronization
 {
@@ -20,9 +21,14 @@ namespace SalsaImporter.Synchronization
         private readonly List<ISyncJob> _jobs;
         private SessionContext _currentContext;
         private readonly AftDbContext _db;
+        private NotificationService _notificationService;
 
-        public SyncSession()
+        public SyncSession() : this(new NotificationService(new EmailService()))
+        { }
+
+        public SyncSession(NotificationService notificationService)
         {
+            _notificationService = notificationService;
             _jobs = new List<ISyncJob>();
             _db = new AftDbContext();
             Initialize();
@@ -108,12 +114,18 @@ namespace SalsaImporter.Synchronization
                 CurrentContext.FinishedTime = DateTime.Now;
                 _db.SaveChanges();
 
-                Logger.Info("Finished sync session.");
+                string message = "Finished sync session.";
+                Logger.Info(message);
+                _notificationService.SendNotification(message);
             }
             catch (Exception ex)
             {
                 var message = "Encourtered unexpected error. Sync aborted. Please try to resume this session later.";
                 Logger.Fatal(message, ex);
+
+                message = String.Format(message + " Exception: {0}", ex.Message);
+                _notificationService.SendNotification(message);
+
                 CurrentContext.State = SessionState.Aborted;
                 _db.SaveChanges();
                 throw new SyncAbortedException(message, ex);
