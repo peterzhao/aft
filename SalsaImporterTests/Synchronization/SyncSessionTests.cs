@@ -165,6 +165,17 @@ namespace SalsaImporterTests.Synchronization
             Assert.Throws<ApplicationException>(() => session.AddJob(job32));
         }
 
+        [Test]
+        public void ShouldSendEmail()
+        {
+            CreateTwoSessions(SessionState.Finished);
+            var session = new SyncSession();
+            var job = new SyncJobStub("email_test_job", (jobcontest) => { });
+            session.AddJob(job);
+
+            throw new NotImplementedException("What I need to do is get the NotificationService and an accompanying mocked ISmtpClient in to SyncSession so I can assert that the NotificationService is called.");
+
+        }
 
         private void CreateTwoSessions(string stateOfSecondSession)
         {

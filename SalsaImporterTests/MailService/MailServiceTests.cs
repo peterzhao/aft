@@ -39,7 +39,7 @@ namespace SalsaImporterTests.MailService
 
         [Test]
         [Category("IntegrationTest")]
-        public void ShouldSendSecureMailMessage()
+        public void ShouldSendMailMessageUsingRealGmailCredentialsAndSslEnabled()
         {
             var notificationService = new NotificationService(new EmailService());
             notificationService.SendNotification(_notification);   
