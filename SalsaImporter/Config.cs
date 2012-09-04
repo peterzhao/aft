@@ -20,7 +20,6 @@ namespace SalsaImporter
 
         private Config()
         {
-            Environment = Test;
         }
 
 

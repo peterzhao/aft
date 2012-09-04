@@ -1,4 +1,12 @@
 
+CREATE TABLE [dbo].[ImporterLogs](
+	[time_stamp] [datetime] NOT NULL,
+	[level] [nvarchar](50) NOT NULL,
+	[threadid] [int] NOT NULL,
+	[message] [nvarchar](max) NOT NULL,
+	[exception] [nvarchar](max) NULL
+) ON [PRIMARY]
+
 CREATE TABLE [SessionContexts] (
     [Id] [int] NOT NULL IDENTITY,
     [State] [nvarchar](max),
@@ -120,3 +128,5 @@ DROP TABLE [SessionContexts]
 DROP TABLE [SalsaDataTypes]
 DROP TABLE [ObjectTypes]
 DROP TABLE [SyncDirections]
+
+DROP TABLE [ImporterLogs]
