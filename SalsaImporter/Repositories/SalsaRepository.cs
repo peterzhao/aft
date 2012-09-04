@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using SalsaImporter.Mappers;
 using SalsaImporter.Salsa;
@@ -21,13 +22,16 @@ namespace SalsaImporter.Repositories
 
         public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
         {
-            var xElements = _salsa.GetObjects(objectType, batchSize, startKey.ToString(), minimumModifiedDate);
+            var mapper = _mapperFactory.GetMapper(objectType);
+            List<string> salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
+            
+            var xElements = _salsa.GetObjects(objectType, batchSize, startKey.ToString(), minimumModifiedDate, salsaFields);
             var batchOfObjects = new List<SyncObject>();
             foreach (var element in xElements)
             {
                 try
                 {
-                    var mapper = _mapperFactory.GetMapper(objectType);
+                   
                     var syncObject = mapper.ToObject(element);
                     batchOfObjects.Add(syncObject);
                 }

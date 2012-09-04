@@ -54,7 +54,7 @@ namespace SalsaImporter
         {
             var name = string.Format("{0} {1}",syncConfig.SyncDirection.ToUpper(), syncConfig.ObjectType.ToUpper());
 
-            const int batchSize = 100;
+            const int batchSize = 500;
 
             switch (syncConfig.SyncDirection)
             {

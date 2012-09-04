@@ -23,6 +23,8 @@ namespace SalsaImporterTests.Repositories
         private Mock<IMapper> _mapperMock;
         private Mock<ISyncErrorHandler> _errorHandlerMock;
         private SyncEventArgs syncEventArgs;
+        private List<FieldMapping> _fieldMappings;
+        private List<string> _expectedSalsaFields;
 
         [SetUp]
         public void SetUp()
@@ -39,6 +41,10 @@ namespace SalsaImporterTests.Repositories
             _repository = new SalsaRepository(_salsaMock.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
 
             _repository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
+
+            _fieldMappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" } };
+            _expectedSalsaFields = new List<string> { "Email" };
+
         }
 
 //        [Test]
@@ -64,8 +70,9 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {xElement};
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, null)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
             _mapperMock.Setup(m => m.ToObject(xElement)).Returns(syncObject);
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
             Assert.AreEqual(syncObject, _repository.GetBatchOfObjects(ObjectType, 10, 200, dateTime).First());
         }
@@ -78,11 +85,12 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> { xElement, xElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, null)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.SetupSequence(m => m.ToObject(xElement))
                .Returns(syncObject)
                .Throws(new FormatException("test exception"));
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
             IEnumerable<SyncObject> batchOfObjects = _repository.GetBatchOfObjects(ObjectType, 10, 200, dateTime).ToList();
             Assert.AreEqual(1, batchOfObjects.Count());
@@ -97,10 +105,11 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {  xUnmappableElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects("supporter", 10, "200", dateTime, null)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects("supporter", 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.Setup(m => m.ToObject(xUnmappableElement))
                .Throws(expectedException);
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
             _repository.GetBatchOfObjects(ObjectType, 10, 200, dateTime);
 
