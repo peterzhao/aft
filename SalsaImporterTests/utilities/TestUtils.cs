@@ -94,11 +94,11 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName)
+        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName, DateTime customDateTime0)
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, SalsaKey) VALUES ('{0}', '{1}', '{2}', 0)", email, firstName, lastName));
+                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, CustomDateTime0, SalsaKey) VALUES ('{0}', '{1}', '{2}', '{3}', 0)", email, firstName, lastName, customDateTime0));
             }
         }
 

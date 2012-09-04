@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Xml.Linq;
@@ -35,8 +36,11 @@ namespace SalsaImporterTests.FunctionalTests
             supporter["Email"] = string.Format("{0}@example.com", arg0);
             supporter["First_Name"] = "Supporter";
             supporter["Last_Name"] = string.Format("{0}", arg0);
+            var hour = Math.Abs(arg0.GetHashCode())%24;
+            var minute = Math.Abs(arg0.GetHashCode())%60;
+            supporter["CustomDateTime0"] = new DateTime(2012, 8, 29, hour, minute, 0, 0);
             return supporter;
-        }
+        } 
 
         [Test]
         public void ShouldImportSupporters()
@@ -50,14 +54,15 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterOne["Email"])));
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterTwo["Email"])));
 
-          
+            Assert.IsTrue(queue.Any(d => d["CustomDateTime0"].Equals(_supporterTwo["CustomDateTime0"])));
+            Assert.IsTrue(queue.Any(d => d["CustomDateTime0"].Equals(_supporterOne["CustomDateTime0"])));
         }
 
         [Test]
         public void ShouldExportSupporters()
         {
-            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1");
-            TestUtils.InsertSupporterToExportQueue("foo2@abc.com", "boo2", "joo2");
+            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00));
+            TestUtils.InsertSupporterToExportQueue("foo2@abc.com", "boo2", "joo2", new DateTime(2012, 08, 29, 01, 23, 45, 00));
 
             var sync = new Sync();
             sync.Run();
