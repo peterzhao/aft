@@ -20,7 +20,7 @@ namespace SalsaImporterTests.Synchronization
         {
             Config.Environment = Config.Test;
             TestUtils.ClearAllSessions();
-            _currentSessionContext = new SyncSession().CurrentContext;
+            _currentSessionContext = new SyncSession(null).CurrentContext;
         }
 
 //        [Test]

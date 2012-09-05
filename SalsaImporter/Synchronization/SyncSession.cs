@@ -23,9 +23,6 @@ namespace SalsaImporter.Synchronization
         private readonly AftDbContext _db;
         private NotificationService _notificationService;
 
-        public SyncSession() : this(new NotificationService(new EmailService()))
-        { }
-
         public SyncSession(NotificationService notificationService)
         {
             _notificationService = notificationService;
@@ -114,9 +111,7 @@ namespace SalsaImporter.Synchronization
                 CurrentContext.FinishedTime = DateTime.Now;
                 _db.SaveChanges();
 
-                string message = "Finished sync session.";
-                Logger.Info(message);
-                _notificationService.SendNotification(message);
+                Logger.Info("Finished sync session.");
             }
             catch (Exception ex)
             {

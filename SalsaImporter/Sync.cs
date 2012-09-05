@@ -4,6 +4,7 @@ using System.Linq;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
+using SalsaImporter.Service;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
@@ -16,7 +17,7 @@ namespace SalsaImporter
         private readonly ISyncEventTracker _syncEventTracker;
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
-
+        private NotificationService _notificationService;
         public Sync()
         {
             _errorHandler = new SyncErrorHandler(10);
@@ -26,8 +27,8 @@ namespace SalsaImporter
             _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
             _queueRepository = new QueueRepository(mapperFactory);
             _salsaClient.Login();
-
-            _syncSession = new SyncSession();
+            _notificationService = new NotificationService(new EmailService());
+            _syncSession = new SyncSession(_notificationService);
         }
 
         public void Run()
@@ -38,7 +39,7 @@ namespace SalsaImporter
             _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             
             _syncSession.Start();
-            PrintSyncEvents();
+            NotifySyncEvents();
         }
 
         private void ConfigSync()
@@ -73,12 +74,13 @@ namespace SalsaImporter
             }
         }
 
-        private void PrintSyncEvents()
+        private void NotifySyncEvents()
         {
-            _syncSession.Jobs.GroupBy( job=>job.ObjectType).ToList().ForEach(g => PrintSyncEventsFor(g.Key));
+            var messages = _syncSession.Jobs.GroupBy( job=>job.ObjectType).Select(g => PrintSyncEventsFor(g.Key)).ToList();
+            _notificationService.SendNotification(string.Join("\n", messages));
         }
 
-        private void PrintSyncEventsFor(string objectType)
+        private string PrintSyncEventsFor(string objectType)
         {
             int totalErrors = 0;
             int totalAddedToLocal = 0;
@@ -87,7 +89,9 @@ namespace SalsaImporter
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error && e.ObjectType == objectType));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Import && e.ObjectType == objectType));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Export && e.ObjectType == objectType));
-            Logger.Info(string.Format("{0}: Total imported from Salsa:{1} Total exported to Salsa:{2} Total errors: {3}", objectType, totalAddedToLocal, totalAddedToSalsa, totalErrors));
+            var message = string.Format("{0}: Total imported from Salsa:{1} Total exported to Salsa:{2} Total errors: {3}", objectType, totalAddedToLocal, totalAddedToSalsa, totalErrors);
+            Logger.Info(message);
+            return message;
         }
 
         public void DeleteAllSupporters()

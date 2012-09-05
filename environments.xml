@@ -11,7 +11,7 @@
     <dbName>Aft</dbName>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
-    <smtpNotificationRecipient>khodgson@thoughtworks.com</smtpNotificationRecipient>
+    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
@@ -25,6 +25,13 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftPerformanceTest</dbName>
+    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpPort>587</smtpPort>
+    <smtpRequireSsl>True</smtpRequireSsl>
+    <smtpRequireLogin>True</smtpRequireLogin>
     <deployDestinationFolder>c:\temp\aftPerformanceTest</deployDestinationFolder>
   </performanceTest>
   <tomPlay>
@@ -33,6 +40,13 @@
     <salsaPassword>7eleven</salsaPassword>
     <dbHost>.</dbHost>
     <dbName>TomPlay</dbName>
+    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpPort>587</smtpPort>
+    <smtpRequireSsl>True</smtpRequireSsl>
+    <smtpRequireLogin>True</smtpRequireLogin>
     <deployDestinationFolder>c:\temp\tomplay</deployDestinationFolder>
   </tomPlay>
   
@@ -43,6 +57,13 @@
     <!-- NOT WRITABLE! -->
     <dbHost>.</dbHost>
     <dbName>AFT</dbName>
+    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpPort>587</smtpPort>
+    <smtpRequireSsl>True</smtpRequireSsl>
+    <smtpRequireLogin>True</smtpRequireLogin>
     <deployDestinationFolder>c:\aft\SalsaImporter</deployDestinationFolder>
   </production>
 
@@ -54,6 +75,13 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftDemo</dbName>
+    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
+    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpPort>587</smtpPort>
+    <smtpRequireSsl>True</smtpRequireSsl>
+    <smtpRequireLogin>True</smtpRequireLogin>
     <deployDestinationFolder>c:\temp\aftdemo</deployDestinationFolder>
   </demo>
 </environments>
