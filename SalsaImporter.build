@@ -133,7 +133,7 @@
     <Copy SourceFiles="@(BuildFiles)" DestinationFiles="@(BuildFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BatchFiles)" DestinationFiles="@(BatchFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <MakeDir Directories="$(ArtifactDirectory)"/>
-    <Exec Command="$(MSBuildProjectDirectory)\dependencies\7-zip\7z.exe a -r $(ArtifactPath) $(PackageDirectory)\*.* "/>
+    <Exec Command="$(MSBuildProjectDirectory)\dependencies\7-zip\7za.exe a -r $(ArtifactPath) $(PackageDirectory)\*.* "/>
     <RemoveDir Directories="$(PackageDirectory)" />
   </Target>
   
