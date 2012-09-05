@@ -8,6 +8,6 @@ namespace SalsaImporter.Repositories
     {
         void Push(SyncObject syncObject, string tableName);
         event EventHandler<SyncEventArgs> NotifySyncEvent;
-        List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey);
+        List<SyncObject> DequeueBatchOfObjects(string objectType, string tableName, int batchSize, int startKey);
     }
 }

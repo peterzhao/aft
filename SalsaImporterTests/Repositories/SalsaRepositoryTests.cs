@@ -65,7 +65,7 @@ namespace SalsaImporterTests.Repositories
         [Test]
         public void ShouldGetBatchOfObjects()
         {
-            var syncObject = new SyncObject(ObjectType) { QuequId = 123 }; 
+            var syncObject = new SyncObject(ObjectType) { QueueId = 123 }; 
             var xElement = XElement.Parse("<item/>");
             var xElements = new List<XElement> {xElement};
             var dateTime = new DateTime(2012, 7, 20);
@@ -80,7 +80,7 @@ namespace SalsaImporterTests.Repositories
         [Test]
         public void ShouldSkipBadDataInBatchFromSalsa()
         {
-            var syncObject = new SyncObject(ObjectType) { QuequId = 123 };
+            var syncObject = new SyncObject(ObjectType) { QueueId = 123 };
             var xElement = XElement.Parse("<item/>");
             var xElements = new List<XElement> { xElement, xElement };
             var dateTime = new DateTime(2012, 7, 20);
@@ -122,7 +122,7 @@ namespace SalsaImporterTests.Repositories
         {
             var key = 1234;
             var id = 7890;
-            var supporter = new SyncObject(ObjectType) {QuequId = id};
+            var supporter = new SyncObject(ObjectType) {QueueId = id};
             supporter["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
             _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
@@ -142,7 +142,7 @@ namespace SalsaImporterTests.Repositories
         public void ShouldHandleExceptionWhenSavingObject()
         {
             var id = 7890;
-            var supporter = new SyncObject(ObjectType) { QuequId = id };
+            var supporter = new SyncObject(ObjectType) { QueueId = id };
             supporter["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
             _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);

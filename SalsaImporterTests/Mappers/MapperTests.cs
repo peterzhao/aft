@@ -34,7 +34,7 @@ namespace SalsaImporterTests.Mappers
 
             SyncObject syncObject = _mapper.ToObject(xElement);
 
-            Assert.AreEqual(12345, syncObject.QuequId);
+            Assert.AreEqual(12345, syncObject.QueueId);
         }
 
         [Test]

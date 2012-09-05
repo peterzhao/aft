@@ -17,7 +17,7 @@ namespace SalsaImporter.Synchronization
             this[SalsaKeyColumnName] = 0;
         }
 
-        public int QuequId { get; set; }
+        public int QueueId { get; set; }
 
         public string ObjectType
         {
@@ -51,7 +51,7 @@ namespace SalsaImporter.Synchronization
                                                       pair => String.Format("{0}: {1}", pair.Key, pair.Value.ToString())));
 
             return String.Format("Id: {0}, {1}",
-                                 QuequId,
+                                 QueueId,
                                  dictionaryFields);
         }
 

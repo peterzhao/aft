@@ -25,7 +25,7 @@ namespace SalsaImporter.Repositories
 
         public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
 
-        public List<SyncObject> DequequBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
+        public List<SyncObject> DequeueBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {
             var mapper = _mapperFactory.GetMapper(objectType);
             var aftFields = mapper.Mappings.Select(m => m.AftField).ToList();
@@ -44,7 +44,7 @@ namespace SalsaImporter.Repositories
                     foreach (DataColumn column in table.Columns)
                     {
                         if (column.ColumnName == "Id")
-                            syncObject.QuequId = int.Parse(row[column].ToString());
+                            syncObject.QueueId = int.Parse(row[column].ToString());
                         else if (aftFields.Contains( column.ColumnName))
                             syncObject[column.ColumnName] = row[column];
                     }
@@ -52,7 +52,7 @@ namespace SalsaImporter.Repositories
                 }
             }
             if ( returnValue.Count > 0 ) 
-                ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().QuequId));
+                ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().QueueId));
 
             return returnValue;
 

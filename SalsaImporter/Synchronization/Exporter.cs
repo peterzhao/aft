@@ -34,14 +34,14 @@ namespace SalsaImporter.Synchronization
             for (int batchCount = 1; ; batchCount++) 
             {
                 Logger.Debug("Dequeue in batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
-                var currentBatch = _source.DequequBatchOfObjects(_objectType,
+                var currentBatch = _source.DequeueBatchOfObjects(_objectType,
                                                           _queueName,
                                                          _batchSize,
                                                          jobContext.CurrentRecord).ToList();
                 var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => _destination.Save(syncObject), null));
                 Task.WaitAll(tasks.ToArray());
                 if (currentBatch.Any())
-                    jobContext.SetCurrentRecord(currentBatch.Last().QuequId);
+                    jobContext.SetCurrentRecord(currentBatch.Last().QueueId);
                 else
                     break;                    
             };
