@@ -15,22 +15,16 @@
     <ArtifactPath>$(ArtifactDirectory)\$(ArtifactName)</ArtifactPath>
     <PackageDirectory>$(MSBuildProjectDirectory)\package</PackageDirectory>
   </PropertyGroup>
-
   
-
- 
-  
-   <Target Name="Build" DependsOnTargets="
-      Init;
-      Compile;
-      UnitTest;
-      IntegrationTest;
-     "/>
 
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
   <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\Dependencies\dbdeploy.net\MSBuild.Dbdeploy.Task.dll" TaskName="MSBuild.Dbdeploy.Task.Dbdeploy" />
-  
+
+  <Target Name="Build" DependsOnTargets="Init;Compile;UnitTest;IntegrationTest;"/>
+  <Target Name="Deploy" DependsOnTargets="Init;CopyToBin;DbMigrate;"/>
+  <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
+
   <Target Name="Clean">
     <ItemGroup>
       <VisualStudioFiles Include="$(MSBuildProjectDirectory)\**\bin\$(Configuration)\**\*" />
@@ -76,7 +70,6 @@
     <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
 
   <Target Name="DbChangeLog" DependsOnTargets="Init">
     <Exec Command="sqlcmd.exe -S @(DbHost) -E -b -d @(DbName) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
@@ -146,13 +139,19 @@
             Query="/environments/$(Env)/dbHost/text()">
       <Output TaskParameter="Result" ItemName="DbHost" />
     </XmlPeek>
-    <Message Text="@(DbHost)"/>
+    <Message Text="DbHost: @(DbHost)"/>
     <XmlPeek Namespaces=""
             XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
             Query="/environments/$(Env)/dbName/text()">
       <Output TaskParameter="Result" ItemName="DbName" />
     </XmlPeek>
-    <Message Text="@(DbName)"/>
+    <Message Text="DbName: @(DbName)"/>
+    <XmlPeek Namespaces=""
+          XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+          Query="/environments/$(Env)/deployDestinationFolder/text()">
+      <Output TaskParameter="Result" ItemName="DeployDestinationFolder" />
+    </XmlPeek>
+    <Message Text="DeployDestinationFolder: @(DeployDestinationFolder)"/>
 
   </Target>
 
@@ -166,5 +165,15 @@
       </Tokens>
     </ItemGroup>
   </Target>
-  
+
+  <Target Name="CopyToBin" DependsOnTargets="Init">
+    <MakeDir Directories="@(DeployDestinationFolder)"/>
+    <ItemGroup>
+      <SourceFiles Include="$(MSBuildProjectDirectory)\bin\*.*"/>
+    </ItemGroup>
+    <PropertyGroup>
+      <DeployDir>@(DeployDestinationFolder)</DeployDir>
+    </PropertyGroup>
+    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(SourceFiles->'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+  </Target>
 </Project>

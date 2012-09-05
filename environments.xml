@@ -16,6 +16,7 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
+    <deployDestinationFolder>c:\temp\aftTest</deployDestinationFolder>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -24,6 +25,7 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftPerformanceTest</dbName>
+    <deployDestinationFolder>c:\temp\aftPerformanceTest</deployDestinationFolder>
   </performanceTest>
   <tomPlay>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -31,6 +33,7 @@
     <salsaPassword>7eleven</salsaPassword>
     <dbHost>.</dbHost>
     <dbName>TomPlay</dbName>
+    <deployDestinationFolder>c:\temp\tomplay</deployDestinationFolder>
   </tomPlay>
   
   <production>
@@ -40,6 +43,7 @@
     <!-- NOT WRITABLE! -->
     <dbHost>.</dbHost>
     <dbName>AFT</dbName>
+    <deployDestinationFolder>c:\aft\SalsaImporter</deployDestinationFolder>
   </production>
 
   
@@ -50,5 +54,6 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftDemo</dbName>
+    <deployDestinationFolder>c:\temp\aftdemo</deployDestinationFolder>
   </demo>
 </environments>

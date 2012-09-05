@@ -1,1 +1,1 @@
-C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe SalsaImporter.build %*
+%windir%\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe SalsaImporter.build %*
