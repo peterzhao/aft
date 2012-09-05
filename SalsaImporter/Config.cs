@@ -55,7 +55,10 @@ namespace SalsaImporter
 
         public static string DbConnectionString
         {
-            get { return GetSetting("dbConnectionString"); }
+            get
+            {
+                return String.Format("Server={0};Database={1};Trusted_Connection=true", GetSetting("dbHost"), GetSetting("dbName"));
+            }
         }
 
         private static IEnumerable<string> Environments

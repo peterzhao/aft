@@ -7,10 +7,16 @@ namespace SalsaImporterTests
     [TestFixture]
     public class ConfigTests
     {
-        [TearDown]
-        public void TearDown()
+        [SetUp]
+        public void SetUp()
         {
             Config.Environment = Config.Test;
+        }
+
+        [Test]
+        public void ShouldGetDbConnectionString()
+        {
+            Assert.AreEqual("Server=.;Database=Aft;Trusted_Connection=true", Config.DbConnectionString);
         }
 
         [Test]

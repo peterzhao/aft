@@ -7,7 +7,8 @@
     <salsaPassword>yourPassword</salsaPassword>
     -->
     <salsaWritable/>
-    <dbConnectionString>Server=.;Database=Aft;Trusted_Connection=true</dbConnectionString>
+    <dbHost>.</dbHost>
+    <dbName>Aft</dbName>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>khodgson@thoughtworks.com</smtpNotificationRecipient>
@@ -21,13 +22,15 @@
     <salsaUserName>tom@alexandrowicz.ca</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
     <salsaWritable/>
-    <dbConnectionString>Server=.;Database=AftPerformanceTest;Trusted_Connection=true</dbConnectionString>
+    <dbHost>.</dbHost>
+    <dbName>AftPerformanceTest</dbName>
   </performanceTest>
   <tomPlay>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>tomplay@example.com</salsaUserName>
     <salsaPassword>7eleven</salsaPassword>
-    <dbConnectionString>Server=.;Database=TomPlay;Trusted_Connection=true;Connection Timeout=90</dbConnectionString>
+    <dbHost>.</dbHost>
+    <dbName>TomPlay</dbName>
   </tomPlay>
   
   <production>
@@ -35,20 +38,17 @@
     <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true</dbConnectionString>
     <!-- user name and password read from environment variables -->
     <!-- NOT WRITABLE! -->
+    <dbHost>.</dbHost>
+    <dbName>AFT</dbName>
   </production>
 
-  <stub>
-    <salsaApiUrl>http://10.10.67.164:4567/</salsaApiUrl>
-    <salsaUserName>peter</salsaUserName>
-    <salsaPassword>1234</salsaPassword>
-    <salsaWritable/>
-    <dbConnectionString>Server=.;Database=AftStub;Trusted_Connection=true</dbConnectionString>
-  </stub>
+  
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>aftdemo@example.com</salsaUserName>
     <salsaPassword>password</salsaPassword>
     <salsaWritable/>
-    <dbConnectionString>Server=.;Database=AftDemo;Trusted_Connection=true</dbConnectionString>
+    <dbHost>.</dbHost>
+    <dbName>AftDemo</dbName>
   </demo>
 </environments>

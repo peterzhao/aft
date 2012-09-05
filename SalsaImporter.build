@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectName>$(MSBuildProjectName)</ProjectName>
     <Solution Condition="Exists('$(ProjectName).sln')">$(ProjectName).sln</Solution>
     <UnitTestProject Condition="Exists('$(ProjectName)Tests')">$(ProjectName)Tests</UnitTestProject>
     <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
-    <Db Condition="$(Db) == ''">Aft</Db>
+    <Env Condition="$(Env) == ''">test</Env>
     <DbFilePath Condition="$(DbFilePath) == ''">C:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA</DbFilePath>
     <DbDir>$(MSBuildProjectDirectory)\DB\</DbDir>
     <NUnitDirectory Condition="Exists('$(MSBuildProjectDirectory)\Dependencies\nunit')">$(MSBuildProjectDirectory)\Dependencies\nunit</NUnitDirectory>
@@ -16,16 +16,12 @@
     <PackageDirectory>$(MSBuildProjectDirectory)\package</PackageDirectory>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Tokens Include="DbName">
-      <ReplacementValue>$(Db)</ReplacementValue>
-    </Tokens>
-    <Tokens Include="DbFilePath">
-      <ReplacementValue>$(DbFilePath)</ReplacementValue>
-    </Tokens>
-  </ItemGroup>
+  
+
+ 
   
    <Target Name="Build" DependsOnTargets="
+      Init;
       Compile;
       UnitTest;
       IntegrationTest;
@@ -74,22 +70,22 @@
 
  
   <Target Name="DbSeed">
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_field_mappings.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i insert_sync_configs.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_SalsaToAftQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d $(Db) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i insert_field_mappings.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i insert_sync_configs.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i create_SalsaToAftQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
 
-  <Target Name="DbChangeLog">
-    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
+  <Target Name="DbChangeLog" DependsOnTargets="Init">
+    <Exec Command="sqlcmd.exe -S @(DbHost) -E -b -d @(DbName) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="MigrateScript" DependsOnTargets="DbChangelog" >
     <Dbdeploy
 			DbType="mssql"
-			DbConnection="Server=.;Initial Catalog=$(Db);Integrated Security=True;"
+			DbConnection="Server=@(DbHost);Initial Catalog=@(DbName);Integrated Security=True;"
 			Dir="$(DbDir)Migrations"
 			OutputFile="$(DbDir)db-migrate.sql"
 			UndoOutputFile="$(DbDir)db-migrate-undo.sql"
@@ -97,36 +93,41 @@
   </Target>
 
   <Target Name="DbMigrate" DependsOnTargets="MigrateScript">
-    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -b -d @(DbName) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="DbMigrateUndo" DependsOnTargets="MigrateScript">
-    <Exec Command="sqlcmd.exe -S . -E -b -d $(Db) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -b -d @(DbName) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="RemoveDb" Condition="Exists('$(DbFilePath)')">
     <TemplateFile Template="$(DbDir)remove_database.sql.template"
                  OutputFilename="$(DbDir)remove_database.sql"
                  Tokens="@(Tokens)" />
-    <Exec Command="sqlcmd.exe -S . -E -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="CreateDb"  Condition="Exists('$(DbFilePath)')" DependsOnTargets="RemoveDb">
+  <Target Name="CreateDb"  Condition="Exists('$(DbFilePath)')" DependsOnTargets="Init;RemoveDb">
     <MakeDir Directories="$(DbFilePath)" ContinueOnError="true"/>
     <TemplateFile Template="$(DbDir)create_database.sql.template"
                  OutputFilename="$(DbDir)create_database.sql"
                  Tokens="@(Tokens)" />
-    <Exec Command="sqlcmd.exe -S . -E -d master -i create_database.sql" WorkingDirectory="$(DbDir)" />
+    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -d master -i create_database.sql" WorkingDirectory="$(DbDir)" />
   </Target>
 
   <Target Name="Artifact">
+    <RemoveDir Directories="$(PackageDirectory)" />
+    <RemoveDir Directories="$(ArtifactDirectory)" />
+    <MakeDir Directories="$(ArtifactDirectory)"/>
+    <MakeDir Directories="$(PackageDirectory)"/>
     <ItemGroup>
       <DbFiles Include="$(MSBuildProjectDirectory)\db\**\*.*"/>
       <DBDeployFiles Include="$(MSBuildProjectDirectory)\dependencies\dbdeploy.net\**\*.*"/>
       <MSBuildTasks Include="$(MSBuildProjectDirectory)\dependencies\msbuild-community-tasks\**\*.*"/>
       <BuildFiles Include="$(MSBuildProjectDirectory)\*.build"/>
       <BinFiles Include="$(MSBuildProjectDirectory)\SalsaImporter\bin\debug\*.*"/>
-      <BatchFiles Include="$(MSBuildProjectDirectory)\build.bat"/>
+      <BatchFiles Include="$(MSBuildProjectDirectory)\*.bat"/>
+      <XmlFiles Include="$(MSBuildProjectDirectory)\*.xml"/>
     </ItemGroup>
     <Copy SourceFiles="@(DbFiles)" DestinationFiles="@(DbFiles->'$(PackageDirectory)\db\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(DBDeployFiles)" DestinationFiles="@(DBDeployFiles->'$(PackageDirectory)\dependencies\dbdeploy.net\%(Filename)%(Extension)')"/>
@@ -134,9 +135,36 @@
     <Copy SourceFiles="@(BinFiles)" DestinationFiles="@(BinFiles->'$(PackageDirectory)\bin\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BuildFiles)" DestinationFiles="@(BuildFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BatchFiles)" DestinationFiles="@(BatchFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
-    <MakeDir Directories="$(ArtifactDirectory)"/>
+    <Copy SourceFiles="@(XmlFiles)" DestinationFiles="@(XmlFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Exec Command="$(MSBuildProjectDirectory)\dependencies\7-zip\7za.exe a -r $(ArtifactPath) $(PackageDirectory)\*.* "/>
     <RemoveDir Directories="$(PackageDirectory)" />
+  </Target>
+
+  <Target Name="Config">
+    <XmlPeek Namespaces=""
+            XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+            Query="/environments/$(Env)/dbHost/text()">
+      <Output TaskParameter="Result" ItemName="DbHost" />
+    </XmlPeek>
+    <Message Text="@(DbHost)"/>
+    <XmlPeek Namespaces=""
+            XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+            Query="/environments/$(Env)/dbName/text()">
+      <Output TaskParameter="Result" ItemName="DbName" />
+    </XmlPeek>
+    <Message Text="@(DbName)"/>
+
+  </Target>
+
+  <Target Name="Init" DependsOnTargets="Config">
+    <ItemGroup>
+      <Tokens Include="DbName">
+        <ReplacementValue>@(DbName)</ReplacementValue>
+      </Tokens>
+      <Tokens Include="DbFilePath">
+        <ReplacementValue>$(DbFilePath)</ReplacementValue>
+      </Tokens>
+    </ItemGroup>
   </Target>
   
 </Project>
