@@ -122,13 +122,15 @@
   <Target Name="Artifact">
     <ItemGroup>
       <DbFiles Include="$(MSBuildProjectDirectory)\db\**\*.*"/>
-      <ToolFiles Include="$(MSBuildProjectDirectory)\dependencies\**\*.*"/>
+      <DBDeployFiles Include="$(MSBuildProjectDirectory)\dependencies\dbdeploy.net\**\*.*"/>
+      <MSBuildTasks Include="$(MSBuildProjectDirectory)\dependencies\msbuild-community-tasks\**\*.*"/>
       <BuildFiles Include="$(MSBuildProjectDirectory)\*.build"/>
       <BinFiles Include="$(MSBuildProjectDirectory)\SalsaImporter\bin\debug\*.*"/>
-      <BatchFiles Include="$(MSBuildProjectDirectory)\*.bat"/>
+      <BatchFiles Include="$(MSBuildProjectDirectory)\build.bat"/>
     </ItemGroup>
     <Copy SourceFiles="@(DbFiles)" DestinationFiles="@(DbFiles->'$(PackageDirectory)\db\%(RecursiveDir)%(Filename)%(Extension)')"/>
-    <Copy SourceFiles="@(ToolFiles)" DestinationFiles="@(ToolFiles->'$(PackageDirectory)\dependencies\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(DBDeployFiles)" DestinationFiles="@(DBDeployFiles->'$(PackageDirectory)\dependencies\dbdeploy.net\%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(MSBuildTasks)" DestinationFiles="@(MSBuildTasks->'$(PackageDirectory)\dependencies\msbuild-community-tasks\%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BinFiles)" DestinationFiles="@(BinFiles->'$(PackageDirectory)\bin\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BuildFiles)" DestinationFiles="@(BuildFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
     <Copy SourceFiles="@(BatchFiles)" DestinationFiles="@(BatchFiles->'$(PackageDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"/>
