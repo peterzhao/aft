@@ -89,7 +89,7 @@ namespace SalsaImporter
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error && e.ObjectType == objectType));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Import && e.ObjectType == objectType));
             _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Export && e.ObjectType == objectType));
-            var message = string.Format("{0}: Total imported from Salsa:{1} Total exported to Salsa:{2} Total errors: {3}", objectType, totalAddedToLocal, totalAddedToSalsa, totalErrors);
+            var message = string.Format("{0}: total imported from Salsa:{1} total exported to Salsa:{2} total errors: {3}", objectType.ToUpper(), totalAddedToLocal, totalAddedToSalsa, totalErrors);
             Logger.Info(message);
             return message;
         }
