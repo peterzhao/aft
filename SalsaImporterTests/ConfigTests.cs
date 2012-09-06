@@ -20,6 +20,16 @@ namespace SalsaImporterTests
         }
 
         [Test]
+        public void ShouldGetDbConnectionStringForNonTrustedConnection()
+        {
+            Config.Environment = Config.Production;
+            Environment.SetEnvironmentVariable("dbUserName", "sa");
+            Environment.SetEnvironmentVariable("dbPassword", "1234");
+            Assert.AreEqual("Server=.;Database=AFT;User Id=sa;Password=1234;", Config.DbConnectionString);
+            Config.Environment = Config.Test;
+        }
+
+        [Test]
         public void ShouldGetConfigForDifferentEnvironments()
         {
             Config.Environment = Config.Demo;

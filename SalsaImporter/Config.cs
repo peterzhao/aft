@@ -6,6 +6,7 @@ using NLog;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter
 {
@@ -53,11 +54,20 @@ namespace SalsaImporter
             get { return GetSetting("salsaPassword"); }
         }
 
+        public static bool DbTrustedConnection
+        {
+            get { return GetSetting("dbTrustedConnection").EqualsIgnoreCase("True"); }
+        }
+
         public static string DbConnectionString
         {
             get
             {
-                return String.Format("Server={0};Database={1};Trusted_Connection=true", GetSetting("dbHost"), GetSetting("dbName"));
+                if (DbTrustedConnection)
+                    return String.Format("Server={0};Database={1};Trusted_Connection=true", GetSetting("dbHost"), GetSetting("dbName"));
+                
+                return string.Format("Server={0};Database={1};User Id={2};Password={3};",
+                        GetSetting("dbHost"), GetSetting("dbName"), GetSetting("dbUserName"), GetSetting("dbPassword"));
             }
         }
 

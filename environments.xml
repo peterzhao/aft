@@ -9,6 +9,7 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>Aft</dbName>
+    <dbTrustedConnection>True</dbTrustedConnection>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
@@ -26,6 +27,7 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftPerformanceTest</dbName>
+    <dbTrustedConnection>True</dbTrustedConnection>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
@@ -42,6 +44,7 @@
     <salsaPassword>7eleven</salsaPassword>
     <dbHost>.</dbHost>
     <dbName>TomPlay</dbName>
+    <dbTrustedConnection>True</dbTrustedConnection>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
@@ -59,6 +62,8 @@
    -->
     <dbHost>.</dbHost>
     <dbName>AFT</dbName>
+    <dbTrustedConnection>False</dbTrustedConnection>
+    <!-- please set environment variables 'dbUserName' and 'dbPassword' instead of writing in this file for security concern-->
     <smtpFromAddress>Salsaintegration@aft.org</smtpFromAddress>
 
     <!--Please set environment variable smtpFromPassword' instead of  writing in this file for security concern-->
@@ -67,8 +72,8 @@
 
     <smtpPort>587</smtpPort>
     <smtpUserName>Salsaintegration@aft.org</smtpUserName>
-    <smtpRequireSsl>True</smtpRequireSsl>
-    <smtpRequireLogin>True</smtpRequireLogin>
+    <smtpRequireSsl>False</smtpRequireSsl>
+    <smtpRequireLogin>False</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
   </production>
@@ -81,6 +86,7 @@
     <salsaWritable/>
     <dbHost>.</dbHost>
     <dbName>AftDemo</dbName>
+    <dbTrustedConnection>True</dbTrustedConnection>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>

@@ -64,18 +64,27 @@
 
  
   <Target Name="DbSeed">
-    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i dbseed.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d $(DbName) -i dbseed.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d $(DbName) -U $(dbUserName) -P $(dbPassword) -i dbseed.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
 
   <Target Name="DbChangeLog" DependsOnTargets="Init">
-    <Exec Command="sqlcmd.exe -S @(DbHost) -E -b -d @(DbName) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d $(DbName) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d $(DbName) -U $(dbUserName) -P $(dbPassword) -i createSchemaVersionTable.mssql.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="MigrateScript" DependsOnTargets="DbChangelog" >
-    <Dbdeploy
+    <Dbdeploy Condition="'$(DbTrustedConnection)' == 'True'"
 			DbType="mssql"
-			DbConnection="Server=@(DbHost);Initial Catalog=@(DbName);Integrated Security=True;"
+			DbConnection="Server=$(DbHost);Initial Catalog=$(DbName);Integrated Security=True;"
+			Dir="$(DbDir)Migrations"
+			OutputFile="$(DbDir)db-migrate.sql"
+			UndoOutputFile="$(DbDir)db-migrate-undo.sql"
+		/>
+    <Dbdeploy Condition="'$(DbTrustedConnection)' != 'True'"
+			DbType="mssql"
+			DbConnection="Server=$(DbHost);Initial Catalog=$(DbName);User Id=$(dbUserName);Password=$(dbPassword);"
 			Dir="$(DbDir)Migrations"
 			OutputFile="$(DbDir)db-migrate.sql"
 			UndoOutputFile="$(DbDir)db-migrate-undo.sql"
@@ -83,18 +92,21 @@
   </Target>
 
   <Target Name="DbMigrate" DependsOnTargets="MigrateScript">
-    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -b -d @(DbName) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d $(DbName) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d $(DbName) -U $(dbUserName) -P $(dbPassword) -i db-migrate.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="DbMigrateUndo" DependsOnTargets="MigrateScript">
-    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -b -d @(DbName) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d $(DbName) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d $(DbName) -U $(dbUserName) -P $(dbPassword) -i db-migrate-undo.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="RemoveDb" Condition="Exists('$(DbFilePath)')">
     <TemplateFile Template="$(DbDir)remove_database.sql.template"
                  OutputFilename="$(DbDir)remove_database.sql"
                  Tokens="@(Tokens)" />
-    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d master -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d master -U $(dbUserName) -P $(dbPassword) -i remove_database.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="CreateDb"  Condition="Exists('$(DbFilePath)')" DependsOnTargets="Init;RemoveDb">
@@ -102,7 +114,8 @@
     <TemplateFile Template="$(DbDir)create_database.sql.template"
                  OutputFilename="$(DbDir)create_database.sql"
                  Tokens="@(Tokens)" />
-    <Exec Command="sqlcmd.exe -S  @(DbHost) -E -d master -i create_database.sql" WorkingDirectory="$(DbDir)" />
+    <Exec Condition="'$(DbTrustedConnection)' == 'True'" Command="sqlcmd.exe -S $(DbHost) -E -b -d master -i create_database.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d master -U $(dbUserName) -P $(dbPassword) -i create_database.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
   <Target Name="Artifact">
@@ -136,26 +149,60 @@
             Query="/environments/$(Env)/dbHost/text()">
       <Output TaskParameter="Result" ItemName="DbHost" />
     </XmlPeek>
-    <Message Text="DbHost: @(DbHost)"/>
+    
     <XmlPeek Namespaces=""
             XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
             Query="/environments/$(Env)/dbName/text()">
       <Output TaskParameter="Result" ItemName="DbName" />
     </XmlPeek>
-    <Message Text="DbName: @(DbName)"/>
+
+    <XmlPeek Namespaces=""
+           XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+           Query="/environments/$(Env)/dbTrustedConnection/text()">
+      <Output TaskParameter="Result" ItemName="DbTrustedConnection" />
+    </XmlPeek>
+   
+    
+    <XmlPeek Namespaces="" 
+           XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+           Query="/environments/$(Env)/dbUserName/text()">
+      <Output TaskParameter="Result" ItemName="DbUserName" />
+    </XmlPeek>
+    
+    <XmlPeek Namespaces=""
+           XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
+           Query="/environments/$(Env)/dbPassword/text()">
+      <Output TaskParameter="Result" ItemName="DbPassword" />
+    </XmlPeek>
+    
     <XmlPeek Namespaces=""
           XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
           Query="/environments/$(Env)/applicationWorkingDir/text()">
       <Output TaskParameter="Result" ItemName="DeployDestinationFolder" />
     </XmlPeek>
-    <Message Text="DeployDestinationFolder: @(DeployDestinationFolder)"/>
+
+    <PropertyGroup>
+      <DbHost>@(DbHost)</DbHost>
+      <DbName>@(DbName)</DbName>
+      <DbTrustedConnection>@(DbTrustedConnection)</DbTrustedConnection>
+      <dbUserName Condition="'@(DbUserName)' != ''">@(DbUserName)</dbUserName>
+      <dbPassword Condition="'@(DbPassword)' != ''">@(DbPassword)</dbPassword>
+      <DeployDestinationFolder>@(DeployDestinationFolder)</DeployDestinationFolder>
+    </PropertyGroup>
+
+    <Message Text="DbHost: $(DbHost)"/>
+    <Message Text="DbName: $(DbName)"/>
+    <Message Text="DbTrustedConnection: $(DbTrustedConnection)"/>
+    <Message Text="DbUserName: $(dbUserName)"/>
+    <Message Text="DbPassword: $(dbPassword)"/>
+    <Message Text="DeployDestinationFolder: $(DeployDestinationFolder)"/>
 
   </Target>
 
   <Target Name="Init" DependsOnTargets="Config">
     <ItemGroup>
       <Tokens Include="DbName">
-        <ReplacementValue>@(DbName)</ReplacementValue>
+        <ReplacementValue>$(DbName)</ReplacementValue>
       </Tokens>
       <Tokens Include="DbFilePath">
         <ReplacementValue>$(DbFilePath)</ReplacementValue>
@@ -168,9 +215,6 @@
     <ItemGroup>
       <SourceFiles Include="$(MSBuildProjectDirectory)\bin\*.*"/>
     </ItemGroup>
-    <PropertyGroup>
-      <DeployDir>@(DeployDestinationFolder)</DeployDir>
-    </PropertyGroup>
-    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(SourceFiles->'$(DeployDir)\%(RecursiveDir)%(Filename)%(Extension)')"/>
+    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(SourceFiles->'$(DeployDestinationFolder)\%(RecursiveDir)%(Filename)%(Extension)')"/>
   </Target>
 </Project>
