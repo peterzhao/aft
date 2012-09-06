@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class QueuePusher :ISyncJob 
+    public class Importer :ISyncJob 
     {
         private readonly ISalsaRepository _source;
         private readonly IQueueRepository _destination;
@@ -16,7 +14,7 @@ namespace SalsaImporter.Synchronization
         public string Name { get; set; }
 
 
-        public QueuePusher(ISalsaRepository source, IQueueRepository destination, int batchSize, string name, string objectType, string queueName)
+        public Importer(ISalsaRepository source, IQueueRepository destination, int batchSize, string name, string objectType, string queueName)
         {
             Name = name;
             _objectType = objectType;

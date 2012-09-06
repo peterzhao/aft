@@ -11,13 +11,13 @@ using SalsaImporter.Synchronization;
 namespace SalsaImporterTests.Synchronization
 {
     [TestFixture]
-    public class QueuePusherTests
+    public class ImporterTests
     {
         private const int BatchSize = 100;
         private const string ObjectType = "TheObjectType";
         private const string QueueName = "QueueName";
 
-        private QueuePusher _pusher;
+        private Importer _pusher;
         private Mock<ISalsaRepository> _sourceMock;
         private Mock<IQueueRepository> _destinationMock;
         private JobContextStub _jobContext;
@@ -30,7 +30,7 @@ namespace SalsaImporterTests.Synchronization
             _sourceMock = new Mock<ISalsaRepository>();
             _destinationMock = new Mock<IQueueRepository>();
             _jobContext = new JobContextStub();
-            _pusher = new QueuePusher(_sourceMock.Object, _destinationMock.Object, BatchSize, null, ObjectType, QueueName);
+            _pusher = new Importer(_sourceMock.Object, _destinationMock.Object, BatchSize, null, ObjectType, QueueName);
         }
 
         [Test]
