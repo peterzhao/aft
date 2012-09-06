@@ -38,5 +38,13 @@ namespace SalsaImporterTests.Utilities
             Assert.IsFalse(StringUtility.EqualsIncludingNullAndSpecifiedvalue("1", null, "0"));
             Assert.IsFalse(StringUtility.EqualsIncludingNullAndSpecifiedvalue("1", "", "0"));
         }
+
+        [Test]
+        public void EqualsIgnoreCase()
+        {
+            Assert.IsTrue("dateTime".EqualsIgnoreCase("Datetime"));
+            string text = null;
+            Assert.IsFalse(text.EqualsIgnoreCase("datatime"));
+        }
     }
 }

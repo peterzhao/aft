@@ -103,6 +103,11 @@ namespace SalsaImporter
             get { return GetSetting("smtpFromPassword"); }
         }
 
+        public static string SmtpUserName
+        {
+            get { return GetSetting("smtpUserName"); }
+        }
+
         public static bool SmtpRequireLogin
         {
             get { 
@@ -165,5 +170,7 @@ namespace SalsaImporter
             var xElement = envRoot.Element(name);
             return xElement;
         }
+
+        
     }
 }

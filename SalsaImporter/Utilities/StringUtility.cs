@@ -1,12 +1,18 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace SalsaImporter.Utilities
 {
-    public class StringUtility
+    public static class StringUtility
     {
+        public static bool EqualsIgnoreCase(this string text, string other)
+        {
+            if (text == null || other == null) return text == other;
+            return text.ToLower() == other.ToLower();
+        }
         public static bool EqualsIncludingNullEmpty(string string1, string string2)
         {
             if (string.IsNullOrWhiteSpace(string1))

@@ -16,7 +16,7 @@ namespace SalsaImporter.Service
             if (Config.SmtpRequireLogin)
             {
                 _mailer = new SmtpClient(Config.SmtpHost, Config.SmtpPort)
-                              {Credentials = new NetworkCredential(Config.SmtpFromAddress, Config.SmtpFromPassword)};
+                              {Credentials = new NetworkCredential(Config.SmtpUserName, Config.SmtpFromPassword)};
             }
         }
 

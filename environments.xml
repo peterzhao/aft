@@ -14,6 +14,7 @@
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
     <smtpPort>587</smtpPort>
+    <smtpUserName>aftsalsatesting@gmail.com</smtpUserName>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\aftTest</applicationWorkingDir>
@@ -29,6 +30,7 @@
     <smtpFromPassword>Welcome00</smtpFromPassword>
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpUserName>aftsalsatesting@gmail.com</smtpUserName>
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
@@ -45,6 +47,7 @@
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
     <smtpPort>587</smtpPort>
+    <smtpUserName>aftsalsatesting@gmail.com</smtpUserName>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\tomplay</applicationWorkingDir>
@@ -53,14 +56,17 @@
   <production>
     <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
     <!-- please set environment variables 'salsaUserName' and 'salsaPassword' instead of writing in this file for security concern
-    -->
+   -->
     <dbHost>.</dbHost>
     <dbName>AFT</dbName>
-    <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
+    <smtpFromAddress>Salsaintegration@aft.org</smtpFromAddress>
+
     <!--Please set environment variable smtpFromPassword' instead of  writing in this file for security concern-->
-    <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
-    <smtpHost>smtp.gmail.com</smtpHost>
+    <smtpNotificationRecipient>rishaq@aft.org</smtpNotificationRecipient>
+    <smtpHost>smtp.aft.org</smtpHost>
+
     <smtpPort>587</smtpPort>
+    <smtpUserName>Salsaintegration@aft.org</smtpUserName>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
@@ -80,6 +86,7 @@
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
     <smtpPort>587</smtpPort>
+    <smtpUserName>aftsalsatesting@gmail.com</smtpUserName>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\aftdemo</applicationWorkingDir>

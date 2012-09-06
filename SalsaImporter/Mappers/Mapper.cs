@@ -24,7 +24,7 @@ namespace SalsaImporter.Mappers
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
-            _mappings.Where(fieldMapping => fieldMapping.MappingRule != MappingRules.readOnly).ToList().ForEach(fieldMapping =>
+            _mappings.Where(fieldMapping => !fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)).ToList().ForEach(fieldMapping =>
                                   {
                                       if (!syncObject.FieldNames.Contains(fieldMapping.AftField)) return;
                                       var salsaField = fieldMapping.SalsaField;
