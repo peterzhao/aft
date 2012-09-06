@@ -64,10 +64,7 @@
 
  
   <Target Name="DbSeed">
-    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i insert_field_mappings.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i insert_sync_configs.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i create_SalsaToAftQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
-    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i create_AftToSalsaQueue_Supporter.sql" WorkingDirectory="$(DbDir)"/>
+    <Exec Command="sqlcmd -S . -E -b -d @(DbName) -i dbseed.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
 
