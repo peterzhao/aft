@@ -13,11 +13,10 @@ namespace SalsaImporter.Service
 
         public EmailService()
         {
+            _mailer = new SmtpClient(Config.SmtpHost, Config.SmtpPort);
             if (Config.SmtpRequireLogin)
-            {
-                _mailer = new SmtpClient(Config.SmtpHost, Config.SmtpPort)
-                              {Credentials = new NetworkCredential(Config.SmtpUserName, Config.SmtpFromPassword)};
-            }
+                _mailer.Credentials = new NetworkCredential(Config.SmtpUserName, Config.SmtpFromPassword);
+            _mailer.EnableSsl = Config.SmtpRequireSsl;
         }
 
         public void Send(MailMessage message)
@@ -25,9 +24,6 @@ namespace SalsaImporter.Service
             _mailer.Send(message);
         }
 
-        public void EnableSsl(bool setting)
-        {
-            _mailer.EnableSsl = setting;
-        }
+      
     }
 }
