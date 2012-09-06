@@ -54,6 +54,7 @@
     <Compile Include="Exceptions\InvalidDataTypeException.cs" />
     <Compile Include="Mappers\DataTypeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
+    <Compile Include="Mappers\MappingRules.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Service\EmailService.cs" />
     <Compile Include="Service\ISmtpClient.cs" />

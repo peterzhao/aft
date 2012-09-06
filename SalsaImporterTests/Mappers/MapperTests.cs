@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter.Mappers;
@@ -19,9 +20,10 @@ namespace SalsaImporterTests.Mappers
         {
             _mappings = new List<FieldMapping>
                                           {
-                                              new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string"},
-                                              new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string"},
-                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "some_date", DataType = "datetime"},
+                                              new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string", MappingRule = MappingRules.aftWins},
+                                              new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string", MappingRule = MappingRules.onlyIfBlank},
+                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = MappingRules.readOnly},
+                                              new FieldMapping{AftField = "CustomDate1", SalsaField = "custom_date1", DataType = "dateTime", MappingRule = MappingRules.aftWins},
                                           };
             _mapper = new Mapper("SomeObject", _mappings);
         }
@@ -58,13 +60,24 @@ namespace SalsaImporterTests.Mappers
         public void ShouldSetDateTimeFieldsToSyncObject()
         {
             var xElement = XElement.Parse(@"<item>
-                                                <some_date>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</some_date>
+                                                <custom_date1>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</custom_date1>
                                             </item>");
 
 
             SyncObject syncObject = _mapper.ToObject(xElement);
 
-            Assert.AreEqual(new DateTime(2012, 08, 30, 11, 19, 43), syncObject["SalsaLastModified"]);
+            Assert.AreEqual(new DateTime(2012, 08, 30, 11, 19, 43), syncObject["CustomDate1"]);
+        }
+
+        [Test]
+        public void ShouldSkipReadOnlyFieldWhenNameValuePairs()
+        {
+            var syncObject = new SyncObject("supporter");
+            syncObject["Email"] = "foo@abc.com";
+            syncObject["SalsaLastModified"] = DateTime.Now;
+
+            var nameValues = _mapper.ToNameValues(syncObject);
+            Assert.IsFalse(nameValues.AllKeys.ToList().Contains("LastModified"));
         }
 
         [Test]
@@ -113,11 +126,11 @@ namespace SalsaImporterTests.Mappers
         public void ShouldCreateNameValuePairsFromSyncObjectWithDateTime()
         {
             var syncObject = new SyncObject(null);
-            syncObject["SalsaLastModified"] = new DateTime(2012, 08, 29, 12, 34, 56);
+            syncObject["CustomDate1"] = new DateTime(2012, 08, 29, 12, 34, 56);
             
             var nameValues = _mapper.ToNameValues(syncObject);
             Assert.AreEqual(2, nameValues.Keys.Count);
-            Assert.AreEqual("2012-08-29 12:34:56", nameValues["some_date"]);
+            Assert.AreEqual("2012-08-29 12:34:56", nameValues["custom_date1"]);
         }
 
     }

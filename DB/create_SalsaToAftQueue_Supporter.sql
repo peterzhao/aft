@@ -19,7 +19,8 @@ CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
         [Chapter_KEY] [int] NULL,
         [CustomDateTime0] [datetime] NULL,
         [CustomBoolean0] [bit] NULL,
-        [CustomInteger0] [bit] NULL
+        [CustomInteger0] [bit] NULL,
+        [SalsaLastModified] [datetime] null
  
 PRIMARY KEY CLUSTERED
 (

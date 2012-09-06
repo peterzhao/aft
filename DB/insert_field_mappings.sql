@@ -7,6 +7,12 @@ VALUES('supporter','First_Name','First_Name' ,'string', 'onlyIfBlank');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Last_Name','Last_Name' ,'string', 'onlyIfBlank');
 
+INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
+VALUES('supporter','Last_Modified','SalsaLastModified' ,'dateTime', 'readOnly');
+
+
+
+
 --INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 --VALUES('supporter','Chapter_KEY', 'Chapter_KEY', 'int', '');
 

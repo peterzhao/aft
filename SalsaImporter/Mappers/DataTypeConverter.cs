@@ -47,10 +47,9 @@ namespace SalsaImporter.Mappers
 
         public static DataTypeConverter GetConverter(string datatype)
         {
-            if (DataTypeConverters.All(converter => converter._datatype != datatype))
-                throw new InvalidDataTypeException(datatype);
-
-            return DataTypeConverters.First(converter => converter._datatype == datatype);
+            var dataTypeConverter = DataTypeConverters.FirstOrDefault(converter => converter._datatype.ToLower() == datatype.ToLower());
+            if (dataTypeConverter == null) throw new InvalidDataTypeException(datatype);
+            return dataTypeConverter;
         }
 
         private static string BooleanToString(object value)

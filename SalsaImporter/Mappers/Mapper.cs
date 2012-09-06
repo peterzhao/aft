@@ -24,17 +24,16 @@ namespace SalsaImporter.Mappers
         public NameValueCollection ToNameValues(SyncObject syncObject)
         {
             var result = new NameValueCollection();
-            syncObject.FieldNames.Where(key => _map.ContainsKey(key))
-                                .ToList()
-                                .ForEach(key =>
-                                              {
-                                                  var fieldMapping = _map[key];
-                                                  var salsaField = fieldMapping.SalsaField;
-                                                  var fieldValue = syncObject[key];
-                                                  var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
-                                                    
-                                                  result[salsaField] = converter.MakeSalsaValue(fieldValue);
-                                              });
+            _mappings.Where(fieldMapping => fieldMapping.MappingRule != MappingRules.readOnly).ToList().ForEach(fieldMapping =>
+                                  {
+                                      if (!syncObject.FieldNames.Contains(fieldMapping.AftField)) return;
+                                      var salsaField = fieldMapping.SalsaField;
+                                      var fieldValue = syncObject[fieldMapping.AftField];
+                                      var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
+
+                                      result[salsaField] = converter.MakeSalsaValue(fieldValue);
+                                  });
+          
             result["key"] = syncObject.SalsaKey.ToString();
             return result;
         }

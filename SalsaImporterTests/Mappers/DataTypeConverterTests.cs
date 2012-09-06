@@ -41,6 +41,17 @@ namespace SalsaImporterTests.Mappers
         }
 
         [Test]
+        public void ShouldGetConverterRegardlessCaseOfDataType()
+        {
+            XElement element = XElement.Parse(@"<item>
+                                                    <field>Thu Aug 30 2012 11:19:43 GMT-0400 (EDT)</field>
+                                                </item>");
+            var converter = DataTypeConverter.GetConverter("dateTime");
+
+            Assert.AreEqual(new DateTime(2012, 08, 30, 11, 19, 43), converter.ReadSalsaValue("field", element));
+        }
+
+        [Test]
         public void ShouldReadSalsaValueFloat()
         {
             XElement element = XElement.Parse(@"<item>
