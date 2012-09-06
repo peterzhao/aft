@@ -16,7 +16,7 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <deployDestinationFolder>c:\temp\aftTest</deployDestinationFolder>
+    <applicationWorkingDir>c:\temp\aftTest</applicationWorkingDir>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -32,7 +32,7 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <deployDestinationFolder>c:\temp\aftPerformanceTest</deployDestinationFolder>
+    <applicationWorkingDir>c:\temp\aftPerformanceTest</applicationWorkingDir>
   </performanceTest>
   <tomPlay>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -47,24 +47,24 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <deployDestinationFolder>c:\temp\tomplay</deployDestinationFolder>
+    <applicationWorkingDir>c:\temp\tomplay</applicationWorkingDir>
   </tomPlay>
   
   <production>
     <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
-    <dbConnectionString>Server=.;Database=AftProduction;Trusted_Connection=true</dbConnectionString>
-    <!-- user name and password read from environment variables -->
-    <!-- NOT WRITABLE! -->
+    <!-- please set environment variables 'salsaUserName' and 'salsaPassword' instead of writing in this file for security concern
+    -->
     <dbHost>.</dbHost>
     <dbName>AFT</dbName>
     <smtpFromAddress>aftsalsatesting@gmail.com</smtpFromAddress>
-    <smtpFromPassword>Welcome00</smtpFromPassword>
+    <!--Please set environment variable smtpFromPassword' instead of  writing in this file for security concern-->
     <smtpNotificationRecipient>abcdef@mailinator.com</smtpNotificationRecipient>
     <smtpHost>smtp.gmail.com</smtpHost>
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <deployDestinationFolder>c:\aft\SalsaImporter</deployDestinationFolder>
+    <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the workng dir as well-->
+    <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
   </production>
 
   
@@ -82,6 +82,6 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <deployDestinationFolder>c:\temp\aftdemo</deployDestinationFolder>
+    <applicationWorkingDir>c:\temp\aftdemo</applicationWorkingDir>
   </demo>
 </environments>

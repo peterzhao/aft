@@ -148,7 +148,7 @@
     <Message Text="DbName: @(DbName)"/>
     <XmlPeek Namespaces=""
           XmlInputPath="$(MSBuildProjectDirectory)\environments.xml"
-          Query="/environments/$(Env)/deployDestinationFolder/text()">
+          Query="/environments/$(Env)/applicationWorkingDir/text()">
       <Output TaskParameter="Result" ItemName="DeployDestinationFolder" />
     </XmlPeek>
     <Message Text="DeployDestinationFolder: @(DeployDestinationFolder)"/>
