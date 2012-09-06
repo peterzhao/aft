@@ -7,7 +7,7 @@ namespace SalsaImporter.Mappers
 {
     public interface IMapper
     {
-        NameValueCollection ToNameValues(SyncObject obj);
+        NameValueCollection ToNameValues(SyncObject aftObject, SyncObject salsaObject);
         SyncObject ToObject(XElement xElement);
 
         List<FieldMapping> Mappings { get; }

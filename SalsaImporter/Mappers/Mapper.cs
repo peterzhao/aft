@@ -21,27 +21,27 @@ namespace SalsaImporter.Mappers
             _mappings.ForEach(m => _map.Add(m.AftField, m));
         }
 
-        public NameValueCollection ToNameValues(SyncObject syncObject)
+        public NameValueCollection ToNameValues( SyncObject aftObject, SyncObject salsaObject)
         {
             var result = new NameValueCollection();
-            _mappings.Where(fieldMapping => !fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)).ToList().ForEach(fieldMapping =>
-                                  {
-                                      if (!syncObject.FieldNames.Contains(fieldMapping.AftField)) return;
-                                      var salsaField = fieldMapping.SalsaField;
-                                      var fieldValue = syncObject[fieldMapping.AftField];
-                                      var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
-
-                                      result[salsaField] = converter.MakeSalsaValue(fieldValue);
-                                  });
+            _mappings.ForEach(fieldMapping =>
+            {
+                if (!aftObject.FieldNames.Contains(fieldMapping.AftField)) return;
+                if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)) return;
+                if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && (salsaObject != null && salsaObject[fieldMapping.AftField] != null)) return;
+                var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
+                result[fieldMapping.SalsaField] = converter.MakeSalsaValue(aftObject[fieldMapping.AftField]);
+            });
           
-            result["key"] = syncObject.SalsaKey.ToString();
+            result["key"] = aftObject.SalsaKey.ToString();
             return result;
         }
 
+
         public SyncObject ToObject(XElement element)
         {
+            if (!element.HasElements) return null;
             var syncObject = new SyncObject(_objectType);
-            
             foreach (var mapping in _mappings)
             {
                 string localName = mapping.AftField;

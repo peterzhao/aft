@@ -22,6 +22,7 @@ namespace SalsaImporterTests.Mappers
                                           {
                                               new FieldMapping{AftField = "Email", SalsaField = "email", DataType = "string", MappingRule = MappingRules.aftWins},
                                               new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string", MappingRule = MappingRules.onlyIfBlank},
+                                              new FieldMapping{AftField = "State", SalsaField = "state", DataType = "string", MappingRule = MappingRules.onlyIfBlank},
                                               new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = "READONLY"},
                                               new FieldMapping{AftField = "CustomDate1", SalsaField = "custom_date1", DataType = "dateTime", MappingRule = MappingRules.aftWins},
                                           };
@@ -57,6 +58,14 @@ namespace SalsaImporterTests.Mappers
         }
 
         [Test]
+        public void ShouldReturnNullSyncObjectWhenGivenXmlElementHasNoChild()
+        {
+            var xElement = XElement.Parse(@"<item></item>");
+            SyncObject syncObject = _mapper.ToObject(xElement);
+            Assert.IsNull(syncObject);
+        }
+
+        [Test]
         public void ShouldSetDateTimeFieldsToSyncObject()
         {
             var xElement = XElement.Parse(@"<item>
@@ -70,13 +79,40 @@ namespace SalsaImporterTests.Mappers
         }
 
         [Test]
+        public void ShouldNotSetValueForAFieldWhenSalsaObjectHasNoneEmptyValueWhenMappingRuleIsIfOnlyBlank()
+        {
+            
+            var salsaObject = new SyncObject("supporter");
+            salsaObject["State"] = "Kansas";
+
+            var aftObject = new SyncObject("supporter");
+            aftObject["State"] = "California";
+            aftObject["Address"] = "100 main";
+            var nameValues = _mapper.ToNameValues(aftObject, salsaObject);
+
+            Assert.AreEqual("100 main", nameValues["address"]);
+            Assert.IsNull(nameValues["state"]);
+        }
+
+        [Test]
+        public void ShouldSetValueForAFieldFromAftObjectWhenSalsaObjectNotExistWhenMappingRuleIsIfOnlyBlank()
+        {
+            var aftObject = new SyncObject("supporter");
+            aftObject["State"] = "California";
+            aftObject["Address"] = "100 main";
+            var nameValues = _mapper.ToNameValues(aftObject, null);
+
+            Assert.AreEqual("100 main", nameValues["address"]);
+            Assert.AreEqual("California", nameValues["state"]);
+        }
+        [Test]
         public void ShouldSkipReadOnlyFieldWhenNameValuePairs()
         {
             var syncObject = new SyncObject("supporter");
             syncObject["Email"] = "foo@abc.com";
             syncObject["SalsaLastModified"] = DateTime.Now;
 
-            var nameValues = _mapper.ToNameValues(syncObject);
+            var nameValues = _mapper.ToNameValues(syncObject, null);
             Assert.IsFalse(nameValues.AllKeys.ToList().Contains("LastModified"));
         }
 
@@ -102,7 +138,7 @@ namespace SalsaImporterTests.Mappers
             syncObject["Address"] = "boo";
             syncObject["somethingShouldNotBeMapped"] = "hi";
 
-            var nameValues = _mapper.ToNameValues(syncObject);
+            var nameValues = _mapper.ToNameValues(syncObject, null);
             Assert.AreEqual(3, nameValues.Keys.Count);
             Assert.AreEqual("boo", nameValues["address"]);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
@@ -116,7 +152,7 @@ namespace SalsaImporterTests.Mappers
             syncObject.SalsaKey = 4567;
             syncObject["Email"] = "foo@abc.com";
 
-            var nameValues = _mapper.ToNameValues(syncObject);
+            var nameValues = _mapper.ToNameValues( syncObject, null);
             Assert.AreEqual(2, nameValues.Keys.Count);
             Assert.AreEqual("foo@abc.com", nameValues["email"]);
             Assert.AreEqual("4567", nameValues["key"]);
@@ -125,10 +161,10 @@ namespace SalsaImporterTests.Mappers
         [Test]
         public void ShouldCreateNameValuePairsFromSyncObjectWithDateTime()
         {
-            var syncObject = new SyncObject(null);
+            var syncObject = new SyncObject("supporter");
             syncObject["CustomDate1"] = new DateTime(2012, 08, 29, 12, 34, 56);
             
-            var nameValues = _mapper.ToNameValues(syncObject);
+            var nameValues = _mapper.ToNameValues(syncObject, null);
             Assert.AreEqual(2, nameValues.Keys.Count);
             Assert.AreEqual("2012-08-29 12:34:56", nameValues["custom_date1"]);
         }

@@ -22,6 +22,8 @@ namespace SalsaImporterTests.Synchronization
 
             obj[fieldName] = expectedChangedValue;
             Assert.AreEqual(expectedChangedValue, obj[fieldName]);
+
+            Assert.IsNull(obj["somethingNotExisting"]);
         }
 
         [Test]

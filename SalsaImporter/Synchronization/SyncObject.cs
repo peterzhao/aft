@@ -40,7 +40,10 @@ namespace SalsaImporter.Synchronization
 
         public object this[string fieldName]
         {
-            get { return _dictionary[fieldName]; }
+            get
+            {
+                return !_dictionary.ContainsKey(fieldName) ? null : _dictionary[fieldName];
+            }
             set { _dictionary[fieldName] = value; }
         }
 

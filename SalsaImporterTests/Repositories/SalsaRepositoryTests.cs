@@ -47,21 +47,20 @@ namespace SalsaImporterTests.Repositories
 
         }
 
-//        [Test]
-//        public void ShouldGetObject()
-//        {
-//            var key = 1234;
-//            var supporter = new Supporter{Email = "boo@abc.com"};
-//            var xElement = XElement.Parse("<item/>");
-//
-//            _salsaMock.Setup(s => s.GetObject("supporter", key.ToString())).Returns(xElement);
-//            _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
-//            _mapperMock.Setup(m => m.SalsaType).Returns("supporter");
-//
-//            Assert.AreEqual(supporter, _repository.Get<ISyncObject>(key));
-//        }
-//
-//
+        [Test]
+        public void ShouldGetObject()
+        {
+            var key = 1234;
+            var supporter = new SyncObject(ObjectType);
+            var xElement = XElement.Parse("<item><key>1234</key></item>");
+
+            _salsaMock.Setup(s => s.GetObject(ObjectType, key.ToString())).Returns(xElement);
+            _mapperMock.Setup(m => m.ToObject(xElement)).Returns(supporter);
+
+            Assert.AreEqual(supporter, _repository.Get(ObjectType, key));
+        }
+
+
         [Test]
         public void ShouldGetBatchOfObjects()
         {
@@ -118,23 +117,29 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        public void ShouldCreateObject()
+        public void ShouldSaveObject()
         {
             var key = 1234;
             var id = 7890;
-            var supporter = new SyncObject(ObjectType) {QueueId = id};
-            supporter["Email"] = "foo@abc.com";
+            var salsaObj = new SyncObject(ObjectType);
+            var salsaXml = XElement.Parse("<item></item>");
+
+            var aftObj = new SyncObject(ObjectType) {SalsaKey = 1234};
+            aftObj["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
-            _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
-            _salsaMock.Setup(s => s.Save("supporter", nameValues)).Returns(key.ToString);
+            _salsaMock.Setup(s => s.GetObject(ObjectType, "1234")).Returns(salsaXml);
+            _mapperMock.Setup(m => m.ToObject(salsaXml)).Returns(salsaObj);
+            _mapperMock.Setup(m => m.ToNameValues(aftObj, salsaObj)).Returns(nameValues);
+            _salsaMock.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
 
 
-             _repository.Save(supporter);
+             _repository.Save(aftObj);
+
             Assert.IsNotNull(syncEventArgs);
             Assert.AreEqual(_repository, syncEventArgs.Destination);
             Assert.AreEqual(SyncEventType.Export, syncEventArgs.EventType);
-            Assert.AreEqual(key, supporter.SalsaKey);
-            Assert.AreEqual(supporter.ToString(), syncEventArgs.Data);
+            Assert.AreEqual(key, aftObj.SalsaKey);
+            Assert.AreEqual(aftObj.ToString(), syncEventArgs.Data);
             
         }
 
@@ -145,7 +150,7 @@ namespace SalsaImporterTests.Repositories
             var supporter = new SyncObject(ObjectType) { QueueId = id };
             supporter["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
-            _mapperMock.Setup(m => m.ToNameValues(supporter)).Returns(nameValues);
+            _mapperMock.Setup(m => m.ToNameValues(supporter, null)).Returns(nameValues);
             var error = new Exception("test error");
             _salsaMock.Setup(s => s.Save("supporter", nameValues)).Throws(error);
 
