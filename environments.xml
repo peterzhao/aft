@@ -63,7 +63,7 @@
     <smtpPort>587</smtpPort>
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
-    <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the workng dir as well-->
+    <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
   </production>
 

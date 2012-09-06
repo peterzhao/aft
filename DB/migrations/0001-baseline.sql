@@ -40,16 +40,17 @@ CREATE TABLE [SyncEvents] (
 CREATE INDEX [IX_SessionContext_Id] ON [SyncEvents]([SessionContext_Id])
 CREATE TABLE [FieldMappings] (
     [Id] [int] NOT NULL IDENTITY,
-    [ObjectType] [nvarchar](100),
-    [SalsaField] [nvarchar](max),
-    [AftField] [nvarchar](max),
-    [DataType] [nvarchar](100),
+    [ObjectType] [nvarchar](100) not null,
+    [SalsaField] [nvarchar](max) not null,
+    [AftField] [nvarchar](max) not null,
+    [DataType] [nvarchar](100) not null,
+     [MappingRule] [nvarchar](100) not null,
     CONSTRAINT [PK_FieldMappings] PRIMARY KEY ([Id])
 )
 CREATE TABLE [SyncConfigs] (
     [Id] [int] NOT NULL IDENTITY,
-    [ObjectType] [nvarchar](100),
-    [SyncDirection] [nvarchar](100),
+    [ObjectType] [nvarchar](100) not null,
+    [SyncDirection] [nvarchar](100) not null,
     [Order] [int] NOT NULL,
     CONSTRAINT [PK_SyncConfigs] PRIMARY KEY ([Id])
 )
@@ -70,6 +71,14 @@ CREATE TABLE [dbo].[SalsaDataTypes](
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
+CREATE TABLE [dbo].[MappingRules](
+	[MappingRule] [nvarchar](100) NOT NULL,
+ CONSTRAINT [PK_MappingRules] PRIMARY KEY CLUSTERED 
+(
+	[MappingRule] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
 CREATE TABLE [dbo].[SyncDirections](
 	[SyncDirection] [nvarchar](100) NOT NULL,
  CONSTRAINT [PK_SyncDirections] PRIMARY KEY CLUSTERED 
@@ -86,6 +95,7 @@ ALTER TABLE [SyncConfigs] ADD CONSTRAINT [FK_SyncConfigs_ObjectTypes_ObjectType]
 ALTER TABLE [SyncConfigs] ADD CONSTRAINT [FK_SyncConfigs_SyncDirections_SyncDirection] FOREIGN KEY ([SyncDirection]) REFERENCES [SyncDirections] ([SyncDirection])
 ALTER TABLE [FieldMappings] ADD CONSTRAINT [FK_FieldMappings_ObjectTypes_ObjectType] FOREIGN KEY ([ObjectType]) REFERENCES [ObjectTypes] ([ObjectType])
 ALTER TABLE [FieldMappings] ADD CONSTRAINT [FK_FieldMappings_SalsaDataTypes_DataType] FOREIGN KEY ([DataType]) REFERENCES [SalsaDataTypes] ([DataType])
+ALTER TABLE [FieldMappings] ADD CONSTRAINT [FK_FieldMappings_MappingRules_MappingRule] FOREIGN KEY ([MappingRule]) REFERENCES [MappingRules] ([MappingRule])
 
 Insert ObjectTypes (ObjectType) values('supporter')
 Insert ObjectTypes (ObjectType) values('groups')
@@ -104,6 +114,10 @@ Insert into  syncdirections(SyncDirection) values('export')
 Insert into  syncdirections(SyncDirection) values('import')
 
 
+Insert into  MappingRules(MappingRule) values('onlyIfBlank')
+Insert into  MappingRules(MappingRule) values('readOnly')
+Insert into  MappingRules(MappingRule) values('aftWins')
+Insert into  MappingRules(MappingRule) values('salsaWins')
 --//@UNDO
 
 
@@ -117,6 +131,8 @@ ALTER TABLE [SyncConfigs] DROP CONSTRAINT [FK_SyncConfigs_ObjectTypes_ObjectType
 ALTER TABLE [SyncConfigs] DROP CONSTRAINT [FK_SyncConfigs_SyncDirections_SyncDirection]
 ALTER TABLE [FieldMappings] DROP CONSTRAINT [FK_FieldMappings_ObjectTypes_ObjectType]
 ALTER TABLE [FieldMappings] DROP CONSTRAINT [FK_FieldMappings_SalsaDataTypes_DataType]
+ALTER TABLE [FieldMappings] DROP CONSTRAINT [FK_FieldMappings_MappingRules_MappingRule]
+
 
 DROP TABLE [SyncConfigs]
 DROP TABLE [FieldMappings]
@@ -128,5 +144,7 @@ DROP TABLE [SessionContexts]
 DROP TABLE [SalsaDataTypes]
 DROP TABLE [ObjectTypes]
 DROP TABLE [SyncDirections]
+DROP TABLE [MappingRules]
+
 
 DROP TABLE [ImporterLogs]
