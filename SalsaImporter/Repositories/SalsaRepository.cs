@@ -32,7 +32,7 @@ namespace SalsaImporter.Repositories
                 try
                 {
                    
-                    var syncObject = mapper.ToObject(element);
+                    var syncObject = mapper.ToAft(element);
                     batchOfObjects.Add(syncObject);
                 }
                 catch (Exception ex)
@@ -50,8 +50,8 @@ namespace SalsaImporter.Repositories
             {
                 IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
                 var salsaXml = _salsa.GetObject(syncObject.ObjectType, syncObject.SalsaKey.ToString());
-                var salsaObject = mapper.ToObject(salsaXml);
-                syncObject.SalsaKey = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToNameValues(syncObject, salsaObject)));
+                var salsaObject = mapper.ToAft(salsaXml);
+                syncObject.SalsaKey = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToSalsa(syncObject, salsaObject)));
                 NotifySyncEvent(this, new SyncEventArgs {EventType = SyncEventType.Export, Destination = this, SyncObject = syncObject});
             }
             catch(Exception ex)
@@ -64,7 +64,7 @@ namespace SalsaImporter.Repositories
         {
             var xElement = _salsa.GetObject(objectType, key.ToString());
             var mapper = _mapperFactory.GetMapper(objectType);
-            return mapper.ToObject(xElement);
+            return mapper.ToAft(xElement);
         }
 
         public DateTime CurrentTime

@@ -21,7 +21,7 @@ namespace SalsaImporter.Mappers
             _mappings.ForEach(m => _map.Add(m.AftField, m));
         }
 
-        public NameValueCollection ToNameValues( SyncObject aftObject, SyncObject salsaObject)
+        public NameValueCollection ToSalsa( SyncObject aftObject, SyncObject salsaObject)
         {
             var result = new NameValueCollection();
             _mappings.ForEach(fieldMapping =>
@@ -29,6 +29,7 @@ namespace SalsaImporter.Mappers
                 if (!aftObject.FieldNames.Contains(fieldMapping.AftField)) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && (salsaObject != null && salsaObject[fieldMapping.AftField] != null)) return;
+                if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.salsaWins) && salsaObject != null) return;
                 var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
                 result[fieldMapping.SalsaField] = converter.MakeSalsaValue(aftObject[fieldMapping.AftField]);
             });
@@ -38,7 +39,7 @@ namespace SalsaImporter.Mappers
         }
 
 
-        public SyncObject ToObject(XElement element)
+        public SyncObject ToAft(XElement element)
         {
             if (!element.HasElements) return null;
             var syncObject = new SyncObject(_objectType);
