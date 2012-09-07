@@ -120,7 +120,6 @@ namespace SalsaImporterTests.Repositories
         public void ShouldSaveObject()
         {
             var key = 1234;
-            var id = 7890;
             var salsaObj = new SyncObject(ObjectType);
             var salsaXml = XElement.Parse("<item></item>");
 
