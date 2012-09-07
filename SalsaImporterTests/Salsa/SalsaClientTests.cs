@@ -128,6 +128,18 @@ namespace SalsaImporterTests.Salsa
         }
 
         [Test]
+        public void ShouldGetSupporterByKey()
+        {
+            string firstName = NewName();
+            var supporterData = GenerateSupporter(firstName);
+            string id = client.Save("supporter", supporterData);
+            XElement support = client.GetObjectBy("supporter", "key", id);
+
+            Assert.AreEqual(firstName, support.Element("First_Name").Value);
+            Assert.AreEqual(id, support.Element("key").Value);
+        }
+
+        [Test]
         public void ShouldGetEmptyXmlElementIfNoObjectCanBeFoundByPrimaryKey()
         {
             XElement support = client.GetObjectBy("supporter", "Email", "someNotExist");

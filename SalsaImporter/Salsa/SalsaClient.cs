@@ -47,6 +47,7 @@ namespace SalsaImporter.Salsa
 
         public XElement GetObjectBy(string objectType, string salsaField, string value)
         {
+            if (salsaField == "key") return GetObject(objectType, value);
             string result = Get(String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value));
             XDocument xml = XDocument.Parse(result);
 
