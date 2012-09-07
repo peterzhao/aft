@@ -6,7 +6,7 @@ namespace SalsaImporter.Synchronization
     public class SyncEvent
     {
         public int Id { get; set; }
-        public int ObjectId { get; set; }
+        public int SalsaKey { get; set; }
         public string ObjectType { get; set; }
         public string Data { get; set; }
         public string EventType { get; set; }

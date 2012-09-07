@@ -19,7 +19,7 @@ namespace SalsaImporter.Synchronization
                     Error = args.Error == null ? null : args.Error.ToString(),
                     EventType = args.EventType,
                     ObjectType = args.ObjectType, 
-                    ObjectId = args.ObjectId,
+                    SalsaKey = args.SalsKey,
                     Data = args.Data,
                     SessionContext = context
                 };
