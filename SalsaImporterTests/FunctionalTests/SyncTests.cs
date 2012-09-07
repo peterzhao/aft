@@ -17,7 +17,7 @@ namespace SalsaImporterTests.FunctionalTests
         private SyncObject _supporterOne;
         private SyncObject _supporterTwo;
         private SyncObject _chapterOne;
-        private Sync _sync;
+        private SyncObject _chapterTwo;
 
         [SetUp]
         public void SetUp()
@@ -35,10 +35,9 @@ namespace SalsaImporterTests.FunctionalTests
             _supporterTwo = MakeSupporter("Two");
 
             _chapterOne = MakeChapter("One");
+            _chapterTwo = MakeChapter("Two");
 
             FieldMappingForTests.CreateInDatabase();
-            
-            _sync = new Sync();
         }
 
         private SyncObject MakeSupporter(string arg0)
@@ -67,7 +66,7 @@ namespace SalsaImporterTests.FunctionalTests
         {
             TestUtils.InsertToSalsa(_supporterOne, _supporterTwo);
 
-            _sync.Run();
+            new Sync().Run();
 
             var queue = TestUtils.ReadAllFromQueue("SalsaToAftQueue_Supporter");
 
@@ -93,7 +92,7 @@ namespace SalsaImporterTests.FunctionalTests
             var dateTimeTwo = new DateTime(2012, 08, 29, 01, 23, 45, 00);
             TestUtils.InsertSupporterToExportQueue(emailTwo, firstTwo, lastTwo, dateTimeTwo);
 
-            _sync.Run();
+            new Sync().Run();
 
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(2, supportersOnSalsa.Count);
@@ -113,13 +112,16 @@ namespace SalsaImporterTests.FunctionalTests
         [Test]
         public void ShouldExportSupporterWithChapter()
         {
+            // Setup
             TestUtils.InsertToSalsa(_chapterOne);
             var chapterKey = _chapterOne.SalsaKey;
 
             TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), chapterKey);
-            
-            _sync.Run();
+          
+            // Test
+            new Sync().Run();
 
+            // Verify
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(1, supportersOnSalsa.Count);
 
@@ -131,6 +133,33 @@ namespace SalsaImporterTests.FunctionalTests
                                                                            supporterChapter.IntValueOrDefault("chapter_KEY") == chapterKey));
         }
 
+        [Test]
+        public void ShouldExportSupporterToUpdateWithNewChapter()
+        {
+            // Setup
+            TestUtils.InsertToSalsa(_chapterOne, _chapterTwo);
+           
+            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), _chapterOne.SalsaKey);
+            new Sync().Run();
+            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), _chapterTwo.SalsaKey);
+
+            // Test
+            new Sync().Run();
+
+            // Verify
+            List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
+            Assert.AreEqual(1, supportersOnSalsa.Count);
+
+            var supporterKey = supportersOnSalsa.First().IntValueOrNull("supporter_KEY");
+
+            List<XElement> supporterChaptersOnSalsa = TestUtils.GetAllFromSalsa("supporter_chapter");
+
+            Assert.IsTrue(supporterChaptersOnSalsa.Any(supporterChapter => supporterChapter.IntValueOrDefault("supporter_KEY") == supporterKey &&
+                                                                           supporterChapter.IntValueOrDefault("chapter_KEY") == _chapterOne.SalsaKey));
+
+            Assert.IsTrue(supporterChaptersOnSalsa.Any(supporterChapter => supporterChapter.IntValueOrDefault("supporter_KEY") == supporterKey &&
+                                                                           supporterChapter.IntValueOrDefault("chapter_KEY") == _chapterTwo.SalsaKey));
+        }
 
         
 
