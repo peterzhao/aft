@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using SalsaImporter.Mappers;
 using SalsaImporter.Synchronization;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Repositories
 {
@@ -44,9 +45,13 @@ namespace SalsaImporter.Repositories
                     foreach (DataColumn column in table.Columns)
                     {
                         if (column.ColumnName == "Id")
+                        {
                             syncObject.QueueId = int.Parse(row[column].ToString());
-                        else if (aftFields.Contains( column.ColumnName))
+                        }
+                        else if (aftFields.Contains(column.ColumnName))
+                        {
                             syncObject[column.ColumnName] = row[column];
+                        }
                     }
                     returnValue.Add(syncObject);
                 }

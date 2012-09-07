@@ -18,12 +18,14 @@ namespace SalsaImporter
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
         private NotificationService _notificationService;
+        
         public Sync()
         {
+            var mapperFactory = new MapperFactory();
+
             _errorHandler = new SyncErrorHandler(10);
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
-            var mapperFactory = new MapperFactory();
             _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
             _queueRepository = new QueueRepository(mapperFactory);
             _salsaClient.Login();

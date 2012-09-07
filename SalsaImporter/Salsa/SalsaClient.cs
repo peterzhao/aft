@@ -31,7 +31,8 @@ namespace SalsaImporter.Salsa
         public string Save(string objectType, NameValueCollection data)
         {
             if(!data.AllKeys.Contains("key"))
-             data.Set("key", "0"); // this is to indicate creation  
+                data.Set("key", "0"); // this is to indicate creation  
+            
             return Try<string, InvalidSalsaResponseException>(() =>
             {
                 string response = Post("save", objectType, data);

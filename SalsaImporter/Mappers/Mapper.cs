@@ -45,13 +45,11 @@ namespace SalsaImporter.Mappers
             var syncObject = new SyncObject(_objectType);
             foreach (var mapping in _mappings)
             {
-                string localName = mapping.AftField;
-                string salsaName = mapping.SalsaField;
                 var converter = DataTypeConverter.GetConverter(mapping.DataType);
                 
-                string value = element.StringValueOrNull(salsaName);
+                string value = element.StringValueOrNull(mapping.SalsaField);
                 if (value == null) continue;
-                syncObject[localName] = converter.ReadSalsaValue(salsaName, element);
+                syncObject[mapping.AftField] = converter.ReadSalsaValue(mapping.SalsaField, element);
             }
 
             syncObject.SalsaKey = element.IntValueOrDefault("key");

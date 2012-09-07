@@ -29,14 +29,14 @@ namespace SalsaImporterTests.Utilities
             get { return new SalsaRepository(SalsaClient, new MapperFactory(), new SyncErrorHandler(10)); }
         }
 
-        public static void RemoveAllSalsa(string objectType)
+        public static void RemoveAllSalsa(string objectType, bool fetchOnlyKeys = true)
         {
-            SalsaClient.DeleteAllObjects(objectType, 100, true);
+            SalsaClient.DeleteAllObjects(objectType, 100, fetchOnlyKeys);
         }
- 
+
         public static void InsertToSalsa(params SyncObject[] objects)
         {
-            objects.ToList().ForEach(syncObject => SalsaRepository.Save(syncObject));
+            objects.ToList().ForEach(SalsaRepository.Save);
         }
 
         public static void UpdateSalsa(params SyncObject[] objects) 
@@ -95,11 +95,11 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName, DateTime customDateTime0)
+        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName, DateTime customDateTime0,  int chapterKey = 0)
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand(String.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, CustomDateTime0, SalsaKey) VALUES ('{0}', '{1}', '{2}', '{3}', 0)", email, firstName, lastName, customDateTime0));
+                db.Database.ExecuteSqlCommand(String.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, CustomDateTime0, Chapter_KEY, SalsaKey) VALUES ('{0}', '{1}', '{2}', '{3}', {4}, 0)", email, firstName, lastName, customDateTime0, chapterKey));
             }
         }
 
@@ -109,5 +109,16 @@ namespace SalsaImporterTests.Utilities
             return salsa.GetObjects(objectType, 100, "0", new DateTime(1991,1,1));
         }
 
+        public static void EnsureSupporterCustomColumn(string name, string type)
+        {
+            var salsaClient = new SalsaClient();
+            var customColumn = new NameValueCollection
+                                   {
+                                       {"name", name},
+                                       {"label", name},
+                                       {"type", type}
+                                   };
+            salsaClient.CreateSupporterCustomColumn(customColumn);
+        }
     }
 }
