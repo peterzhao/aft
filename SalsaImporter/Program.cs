@@ -40,19 +40,6 @@ namespace SalsaImporter
                     case "delete":
                         sync.DeleteAllSupporters();
                         break;
-                    case "customcolumns":
-                        new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
-                                                                                 {
-                                                                                     new SupporterCustomColumnsRequest
-                                                                                         {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
-                                                                                     new SupporterCustomColumnsRequest
-                                                                                         {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
-                                                                                     new SupporterCustomColumnsRequest
-                                                                                         {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
-                                                                                     new SupporterCustomColumnsRequest
-                                                                                         {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
-                                                                                 });
-                        break;
                     default:
                         ShowUsage();
                         break;
@@ -72,7 +59,7 @@ namespace SalsaImporter
 
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: sync|count|delete|customcolumns [environment]\n The default environment is test.");
+            Console.WriteLine("Usage: sync|count|delete [environment]\n The default environment is test.");
         }
     }
 }

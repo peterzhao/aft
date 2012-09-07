@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
@@ -73,7 +74,7 @@ namespace SalsaImporterTests.Utilities
         public static List<Dictionary<string, object>> ReadAllFromQueue(string tableName)
         {
 
-            using (var dataAdaptor = new SqlDataAdapter(string.Format("SELECT * FROM {0}", tableName),
+            using (var dataAdaptor = new SqlDataAdapter(String.Format("SELECT * FROM {0}", tableName),
                                                  Config.DbConnectionString))
             {
                 var dataSet = new DataSet();
@@ -98,15 +99,15 @@ namespace SalsaImporterTests.Utilities
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand(string.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, CustomDateTime0, SalsaKey) VALUES ('{0}', '{1}', '{2}', '{3}', 0)", email, firstName, lastName, customDateTime0));
+                db.Database.ExecuteSqlCommand(String.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, CustomDateTime0, SalsaKey) VALUES ('{0}', '{1}', '{2}', '{3}', 0)", email, firstName, lastName, customDateTime0));
             }
         }
 
         public static List<XElement> GetAllFromSalsa(string objectType)
         {
-
             var salsa = new SalsaClient();
             return salsa.GetObjects(objectType, 100, "0", new DateTime(1991,1,1));
         }
+
     }
 }

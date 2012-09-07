@@ -48,14 +48,6 @@ namespace SalsaImporterTests.Salsa
             Assert.AreEqual(id, xml.Element("supporter_KEY").Value);
         }
 
-        [Ignore("We don't need to delete the custom fields over and over again...")]
-        [Test]
-        public void ShouldDeleteAllCustomFields()
-        {
-            client.DeleteAllObjects("custom_column", 100, false);
-            Assert.AreEqual(0, client.CountObjects("custom_column"));
-        }
-
         [Test]
         public void ShouldDeleteAllSupporters()
         {
