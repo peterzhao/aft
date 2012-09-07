@@ -21,7 +21,7 @@
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
   <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\Dependencies\dbdeploy.net\MSBuild.Dbdeploy.Task.dll" TaskName="MSBuild.Dbdeploy.Task.Dbdeploy" />
 
-  <Target Name="Build" DependsOnTargets="Init;Compile;UnitTest;IntegrationTest;"/>
+  <Target Name="Build" DependsOnTargets="Init;Compile;UnitTest;IntegrationTest;FunctionalTest"/>
   <Target Name="Deploy" DependsOnTargets="Init;CopyToBin;DbMigrate;"/>
   <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
 
