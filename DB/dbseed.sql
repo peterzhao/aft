@@ -1,5 +1,12 @@
+
+delete from FieldMappings
+delete from SyncConfigs
+
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
-VALUES('supporter','Email','Email' ,'string', 'aftWins');
+VALUES('supporter','Email','Email' ,'string', 'primaryKey');
+
+INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
+VALUES('supporter','Title','Title' ,'string', 'onlyIfBlank');
 
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','First_Name','First_Name' ,'string', 'onlyIfBlank');
@@ -21,8 +28,8 @@ VALUES('supporter','Last_Modified','SalsaLastModified' ,'dateTime', 'readOnly');
 --VALUES('supporter','CustomDateTime0', 'CustomDateTime0', 'datetime');
 
 GO
-INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'import',1)
-INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'export',2)
+INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'export',1)
+INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'import',2)
 GO
 
 
@@ -41,9 +48,10 @@ GO
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
         [Id] [int] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NOT NULL,
-        [First_Name] [nvarchar](50) NULL,
-        [Last_Name] [nvarchar](50) NULL,
-        [Email] [nvarchar](50) NULL,
+        [Title] [nvarchar](50) NULL,
+        [First_Name] [nvarchar](100) NULL,
+        [Last_Name] [nvarchar](100) NULL,
+        [Email] [nvarchar](100) NULL,
         [Chapter_KEY] [int] NULL,
         [CustomDateTime0] [datetime] NULL,
         [CustomBoolean0] [bit] NULL,
@@ -74,9 +82,10 @@ GO
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
         [Id] [int] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NOT NULL,
-        [First_Name] [nvarchar](50) NULL,
-        [Last_Name] [nvarchar](50) NULL,
-        [Email] [nvarchar](50) NULL,
+        [Title] [nvarchar](50) NULL,
+        [First_Name] [nvarchar](100) NULL,
+        [Last_Name] [nvarchar](100) NULL,
+        [Email] [nvarchar](100) NULL,
 		[Chapter_KEY] [int] NULL,
         [CustomDateTime0] [datetime] NULL,
         [CustomBoolean0] [bit] NULL,
@@ -89,8 +98,3 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
-
---mark email of supporter as primary key on salsa
-update FieldMappings 
-set MappingRule='primaryKey'
-where ObjectType='supporter' and SalsaField='Email'
