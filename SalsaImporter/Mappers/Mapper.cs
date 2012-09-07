@@ -12,13 +12,22 @@ namespace SalsaImporter.Mappers
     {
         private readonly string _objectType;
         private readonly List<FieldMapping> _mappings;
-        private readonly Dictionary<string, FieldMapping> _map = new Dictionary<string, FieldMapping>(); 
-
+        private readonly Dictionary<string, FieldMapping> _map = new Dictionary<string, FieldMapping>();
+        private readonly FieldMapping _salsaKeyMapping = new FieldMapping {AftField = SyncObject.SalsaKeyColumnName, SalsaField = "key", DataType = "int"};
         public Mapper(string objectType, List<FieldMapping>  mappings)
         {
             _objectType = objectType;
             _mappings = mappings;
             _mappings.ForEach(m => _map.Add(m.AftField, m));
+        }
+
+        public FieldMapping PrimaryKeyMapping
+        {
+            get
+            {
+                var primaryMapping = _mappings.FirstOrDefault(m => m.MappingRule.EqualsIgnoreCase(MappingRules.primaryKey));
+                return primaryMapping ?? _salsaKeyMapping;
+            }
         }
 
         public NameValueCollection ToSalsa( SyncObject aftObject, SyncObject salsaObject)
@@ -30,12 +39,22 @@ namespace SalsaImporter.Mappers
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && (salsaObject != null && salsaObject[fieldMapping.AftField] != null)) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.salsaWins) && salsaObject != null) return;
-                var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
-                result[fieldMapping.SalsaField] = converter.MakeSalsaValue(aftObject[fieldMapping.AftField]);
+                SetFieldValueToSalsa(aftObject, fieldMapping, result);
             });
           
-            result["key"] = aftObject.SalsaKey.ToString();
+            SetPrimaryKeyToSalsa(aftObject, result);
             return result;
+        }
+
+        private  void SetPrimaryKeyToSalsa(SyncObject aftObject, NameValueCollection result)
+        {
+            SetFieldValueToSalsa(aftObject, PrimaryKeyMapping, result);
+        }
+
+        private  void SetFieldValueToSalsa(SyncObject aftObject, FieldMapping fieldMapping, NameValueCollection result)
+        {
+            var converter = DataTypeConverter.GetConverter(fieldMapping.DataType);
+            result[fieldMapping.SalsaField] = converter.MakeSalsaValue(aftObject[fieldMapping.AftField]);
         }
 
 

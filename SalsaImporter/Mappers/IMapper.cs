@@ -9,7 +9,7 @@ namespace SalsaImporter.Mappers
     {
         NameValueCollection ToSalsa(SyncObject aftObject, SyncObject salsaObject);
         SyncObject ToAft(XElement xElement);
-
+        FieldMapping PrimaryKeyMapping { get; }
         List<FieldMapping> Mappings { get; }
     }
 }

@@ -86,9 +86,9 @@ namespace SalsaImporter.Synchronization
 
         public void Start()
         {
-            Logger.Info("Start new sync session...");
+            Logger.Info("Start new sync session...");//Todo: check if resume 
 
-            CurrentContext.State = SessionState.Start;
+            CurrentContext.State = SessionState.Start;//Todo: if resume, don't not reset starttime
             CurrentContext.StartTime = DateTime.Now;
             _db.SaveChanges();
 

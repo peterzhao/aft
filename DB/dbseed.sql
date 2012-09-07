@@ -90,4 +90,7 @@ PRIMARY KEY CLUSTERED
 
 GO
 
-GO
+--mark email of supporter as primary key on salsa
+update FieldMappings 
+set MappingRule='primaryKey'
+where ObjectType='supporter' and SalsaField='Email'

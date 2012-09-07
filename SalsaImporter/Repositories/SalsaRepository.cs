@@ -49,7 +49,8 @@ namespace SalsaImporter.Repositories
             try
             {
                 IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
-                var salsaXml = _salsa.GetObject(syncObject.ObjectType, syncObject.SalsaKey.ToString());
+                var primaryKeyMapping = mapper.PrimaryKeyMapping;
+                var salsaXml = _salsa.GetObjectBy(syncObject.ObjectType, primaryKeyMapping.SalsaField, syncObject[primaryKeyMapping.AftField].ToString());
                 var salsaObject = mapper.ToAft(salsaXml);
                 syncObject.SalsaKey = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToSalsa(syncObject, salsaObject)));
                 NotifySyncEvent(this, new SyncEventArgs {EventType = SyncEventType.Export, Destination = this, SyncObject = syncObject});

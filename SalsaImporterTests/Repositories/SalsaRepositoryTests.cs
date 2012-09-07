@@ -122,11 +122,13 @@ namespace SalsaImporterTests.Repositories
             var key = 1234;
             var salsaObj = new SyncObject(ObjectType);
             var salsaXml = XElement.Parse("<item></item>");
+            var primaryFieldMapping = new FieldMapping{AftField = "Email", SalsaField = "email"};
 
             var aftObj = new SyncObject(ObjectType) {SalsaKey = 1234};
             aftObj["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
-            _salsaMock.Setup(s => s.GetObject(ObjectType, "1234")).Returns(salsaXml);
+            _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
+            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, aftObj[primaryFieldMapping.AftField].ToString())).Returns(salsaXml);
             _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
             _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
             _salsaMock.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
@@ -146,12 +148,13 @@ namespace SalsaImporterTests.Repositories
         public void ShouldHandleExceptionWhenSavingObject()
         {
             var id = 7890;
-            var supporter = new SyncObject(ObjectType) { QueueId = id };
+            var supporter = new SyncObject(ObjectType) { QueueId = id,};
             supporter["Email"] = "foo@abc.com";
-            var nameValues = new NameValueCollection();
-            _mapperMock.Setup(m => m.ToSalsa(supporter, null)).Returns(nameValues);
+            
+            var primaryFieldMapping = new FieldMapping { AftField = "Email", SalsaField = "email" };
+            _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
             var error = new Exception("test error");
-            _salsaMock.Setup(s => s.Save("supporter", nameValues)).Throws(error);
+            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter[primaryFieldMapping.AftField].ToString())).Throws(error);
 
             _repository.Save(supporter);
 

@@ -30,9 +30,6 @@ namespace SalsaImporter.Salsa
 
         public string Save(string objectType, NameValueCollection data)
         {
-            if(!data.AllKeys.Contains("key"))
-                data.Set("key", "0"); // this is to indicate creation  
-            
             return Try<string, InvalidSalsaResponseException>(() =>
             {
                 string response = Post("save", objectType, data);
@@ -46,6 +43,16 @@ namespace SalsaImporter.Salsa
             string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
             XDocument xml = XDocument.Parse(result);
             return xml.Element("data").Element(objectType).Element("item"); //Todo: check xml format for error.
+        }
+
+        public XElement GetObjectBy(string objectType, string salsaField, string value)
+        {
+            string result = Get(String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value));
+            XDocument xml = XDocument.Parse(result);
+
+            var objectTopElement = xml.Element("data").Element(objectType);
+            if (objectTopElement.Element("count").Value == "0") return XElement.Parse("<item/>");
+            return objectTopElement.Element("item"); //Todo: check xml format for error.
         }
 
         public CookieContainer Login()
@@ -146,6 +153,8 @@ namespace SalsaImporter.Salsa
                     return XDocument.Parse(response).Descendants("item").ToList();
                 }, 3);
         }
+
+      
 
         public void CreateSupporterCustomColumn(NameValueCollection customField)
         {
@@ -321,5 +330,7 @@ namespace SalsaImporter.Salsa
                 }
             }
         }
+
+
     }
 }

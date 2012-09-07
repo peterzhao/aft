@@ -59,7 +59,7 @@ namespace SalsaImporter
 
             const int batchSize = 500;
 
-            switch (syncConfig.SyncDirection)
+            switch (syncConfig.SyncDirection.ToLower())
             {
                 case "export":
                     {
