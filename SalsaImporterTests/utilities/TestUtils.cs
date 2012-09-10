@@ -123,7 +123,7 @@ namespace SalsaImporterTests.Utilities
                                        {"type", type}
                                    };
             var xElement = salsaClient.GetObjectBy("custom_column", "name", name);
-            if ("type" == xElement.StringValueOrNull("type"))
+            if (type == xElement.StringValueOrNull("type"))
                 return;
 
             salsaClient.CreateSupporterCustomColumn(customColumn);
