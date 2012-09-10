@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Service;
@@ -15,47 +16,49 @@ namespace SalsaImporter.Synchronization
         public static string Aborted = "Aborted";
     }
 
+    public class SessionRunningFlag
+    {
+        public static readonly string Default = "Default";
+        public static readonly string Rebase = "Rebase";
+        public static readonly string RedoLast = "RedoLast";
+    }
+
     public class SyncSession
     {
         private readonly List<ISyncJob> _jobs;
         private SessionContext _currentContext;
         private readonly AftDbContext _db;
         private NotificationService _notificationService;
+        public readonly static DateTime BaseModifiedDate = new DateTime(1991, 1, 1);
 
         public SyncSession(NotificationService notificationService)
         {
             _notificationService = notificationService;
             _jobs = new List<ISyncJob>();
             _db = new AftDbContext();
-            Initialize();
         }
 
-        private void Initialize()
+        private void InitializeContext(string flag)
         {
             var lastContext = _db.SessionContexts.Include("JobContexts").OrderByDescending(s => s.Id).FirstOrDefault();
-            if (lastContext == null)
-            {
-                _currentContext = new SessionContext()
-                                      {MinimumModifiedDate = new DateTime(1991, 1, 1), 
-                                          State = SessionState.New};
-                _db.SessionContexts.Add(_currentContext);
-            }
+            if (lastContext == null || flag == SessionRunningFlag.Rebase)
+                StartNewSession(BaseModifiedDate);
+            else if(flag == SessionRunningFlag.RedoLast)
+                StartNewSession(lastContext.MinimumModifiedDate);
+            else if (lastContext.State == SessionState.Finished)
+                StartNewSession(lastContext.StartTime.Value);
             else
-            {
-                if (lastContext.State != SessionState.Finished)
-                {
-                    _currentContext = lastContext;
-                }
-                else
-                {
-                    _currentContext = new SessionContext()
-                                          {MinimumModifiedDate = lastContext.StartTime.Value, 
-                                              State = SessionState.New};
-                    _db.SessionContexts.Add(_currentContext);
-                }
-            }
+                ResumeLastSession(lastContext);
+
+            _jobs.ForEach(job =>{if (CurrentContext.JobContexts.All(j => j.JobName != job.Name))
+                                      CurrentContext.JobContexts.Add(new JobContext { JobName = job.Name });
+                              });
+          
             _db.SaveChanges();
         }
+
+      
+
 
         public SessionContext CurrentContext
         {
@@ -75,33 +78,21 @@ namespace SalsaImporter.Synchronization
                 throw new ApplicationException("Job names must be unique.  Already have job: " + job.Name);
 
             _jobs.Add(job);
-
-            if (CurrentContext.JobContexts == null) CurrentContext.JobContexts = new List<JobContext>();
-            if (CurrentContext.JobContexts.All(j => j.JobName != job.Name))
-                CurrentContext.JobContexts.Add(new JobContext {JobName = job.Name});
-            _db.SaveChanges();
-
             return this;
         }
 
-        public void Start()
-        {
-            UpdateSessionStateToStart();
+     
 
+        public void Run(string sessionRunningFlag)
+        {
+            InitializeContext(sessionRunningFlag);
             try
             {
                 foreach (var job in _jobs)
                 {
                     var jobContext = CurrentContext.JobContexts.First(j => j.JobName == job.Name);
-                    jobContext.JobContextChanged += (obj, arg) => _db.SaveChanges();
-                    jobContext.StartTime = DateTime.Now;
-                    Logger.Info("Start job " + job.Name);
-                    _db.SaveChanges();
-
-                    job.Start(jobContext);
-
-                    jobContext.FinishedTime = DateTime.Now;
-                    _db.SaveChanges();
+                    if(jobContext.FinishedTime == null)
+                        StartJob(jobContext, job);
                 }
                 UpdateSessionStateToFinished();
             }
@@ -119,6 +110,30 @@ namespace SalsaImporter.Synchronization
             }
         }
 
+        private void StartNewSession(DateTime modifiedDate)
+        {
+                _currentContext = new SessionContext { 
+                    State = SessionState.New,
+                    StartTime = DateTime.Now,
+                    JobContexts = new Collection<JobContext>(),
+                    MinimumModifiedDate = modifiedDate};
+                Logger.Info("Start sync session...");
+                _db.SessionContexts.Add(_currentContext);
+        }
+
+        private void StartJob(JobContext jobContext, ISyncJob job)
+        {
+            jobContext.JobContextChanged += (obj, arg) => _db.SaveChanges();
+            if(jobContext.StartTime == null) jobContext.StartTime = DateTime.Now;
+            Logger.Info("Start job " + job.Name);
+            _db.SaveChanges();
+
+            job.Start(jobContext);
+
+            jobContext.FinishedTime = DateTime.Now;
+            _db.SaveChanges();
+        }
+
         private void UpdateSessionStateToFinished()
         {
             CurrentContext.State = SessionState.Finished;
@@ -128,20 +143,11 @@ namespace SalsaImporter.Synchronization
             Logger.Info("Finished sync session.");
         }
 
-        private void UpdateSessionStateToStart()
+        private void ResumeLastSession(SessionContext lastContext)
         {
-            if (CurrentContext.State == SessionState.New)
-            {
-                CurrentContext.StartTime = DateTime.Now;
-                CurrentContext.State = SessionState.Started;
-                Logger.Info("Start new sync session...");
-            }
-            else
-            {
-                CurrentContext.State = SessionState.Resumed;
-                Logger.Info("Resuming sync session...");
-            }
-            _db.SaveChanges();
+            _currentContext = lastContext; //resume
+            CurrentContext.State = SessionState.Resumed;
+            Logger.Info("Resuming sync session...");
         }
     }
 }

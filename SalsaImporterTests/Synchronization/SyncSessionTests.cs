@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
-using System.Threading;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter;
@@ -34,72 +32,54 @@ namespace SalsaImporterTests.Synchronization
         }
 
         [Test]
-        public void ShouldStartANewSessionIfThereIsNoPreviousSessionBefore()
+        public void ShouldRunGiveJobsAndUpdateJobStatusWhenThereIsNoSessionRunBefore()
         {
+            var start = DateTime.Now.AddMinutes(-1);
             var session = new SyncSession(_notificationService);
-            Assert.AreEqual(SessionState.New, session.CurrentContext.State);
-            Assert.AreEqual(new DateTime(1991, 1, 1), session.CurrentContext.MinimumModifiedDate);
-            Assert.IsNull(session.CurrentContext.JobContexts);
-            Assert.IsNotNull(GetSessionContext(session.CurrentContext.Id));
-        }
-
-       
-
-
-        [Test]
-        public void ShouldResumeTheLastUnFinishedSessionAsCurrentContext()
-        {
-            CreateTwoSessions(SessionState.Aborted);
-
-            var session = new SyncSession(_notificationService);
-            Assert.AreEqual(SessionState.Aborted, session.CurrentContext.State);
-            Assert.AreEqual(new DateTime(2012, 7, 1), session.CurrentContext.MinimumModifiedDate);
-            Assert.IsNotNull(session.CurrentContext.JobContexts);
-            Assert.AreEqual("job21", session.CurrentContext.JobContexts.First().JobName);
-            Assert.AreEqual("job22", session.CurrentContext.JobContexts.Last().JobName);
-        }
-
-        [Test]
-        public void ShouldCreateANewContextWhenTheLastSessionWasFinished()
-        {
-            CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession(_notificationService);
-            Assert.AreEqual(SessionState.New, session.CurrentContext.State);
-            Assert.AreEqual(_context2.StartTime, session.CurrentContext.MinimumModifiedDate);
-            Assert.IsNull(session.CurrentContext.JobContexts);
-        }
-
-        [Test]
-        public void ShouldCreateNewJobContextForNewJobIfThereIsNoExistingOne()
-        {
-            CreateTwoSessions(SessionState.Finished);
-            var session = new SyncSession(_notificationService);
-            var job31 = new SyncJobStub("job21", (jobContext) => { });
-            var job32 = new SyncJobStub("job22", (jobContext) => { });
+            var job1Called = false;
+            var job2Called = false;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Called = true; jobContext.SetCurrentRecord(200); });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
             session.AddJob(job31).AddJob(job32);
-            Assert.AreEqual(job31.Name, session.CurrentContext.JobContexts.First().JobName);
-            Assert.AreEqual(job32.Name, session.CurrentContext.JobContexts.Last().JobName);
-            Assert.AreNotEqual(_jobContext21.Id, session.CurrentContext.JobContexts.First().Id);
-            Assert.AreNotEqual(_jobContext22.Id, session.CurrentContext.JobContexts.Last().Id);
 
+            session.Run(SessionRunningFlag.Default);
+
+            Assert.IsTrue(job1Called);
+
+            Assert.IsTrue(job2Called);
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            Assert.AreEqual(SessionState.Finished, currentContext.State);
+            Assert.IsTrue(currentContext.FinishedTime >= start);
+            Assert.IsTrue(currentContext.StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.First().StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.Last().StartTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.First().FinishedTime >= start);
+            Assert.IsTrue(currentContext.JobContexts.Last().FinishedTime >= start);
+            Assert.AreEqual(200, currentContext.JobContexts.First().CurrentRecord);
+            Assert.AreEqual(SyncSession.BaseModifiedDate, session.CurrentContext.MinimumModifiedDate);
         }
 
         [Test]
-        public void ShouldUseExistingJobContextForJobIfThereIsExistingOne()
+        public void ShouldResumeAbortedSessionButSkipFinishedJobWhenResumeSession()
         {
             CreateTwoSessions(SessionState.Aborted);
             var session = new SyncSession(_notificationService);
-            var job31 = new SyncJobStub("job21", (jobContext) => { });
-            var job32 = new SyncJobStub("job22", (jobContext) => { });
+          
+            var job1Called = false;
+            var job2Called = false;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Called = true; });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
             session.AddJob(job31).AddJob(job32);
-            Assert.AreEqual(job31.Name, session.CurrentContext.JobContexts.First().JobName);
-            Assert.AreEqual(job32.Name, session.CurrentContext.JobContexts.Last().JobName);
-            Assert.AreEqual(_jobContext21.Id, session.CurrentContext.JobContexts.First().Id);
-            Assert.AreEqual(_jobContext22.Id, session.CurrentContext.JobContexts.Last().Id);
+
+            session.Run(SessionRunningFlag.Default);
+
+            Assert.IsFalse(job1Called);
+            Assert.IsTrue(job2Called);
+            Assert.AreEqual(_jobContext22.StartTime, session.CurrentContext.JobContexts.Last().StartTime);
         }
 
         [Test]
-        public void ShouldRunGiveJobsAndUpdateJobStatus()
+        public void ShouldRunGiveJobsAndUpdateJobStatusWhenStartNewSession()
         {
             var start = DateTime.Now;
             CreateTwoSessions(SessionState.Finished);
@@ -110,7 +90,7 @@ namespace SalsaImporterTests.Synchronization
             var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
             session.AddJob(job31).AddJob(job32);
 
-            session.Start();
+            session.Run(SessionRunningFlag.Default);
 
             Assert.IsTrue(job1Called);
          
@@ -126,6 +106,8 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(200, currentContext.JobContexts.First().CurrentRecord);
         }
 
+       
+
         [Test]
         public void ShouldAbortSyncSessionAndNotifyWhenGotError()
         {
@@ -140,7 +122,7 @@ namespace SalsaImporterTests.Synchronization
             session.AddJob(job31).AddJob(job32);
             try
             {
-                session.Start();
+                session.Run(SessionRunningFlag.Default);
             }catch(Exception){}
 
             Assert.IsTrue(job1Called);
@@ -182,17 +164,114 @@ namespace SalsaImporterTests.Synchronization
             var session = new SyncSession(_notificationService);
             var job = new SyncJobStub("email_test_job", (jobcontest) => { });
             session.AddJob(job);
-            session.Start();
+            session.Run(SessionRunningFlag.Default);
             _mockMailer.Verify();
             
         }
 
-        private void CreateTwoSessions(string stateOfSecondSession)
+        [Test]
+        public void ShouldRunSyncFrom1991IfRebase()
+        {
+            CreateTwoSessions(SessionState.Finished);
+            var session = new SyncSession(_notificationService);
+            var job1Called = false;
+            var job2Called = false;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Called = true; jobContext.SetCurrentRecord(200); });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
+            session.AddJob(job31).AddJob(job32);
+
+            session.Run(SessionRunningFlag.Rebase);
+
+            Assert.IsTrue(job1Called);
+            Assert.IsTrue(job2Called);
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            Assert.AreEqual(SessionState.Finished, currentContext.State);
+            Assert.AreEqual(SyncSession.BaseModifiedDate, currentContext.MinimumModifiedDate);
+        }
+
+
+
+        [Test]
+        public void ShouldRunSyncFrom1991IfRebaseForAbortedSession()
+        {
+            DateTime startTime = new DateTime();
+            CreateTwoSessions(SessionState.Aborted, 100, 101);
+            var session = new SyncSession(_notificationService);
+            JobContext job1Context = null;
+            JobContext job2Context = null;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Context = jobContext; });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Context = jobContext; });
+            session.AddJob(job31).AddJob(job32);
+
+            session.Run(SessionRunningFlag.Rebase);
+
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+
+            Assert.IsTrue(job1Context.StartTime > startTime);
+            Assert.IsTrue(job2Context.StartTime > startTime);
+
+            Assert.AreEqual(0, job1Context.CurrentRecord);
+            Assert.AreEqual(0, job2Context.CurrentRecord);
+            Assert.AreEqual(SyncSession.BaseModifiedDate, currentContext.MinimumModifiedDate);
+           
+        }
+
+        [Test]
+        public void ShouldReRunLastSyncSession()
+        {
+            CreateTwoSessions(SessionState.Finished);
+            var session = new SyncSession(_notificationService);
+            var job1Called = false;
+            var job2Called = false;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Called = true; jobContext.SetCurrentRecord(200); });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Called = true; });
+            session.AddJob(job31).AddJob(job32);
+
+            session.Run(SessionRunningFlag.RedoLast);
+
+            Assert.IsTrue(job1Called);
+            Assert.IsTrue(job2Called);
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            Assert.AreEqual(SessionState.Finished, currentContext.State);
+            Assert.AreEqual(_context2.MinimumModifiedDate, currentContext.MinimumModifiedDate);
+        }
+
+        [Test]
+        public void ShouldReRunLastSessionSyncIfLastSessionWasAborted()
+        {
+            DateTime startTime = new DateTime();
+            CreateTwoSessions(SessionState.Aborted, 100, 101);
+            var session = new SyncSession(_notificationService);
+            JobContext job1Context = null;
+            JobContext job2Context = null;
+            var job31 = new SyncJobStub("job21", (jobContext) => { job1Context = jobContext; });
+            var job32 = new SyncJobStub("job22", (jobContext) => { job2Context = jobContext; });
+            session.AddJob(job31).AddJob(job32);
+
+            session.Run(SessionRunningFlag.RedoLast);
+
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+
+            Assert.IsTrue(job1Context.StartTime > startTime);
+            Assert.IsTrue(job2Context.StartTime > startTime);
+
+            Assert.AreEqual(0, job1Context.CurrentRecord);
+            Assert.AreEqual(0, job2Context.CurrentRecord);
+            Assert.AreEqual(_context2.MinimumModifiedDate, currentContext.MinimumModifiedDate);
+
+        }
+
+
+      
+
+        private void CreateTwoSessions(string stateOfSecondSession, int job1CurrentRecord = 0, int job2CurrentRecord = 0)
         {
             _jobContext11 = new JobContext { JobName = "job11", StartTime = new DateTime(2012, 6, 30), FinishedTime = new DateTime(2012, 6, 30) };
             _jobContext12 = new JobContext { JobName = "job12", StartTime = new DateTime(2012, 7, 1), FinishedTime = new DateTime(2012, 7, 1) };
-            _jobContext21 = new JobContext { JobName = "job21", StartTime = new DateTime(2012, 7, 2), FinishedTime = new DateTime(2012, 7, 2) };
+            _jobContext21 = new JobContext { JobName = "job21", StartTime = new DateTime(2012, 7, 2), FinishedTime = new DateTime(2012, 7, 2)};
             _jobContext22 = new JobContext { JobName = "job22", StartTime = new DateTime(2012, 7, 2), FinishedTime = null };
+            _jobContext21.SetCurrentRecord(job1CurrentRecord);
+            _jobContext22.SetCurrentRecord(job2CurrentRecord);
             _context1 = new SessionContext
             {
                 MinimumModifiedDate = new DateTime(1991, 1, 1),
@@ -214,10 +293,7 @@ namespace SalsaImporterTests.Synchronization
         }
 
 
-        private SessionContext GetSessionContext(int id)
-        {
-            return Db(db => db.SessionContexts.FirstOrDefault(s => s.Id == id));
-        }
+       
 
         private void SaveSessionContext(SessionContext context)
         {

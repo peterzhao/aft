@@ -67,7 +67,7 @@ namespace SalsaImporterTests.FunctionalTests
             var startTime = new SalsaClient().CurrentTime;
             TestUtils.InsertToSalsa(_supporterOne, _supporterTwo);
 
-            new Sync().Run();
+            new Sync().Start();
             
             var queue = TestUtils.ReadAllFromQueue("SalsaToAftQueue_Supporter");
 
@@ -103,7 +103,7 @@ namespace SalsaImporterTests.FunctionalTests
             var titleTwo = "Miss";
             TestUtils.InsertSupporterToExportQueue(emailTwo, firstTwo, lastTwo, dateTimeTwo, titleTwo, 0);//insert a new supporter
 
-            new Sync().Run();
+            new Sync().Start();
 
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(2, supportersOnSalsa.Count);
@@ -135,7 +135,7 @@ namespace SalsaImporterTests.FunctionalTests
             var titleOne = "Mr."; 
             TestUtils.InsertSupporterToExportQueue(emailOne, firstOne, lastOne, dateTimeOne, titleOne, _supporterOne.SalsaKey); //update supportOne
 
-            new Sync().Run();
+            new Sync().Start();
 
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(2, supportersOnSalsa.Count);
@@ -168,7 +168,7 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.InsertSupporterToExportQueue(expectedEmailAddress, expectedFirstName, expectedLastName, expectedAFT_Match_DateTime, "", 0, chapterKey);
           
             // Test
-            new Sync().Run();
+            new Sync().Start();
 
             // Verify
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
@@ -195,11 +195,11 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.InsertToSalsa(_chapterOne, _chapterTwo);
            
             TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), "", 0, _chapterOne.SalsaKey);
-            new Sync().Run();
+            new Sync().Start();
             TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), "", 0, _chapterTwo.SalsaKey);
 
             // Test
-            new Sync().Run();
+            new Sync().Start();
 
             // Verify
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");

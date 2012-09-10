@@ -8,12 +8,12 @@ namespace SalsaImporterTests.Synchronization
 {
     public class SyncJobStub:ISyncJob
     {
-        private readonly Action<IJobContext> _startAction;
+        private readonly Action<JobContext> _startAction;
 
         public string Name { get; private set; }
         public string ObjectType { get { return ""; } }
 
-        public SyncJobStub(string name, Action<IJobContext> startAction)
+        public SyncJobStub(string name, Action<JobContext> startAction)
         {
             _startAction = startAction;
             Name = name;
@@ -21,7 +21,7 @@ namespace SalsaImporterTests.Synchronization
 
         public void Start(IJobContext jobContext)
         {
-            _startAction(jobContext);
+            _startAction((JobContext) jobContext);
         }
     }
 }

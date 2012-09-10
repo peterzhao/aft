@@ -32,7 +32,13 @@ namespace SalsaImporter
                 switch (args[0])
                 {  
                     case "sync":
-                        sync.Run();
+                        sync.Start();
+                        break;
+                    case "redo":
+                        sync.Redo();
+                        break;
+                    case "rebase":
+                        sync.Rebase();
                         break;
                     case "count":
                         sync.CountSupportOnSalsa();
@@ -59,7 +65,13 @@ namespace SalsaImporter
 
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: sync|count|delete [environment]\n The default environment is test.");
+            Console.WriteLine("Usage: sync|redo|rebase|count|delete [environment]\n .");
+            Console.WriteLine("sync: will start a new session if last session was finished or resume last session from the broken point if last session was aborted.");
+            Console.WriteLine("redo: will re-run last session");
+            Console.WriteLine("rebase: will start a new session which will synchronize data from 1991-1-1");
+            Console.WriteLine("count: fetch the count of supporters on salsa");
+            Console.WriteLine("delete: delete all supporters on salsa(cannot be run on production environment)");
+            Console.WriteLine("The default environment is test.");
         }
     }
 }

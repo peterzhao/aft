@@ -33,14 +33,29 @@ namespace SalsaImporter
             _syncSession = new SyncSession(_notificationService);
         }
 
-        public void Run()
+        public void Start()
+        {
+           Run(SessionRunningFlag.Default); 
+        }
+
+        public void Redo()
+        {
+            Run(SessionRunningFlag.RedoLast);
+        }
+
+        public void Rebase()
+        {
+            Run(SessionRunningFlag.Rebase);
+        }
+
+        private void Run(string sessionRunningFlag)
         {
             ConfigSync();
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            
-            _syncSession.Start();
+
+            _syncSession.Run(sessionRunningFlag);
             NotifySyncEvents();
         }
 
@@ -98,6 +113,8 @@ namespace SalsaImporter
 
         public void DeleteAllSupporters()
         {
+            if(Config.Environment == Config.Production)
+                throw new InvalidOperationException("Cannot delete all supporters in production");
             _salsaClient.DeleteAllObjects("supporter", 100, true);
         }
 
