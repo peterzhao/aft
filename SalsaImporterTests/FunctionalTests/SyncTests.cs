@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 using SalsaImporterTests.Utilities;
@@ -64,7 +65,7 @@ namespace SalsaImporterTests.FunctionalTests
         [Test]
         public void ShouldImportSupporters()
         {
-            var startTime = DateTime.Now.AddSeconds(-10);//in case server time is different from local
+            var startTime = new SalsaClient().CurrentTime;
             TestUtils.InsertToSalsa(_supporterOne, _supporterTwo);
 
             new Sync().Run();
@@ -127,15 +128,13 @@ namespace SalsaImporterTests.FunctionalTests
         public void ShouldCreateNewSupporterInSalsaWhenGivenSupporterHasDifferentEmail()
         {
             TestUtils.InsertToSalsa(_supporterOne);
-            Console.WriteLine("salsa kye:" + _supporterOne.SalsaKey);
+
             var emailOne = "foo1@abc.com";
             var firstOne = "boo1"; 
             var lastOne = "joo1"; 
             var dateTimeOne = new DateTime(2012, 08, 29, 03, 34, 56, 00);//aft wins
             var titleOne = "Mr."; 
             TestUtils.InsertSupporterToExportQueue(emailOne, firstOne, lastOne, dateTimeOne, titleOne, _supporterOne.SalsaKey); //update supportOne
-
-          
 
             new Sync().Run();
 
@@ -163,7 +162,11 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.InsertToSalsa(_chapterOne);
             var chapterKey = _chapterOne.SalsaKey;
 
-            TestUtils.InsertSupporterToExportQueue("foo1@abc.com", "boo1", "joo1", new DateTime(2012, 08, 29, 12, 34, 56, 00), "", 0, chapterKey);
+            var expectedEmailAddress = "foo1@abc.com";
+            var expectedFirstName = "boo1";
+            var expectedLastName = "joo1";
+            var expectedCustomDateTime0 = new DateTime(2012, 08, 29, 12, 34, 56, 00);
+            TestUtils.InsertSupporterToExportQueue(expectedEmailAddress, expectedFirstName, expectedLastName, expectedCustomDateTime0, "", 0, chapterKey);
           
             // Test
             new Sync().Run();
@@ -172,7 +175,13 @@ namespace SalsaImporterTests.FunctionalTests
             List<XElement> supportersOnSalsa = TestUtils.GetAllFromSalsa("supporter");
             Assert.AreEqual(1, supportersOnSalsa.Count);
 
-            var supporterKey = supportersOnSalsa.First().IntValueOrNull("supporter_KEY");
+            var supporter = supportersOnSalsa.First();
+            var supporterKey = supporter.IntValueOrNull("supporter_KEY");
+
+            Assert.AreEqual(expectedEmailAddress, supporter.StringValueOrNull("Email"));
+            Assert.AreEqual(expectedFirstName, supporter.StringValueOrNull("First_Name"));
+            Assert.AreEqual(expectedLastName, supporter.StringValueOrNull("Last_Name"));
+            Assert.AreEqual(expectedCustomDateTime0, supporter.DateTimeValueOrNull("CustomDateTime0"));
 
             List<XElement> supporterChaptersOnSalsa = TestUtils.GetAllFromSalsa("supporter_chapter");
             

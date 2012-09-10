@@ -160,7 +160,8 @@ namespace SalsaImporter.Salsa
         public void CreateSupporterCustomColumn(NameValueCollection customField)
         {
             customField.Set("database_table_KEY", "142");
-            customField.Set("key", "0"); // this is to indicate creation 
+            customField.Set("key", "0"); // this is to indicate creation
+            customField.Set("expose_to_chapters", "1");
             customField.Set("required", "label,name,type");
             string response = Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField);
         }
