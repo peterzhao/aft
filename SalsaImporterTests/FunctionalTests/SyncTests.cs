@@ -29,8 +29,7 @@ namespace SalsaImporterTests.FunctionalTests
             TestUtils.RemoveAllSalsa("chapter");
             TestUtils.ClearAllQueues();
 
-            //TestUtils.RemoveAllSalsa("custom_column", false);
-            TestUtils.EnsureSupporterCustomColumn("CustomDateTime0", "datetime");
+            TestUtils.EnsureSupporterCustomColumn("cdb_match_date", "datetime");
 
             _supporterOne = MakeSupporter("One");
             _supporterTwo = MakeSupporter("Two");
@@ -50,7 +49,7 @@ namespace SalsaImporterTests.FunctionalTests
 
             var hour = Math.Abs(arg0.GetHashCode())%24;
             var minute = Math.Abs(arg0.GetHashCode())%60;
-            supporter["CustomDateTime0"] = new DateTime(2012, 8, 29, hour, minute, 0, 0);
+            supporter["AFT_Match_DateTime"] = new DateTime(2012, 8, 29, hour, minute, 0, 0);
             
             return supporter;
         }
@@ -77,10 +76,10 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(queue.Any(d => d["First_Name"].Equals(_supporterOne["First_Name"])));
             Assert.IsTrue(queue.Any(d => d["First_Name"].Equals(_supporterTwo["First_Name"])));
 
-            Assert.IsTrue(queue.Any(d => d["CustomDateTime0"].Equals(_supporterTwo["CustomDateTime0"])));
-            Assert.IsTrue(queue.Any(d => d["CustomDateTime0"].Equals(_supporterOne["CustomDateTime0"])));
+            Assert.IsTrue(queue.Any(d => d["AFT_Match_DateTime"].Equals(_supporterTwo["AFT_Match_DateTime"])));
+            Assert.IsTrue(queue.Any(d => d["AFT_Match_DateTime"].Equals(_supporterOne["AFT_Match_DateTime"])));
 
-            Assert.IsTrue(queue.All(d => (DateTime)d["SalsaLastModified"] >= startTime), "readonly field SalsaLastModified should be read from salsa");
+            Assert.IsTrue(queue.All(d => (DateTime)d["Last_Modified"] >= startTime), "readonly field SalsaLastModified should be read from salsa");
         }
 
         [Test]
@@ -114,13 +113,13 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.AreEqual(_supporterOne["First_Name"], xmlOne.StringValueOrNull("First_Name"));
             Assert.AreEqual(lastOne, xmlOne.StringValueOrNull("Last_Name"));
             Assert.AreEqual(_supporterOne["Title"], xmlOne.StringValueOrNull("Title"));
-            Assert.AreEqual(dateTimeOne, xmlOne.DateTimeValueOrNull("CustomDateTime0"));
+            Assert.AreEqual(dateTimeOne, xmlOne.DateTimeValueOrNull("cdb_match_date"));
 
             Assert.IsNotNull(xmlTwo);
             Assert.AreEqual(firstTwo, xmlTwo.StringValueOrNull("First_Name"));
             Assert.AreEqual(lastTwo, xmlTwo.StringValueOrNull("Last_Name"));
             Assert.AreEqual(titleTwo, xmlTwo.StringValueOrNull("Title"));
-            Assert.AreEqual(dateTimeTwo, xmlTwo.DateTimeValueOrNull("CustomDateTime0"));
+            Assert.AreEqual(dateTimeTwo, xmlTwo.DateTimeValueOrNull("cdb_match_date"));
 
         }
 
@@ -145,12 +144,12 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsNotNull(xmlNew);
             Assert.AreEqual(firstOne, xmlNew.StringValueOrNull("First_Name"));
             Assert.AreEqual(lastOne, xmlNew.StringValueOrNull("Last_Name"));
-            Assert.AreEqual(dateTimeOne, xmlNew.DateTimeValueOrNull("CustomDateTime0"));
+            Assert.AreEqual(dateTimeOne, xmlNew.DateTimeValueOrNull("cdb_match_date"));
 
             Assert.IsNotNull(xmlOld);
             Assert.AreEqual(_supporterOne["First_Name"], xmlOld.StringValueOrNull("First_Name"));
             Assert.AreEqual(_supporterOne["Last_Name"], xmlOld.StringValueOrNull("Last_Name"));
-            Assert.AreEqual(_supporterOne["CustomDateTime0"], xmlOld.DateTimeValueOrNull("CustomDateTime0"));
+            Assert.AreEqual(_supporterOne["AFT_Match_DateTime"], xmlOld.DateTimeValueOrNull("cdb_match_date"));
 
         }
 
@@ -165,8 +164,8 @@ namespace SalsaImporterTests.FunctionalTests
             var expectedEmailAddress = "foo1@abc.com";
             var expectedFirstName = "boo1";
             var expectedLastName = "joo1";
-            var expectedCustomDateTime0 = new DateTime(2012, 08, 29, 12, 34, 56, 00);
-            TestUtils.InsertSupporterToExportQueue(expectedEmailAddress, expectedFirstName, expectedLastName, expectedCustomDateTime0, "", 0, chapterKey);
+            var expectedAFT_Match_DateTime = new DateTime(2012, 08, 29, 12, 34, 56, 00);
+            TestUtils.InsertSupporterToExportQueue(expectedEmailAddress, expectedFirstName, expectedLastName, expectedAFT_Match_DateTime, "", 0, chapterKey);
           
             // Test
             new Sync().Run();
@@ -181,7 +180,7 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.AreEqual(expectedEmailAddress, supporter.StringValueOrNull("Email"));
             Assert.AreEqual(expectedFirstName, supporter.StringValueOrNull("First_Name"));
             Assert.AreEqual(expectedLastName, supporter.StringValueOrNull("Last_Name"));
-            Assert.AreEqual(expectedCustomDateTime0, supporter.DateTimeValueOrNull("CustomDateTime0"));
+            Assert.AreEqual(expectedAFT_Match_DateTime, supporter.DateTimeValueOrNull("cdb_match_date"));
 
             List<XElement> supporterChaptersOnSalsa = TestUtils.GetAllFromSalsa("supporter_chapter");
             

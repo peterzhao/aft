@@ -23,13 +23,13 @@ namespace SalsaImporterTests.FunctionalTests
                             DataType = "string",MappingRule = MappingRules.onlyIfBlank},
                         new FieldMapping{ObjectType = "supporter",AftField = "Email",SalsaField = "Email",
                                 DataType = "string",MappingRule = MappingRules.primaryKey},
-                        new FieldMapping{ObjectType = "supporter",AftField = "CustomDateTime0",SalsaField = "CustomDateTime0",
+                        new FieldMapping{ObjectType = "supporter",AftField = "AFT_Match_DateTime",SalsaField = "cdb_match_date",
                                 DataType = "datetime",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "Chapter_KEY",SalsaField = "chapter_KEY",
                                 DataType = "int",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "chapter",AftField = "Name",SalsaField = "Name",
                             DataType = "string",MappingRule = MappingRules.aftWins},
-                        new FieldMapping{ObjectType = "supporter",AftField = "SalsaLastModified",SalsaField = "Last_Modified",
+                        new FieldMapping{ObjectType = "supporter",AftField = "Last_Modified",SalsaField = "Last_Modified",
                             DataType = "datetime",MappingRule = MappingRules.readOnly},
                     }.ForEach(f => db.FieldMappings.Add(f));
 
