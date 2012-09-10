@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
@@ -70,32 +71,6 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(expectedEmail, firstQueueRecord["Email"]);
         }
 
-       
-
-//        [Test]
-//        public void ShouldInsertNullSupporter()
-//        {
-//            var supporter = new SyncObject("supporter");
-//            supporter["First_Name"] = null;
-//
-//            var fields = new List<string>() { "First_Name" };
-//
-//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporter", fields);
-//
-//        }
-//
-//        [Test]
-//        public void ShouldInsertEmptySupporter()
-//        {
-//            var supporter = new SyncObject("supporter");
-//            supporter["First_Name"] = "";
-//
-//            var fields = new List<string>() { "First_Name" };
-//
-//            QueueRepository.InsertToQueue(_dbContext.Database, supporter, "SalsaToAftQueue_Supporter", fields);
-//
-//        }
-
         [Test]
         public void ShouldRaiseEventWhenPushed()
         {
@@ -137,10 +112,29 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(0, batch3.Count);
         }
 
+        [Test]
+        public void ShouldNotReadNullFieldsIntoSyncObject()
+        {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
+            Enqueue("foo@abc.com", "peter");
+
+            var batch1 = _repository.DequeueBatchOfObjects(ObjectType, TableName, 1, 0);
+            Assert.AreEqual(1, batch1.Count);
+            Assert.AreEqual("peter", batch1.First()["First_Name"]);
+            Assert.IsFalse(batch1.First().FieldNames.Contains("Last_Name"));
+        }
+
         private void Enqueue(string email, string firstName, string lastName)
         {
             TestUtils.ExecuteSql(string.Format("insert into {0} ([First_Name],[Last_Name],[Email], SalsaKey) VALUES('{1}','{2}','{3}', 0)", 
                 TableName, firstName, lastName, email));
         }
+
+        private void Enqueue(string email, string firstName)
+        {
+            TestUtils.ExecuteSql(string.Format("insert into {0} ([First_Name],[Email], SalsaKey) VALUES('{1}','{2}', 0)",
+                TableName, firstName, email));
+        }
+
     }
 }

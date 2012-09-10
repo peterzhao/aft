@@ -24,7 +24,7 @@ namespace SalsaImporterTests.Mappers
                                               new FieldMapping{AftField = "Address", SalsaField = "address", DataType = "string", MappingRule = MappingRules.onlyIfBlank},
                                               new FieldMapping{AftField = "State", SalsaField = "state", DataType = "string", MappingRule = MappingRules.onlyIfBlank},
                                               new FieldMapping{AftField = "NickName", SalsaField = "nick_name", DataType = "string", MappingRule = MappingRules.salsaWins},
-                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = "READONLY"},
+                                              new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = MappingRules.readOnly},
                                               new FieldMapping{AftField = "CustomDate1", SalsaField = "custom_date1", DataType = "dateTime", MappingRule = MappingRules.aftWins},
                                           };
             _mapper = new Mapper("SomeObject", _mappings);
@@ -167,8 +167,7 @@ namespace SalsaImporterTests.Mappers
 
             Assert.IsFalse(syncObject.FieldNames.Contains("Address"));
         }
-       
-      
+
 
         [Test]
         public void ShouldCreateNameValuePairsFromSyncObjectWithDateTime()
@@ -181,5 +180,6 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("2012-08-29 12:34:56", nameValues["custom_date1"]);
         }
 
+ 
     }
 }

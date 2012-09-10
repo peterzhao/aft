@@ -24,7 +24,7 @@ namespace SalsaImporterTests.Mappers
             XElement element = XElement.Parse(@"<item>
                                                     <field>false</field>
                                                 </item>");
-            var converter = DataTypeConverter.GetConverter("boolean");
+            var converter = DataTypeConverter.GetConverter("bool");
 
             Assert.AreEqual(false, converter.ReadSalsaValue("field", element));
         }
@@ -88,7 +88,7 @@ namespace SalsaImporterTests.Mappers
         [Test]
         public void ShouldMakeSalsaValueBoolean()
         {
-            var converter = DataTypeConverter.GetConverter("boolean");
+            var converter = DataTypeConverter.GetConverter("bool");
             Assert.AreEqual("0", converter.MakeSalsaValue(false));
             Assert.AreEqual("1", converter.MakeSalsaValue(true));
         }

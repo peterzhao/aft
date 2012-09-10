@@ -15,11 +15,11 @@ namespace SalsaImporter.Mappers
 
         private static readonly List<DataTypeConverter> DataTypeConverters = new List<DataTypeConverter>
         {
-            new DataTypeConverter("boolean", (field, element) => element.BoolValueOrFalse(field), BooleanToString),
+            new DataTypeConverter("bool", (field, element) => element.BoolValueOrFalse(field), BooleanToString),
             new DataTypeConverter("datetime", (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
             new DataTypeConverter("float", (field, element) => element.FloatValueOrNull(field)),
             new DataTypeConverter("int", (field, element) => element.IntValueOrNull(field)),
-            new DataTypeConverter("string", (field, element) => element.StringValueOrNull(field), value => (string)value)
+            new DataTypeConverter("string", (field, element) => element.StringValueOrNull(field), value => value is string ? value as string : null)
         };
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue, Func<object, string> makeSalsaValue)
@@ -30,7 +30,7 @@ namespace SalsaImporter.Mappers
         }
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue)
-            : this(datatype, readSalsaValue, value => value == null ? null : value.ToString())
+            : this(datatype, readSalsaValue, value => DBNull.Value == value ? null : value == null ? null : value.ToString())
         {
         }
 
@@ -58,7 +58,9 @@ namespace SalsaImporter.Mappers
 
         private static string DateTimeToString(object value)
         {
-            return ((DateTime?)value).Value.ToString("yyyy-MM-dd HH:mm:ss");
+            if (value is DateTime)
+                return ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss");
+            return null;
         }
     }
 }

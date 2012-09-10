@@ -210,7 +210,7 @@ GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
          [Id] [int] IDENTITY(1,1) NOT NULL,
-        [SalsaKey] [int] NOT NULL,
+        [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
 		[First_Name] varchar(200) null,
