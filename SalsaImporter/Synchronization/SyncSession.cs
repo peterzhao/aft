@@ -9,11 +9,10 @@ namespace SalsaImporter.Synchronization
     public class SessionState
     {
         public static string New = "New";
-        public static string Resume = "Resume";
-        public static string Start = "Start";
+        public static string Started = "Started";
+        public static string Resumed = "Resumed";
         public static string Finished = "Finished";
         public static string Aborted = "Aborted";
-        public static string Canceled = "Canceled";
     }
 
     public class SyncSession
@@ -134,12 +133,12 @@ namespace SalsaImporter.Synchronization
             if (CurrentContext.State == SessionState.New)
             {
                 CurrentContext.StartTime = DateTime.Now;
-                CurrentContext.State = SessionState.Start;
+                CurrentContext.State = SessionState.Started;
                 Logger.Info("Start new sync session...");
             }
             else
             {
-                CurrentContext.State = SessionState.Resume;
+                CurrentContext.State = SessionState.Resumed;
                 Logger.Info("Resuming sync session...");
             }
             _db.SaveChanges();
