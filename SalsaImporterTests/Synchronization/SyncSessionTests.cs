@@ -52,7 +52,7 @@ namespace SalsaImporterTests.Synchronization
             CreateTwoSessions(SessionState.Aborted);
 
             var session = new SyncSession(_notificationService);
-            Assert.AreEqual(SessionState.InProgress, session.CurrentContext.State);
+            Assert.AreEqual(SessionState.Aborted, session.CurrentContext.State);
             Assert.AreEqual(new DateTime(2012, 7, 1), session.CurrentContext.MinimumModifiedDate);
             Assert.IsNotNull(session.CurrentContext.JobContexts);
             Assert.AreEqual("job21", session.CurrentContext.JobContexts.First().JobName);

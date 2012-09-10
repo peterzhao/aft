@@ -9,8 +9,8 @@ namespace SalsaImporter.Synchronization
     public class SessionState
     {
         public static string New = "New";
+        public static string Resume = "Resume";
         public static string Start = "Start";
-        public static string InProgress = "In Progress";
         public static string Finished = "Finished";
         public static string Aborted = "Aborted";
         public static string Canceled = "Canceled";
@@ -37,7 +37,8 @@ namespace SalsaImporter.Synchronization
             if (lastContext == null)
             {
                 _currentContext = new SessionContext()
-                                      {MinimumModifiedDate = new DateTime(1991, 1, 1), State = SessionState.New};
+                                      {MinimumModifiedDate = new DateTime(1991, 1, 1), 
+                                          State = SessionState.New};
                 _db.SessionContexts.Add(_currentContext);
             }
             else
@@ -45,12 +46,12 @@ namespace SalsaImporter.Synchronization
                 if (lastContext.State != SessionState.Finished)
                 {
                     _currentContext = lastContext;
-                    lastContext.State = SessionState.InProgress;
                 }
                 else
                 {
                     _currentContext = new SessionContext()
-                                          {MinimumModifiedDate = lastContext.StartTime.Value, State = SessionState.New};
+                                          {MinimumModifiedDate = lastContext.StartTime.Value, 
+                                              State = SessionState.New};
                     _db.SessionContexts.Add(_currentContext);
                 }
             }
@@ -86,11 +87,7 @@ namespace SalsaImporter.Synchronization
 
         public void Start()
         {
-            Logger.Info("Start new sync session...");//Todo: check if resume 
-
-            CurrentContext.State = SessionState.Start;//Todo: if resume, don't not reset starttime
-            CurrentContext.StartTime = DateTime.Now;
-            _db.SaveChanges();
+            UpdateSessionStateToStart();
 
             try
             {
@@ -107,11 +104,7 @@ namespace SalsaImporter.Synchronization
                     jobContext.FinishedTime = DateTime.Now;
                     _db.SaveChanges();
                 }
-                CurrentContext.State = SessionState.Finished;
-                CurrentContext.FinishedTime = DateTime.Now;
-                _db.SaveChanges();
-
-                Logger.Info("Finished sync session.");
+                UpdateSessionStateToFinished();
             }
             catch (Exception ex)
             {
@@ -125,6 +118,31 @@ namespace SalsaImporter.Synchronization
                 _db.SaveChanges();
                 throw new SyncAbortedException(message, ex);
             }
+        }
+
+        private void UpdateSessionStateToFinished()
+        {
+            CurrentContext.State = SessionState.Finished;
+            CurrentContext.FinishedTime = DateTime.Now;
+            _db.SaveChanges();
+
+            Logger.Info("Finished sync session.");
+        }
+
+        private void UpdateSessionStateToStart()
+        {
+            if (CurrentContext.State == SessionState.New)
+            {
+                CurrentContext.StartTime = DateTime.Now;
+                CurrentContext.State = SessionState.Start;
+                Logger.Info("Start new sync session...");
+            }
+            else
+            {
+                CurrentContext.State = SessionState.Resume;
+                Logger.Info("Resuming sync session...");
+            }
+            _db.SaveChanges();
         }
     }
 }
