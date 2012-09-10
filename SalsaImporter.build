@@ -21,7 +21,7 @@
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.NUnit" />
   <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\Dependencies\dbdeploy.net\MSBuild.Dbdeploy.Task.dll" TaskName="MSBuild.Dbdeploy.Task.Dbdeploy" />
 
-  <Target Name="Build" DependsOnTargets="Init;Compile;UnitTest;IntegrationTest;FunctionalTest"/>
+  <Target Name="Build" DependsOnTargets="Init;Compile;DbMigrate;DbSeed;UnitTest;IntegrationTest;FunctionalTest"/>
   <Target Name="Deploy" DependsOnTargets="Init;CopyToBin;DbMigrate;"/>
   <Target Name="Db" DependsOnTargets="CreateDb;DbMigrate;DbSeed"/>
 
@@ -118,7 +118,7 @@
     <Exec Condition="'$(DbTrustedConnection)' != 'True'" Command="sqlcmd.exe -S $(DbHost) -b -d master -U $(dbUserName) -P $(dbPassword) -i create_database.sql" WorkingDirectory="$(DbDir)"/>
   </Target>
 
-  <Target Name="Artifact">
+  <Target Name="Artifact" DependsOnTargets="Compile">
     <RemoveDir Directories="$(PackageDirectory)" />
     <RemoveDir Directories="$(ArtifactDirectory)" />
     <MakeDir Directories="$(ArtifactDirectory)"/>

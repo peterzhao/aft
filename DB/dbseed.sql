@@ -133,7 +133,7 @@ DROP TABLE dbo.SalsaToAftQueue_Supporter
 GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
-         [Id] [int] IDENTITY(1,1) NOT NULL,
+         [Id] [bigint] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NOT NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -185,7 +185,10 @@ CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
 		[Officer_Info] varchar(200) null,
 		[Key_Contact] bit null,
 		[PAC_Contributor] bit null,
-		[PAC_Date] nvarchar(200) null
+		[PAC_Date] nvarchar(200) null,
+		[Cdate] datetime null default(getdate()),
+		[ProcessedDate] datetime null,
+		[Status] nvarchar(200) null
  
 PRIMARY KEY CLUSTERED
 (
@@ -209,7 +212,7 @@ DROP TABLE dbo.AftToSalsaQueue_Supporter
 GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
-         [Id] [int] IDENTITY(1,1) NOT NULL,
+         [Id] [bigint] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -259,11 +262,165 @@ CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
 		[Officer_Info] varchar(200) null,
 		[Key_Contact] bit null,
 		[PAC_Contributor] bit null,
-		[PAC_Date] nvarchar(200) null
+		[PAC_Date] nvarchar(200) null,
+		[Cdate] datetime null default(getdate()),
+		[ProcessedDate] datetime null,
+		[Status] nvarchar(200) null
 
 PRIMARY KEY CLUSTERED
 (
         [Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+--history tables
+
+IF OBJECT_ID('dbo.SalsaToAftQueue_Supporter_History', 'U') IS NOT NULL
+DROP TABLE dbo.SalsaToAftQueue_Supporter_History
+GO
+
+CREATE TABLE [dbo].SalsaToAftQueue_Supporter_History(
+        [HistoryId] [bigint] IDENTITY(1,1) NOT NULL,
+        [Id] [bigint] NOT NULL,
+        [SalsaKey] [int] NOT NULL,
+        [Chapter_KEY] int NULL,
+		[Title] varchar(200) null,
+		[First_Name] varchar(200) null,
+		[MI] varchar(200) null,
+		[Last_Name] varchar(200) null,
+		[Suffix] varchar(200) null,
+		[Email] varchar(200)  null,
+		[Date_Created] datetime null,
+		[Last_Modified] datetime null,
+		[Phone] varchar(200) null,
+		[Street] varchar(200) null,
+		[Street_2] varchar(200) null,
+		[Street_3] varchar(200) null,
+		[City] varchar(200) null,
+		[State] varchar(200) null,
+        [Zip] varchar(200) null,
+		[PRIVATE_Zip_Plus_4] varchar(200) null,
+		[Organization] varchar(200) null,
+		[Department] varchar(200) null,
+		[Occupation] varchar(200) null,
+		[IndividualID] varchar(200) null,
+		[Leadership_Code] varchar(200) null,
+		[MCODE] varchar(200) null,
+		[MAIL] varchar(200) null,
+		[LOCALNBR] varchar(200) null,
+		[Local_Name] varchar(200) null,
+		[AT_Pub] bit null,
+		[PSRP_Pub] bit null,
+		[PE_Pub] bit null,
+		[HED_Pub] bit null,
+		[Health_Pub] bit null,
+		[Method_Match] varchar(200) null,
+		[AFT_Match_DateTime] datetime null,
+		[Job_Class] varchar(200) null,
+		[Most_Recent_Assement_Rating] varchar(200) null,
+		[Local_Job_Classification] varchar(200) null,
+		[Salary] varchar(200) null,
+		[Work_Unit] varchar(200) null,
+		[Worksite] varchar(200) null,
+		[Worksite_Area] varchar(200) null,
+		[Payment_Enrolled] varchar(200) null,
+		[Enrollment_Type] varchar(200) null,
+		[Local_Dues_Category] varchar(200) null,
+		[Employer] varchar(200) null,
+		[Non_Member_Type] varchar(200) null,
+		[Union_Status] varchar(200) null,
+		[Building_Rep] bit null,
+		[Officer_Info] varchar(200) null,
+		[Key_Contact] bit null,
+		[PAC_Contributor] bit null,
+		[PAC_Date] nvarchar(200) null,
+		[Cdate] datetime null,
+		[ProcessedDate] datetime null,
+		[Status] nvarchar(200) null
+ 
+PRIMARY KEY CLUSTERED
+(
+        [HistoryId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+IF OBJECT_ID('dbo.AftToSalsaQueue_Supporter_History', 'U') IS NOT NULL
+DROP TABLE dbo.AftToSalsaQueue_Supporter_History
+GO
+
+CREATE TABLE [dbo].AftToSalsaQueue_Supporter_History(
+         [HistoryId] [bigint] IDENTITY(1,1) NOT NULL,
+          [Id] [bigint] NOT NULL,
+        [SalsaKey] [int] NULL,
+        [Chapter_KEY] int NULL,
+		[Title] varchar(200) null,
+		[First_Name] varchar(200) null,
+		[MI] varchar(200) null,
+		[Last_Name] varchar(200) null,
+		[Suffix] varchar(200) null,
+		[Email] varchar(200) null,		
+		[Phone] varchar(200) null,
+		[Street] varchar(200) null,
+		[Street_2] varchar(200) null,
+		[Street_3] varchar(200) null,
+		[City] varchar(200) null,
+		[State] varchar(200) null,
+        [Zip] varchar(200) null,
+		[PRIVATE_Zip_Plus_4] varchar(200) null,
+		[Organization] varchar(200) null,
+		[Department] varchar(200) null,
+		[Occupation] varchar(200) null,
+		[IndividualID] varchar(200) null,
+		[Leadership_Code] varchar(200) null,
+		[MCODE] varchar(200) null,
+		[MAIL] varchar(200) null,
+		[LOCALNBR] varchar(200) null,
+		[Local_Name] varchar(200) null,
+		[AT_Pub] bit null,
+		[PSRP_Pub] bit null,
+		[PE_Pub] bit null,
+		[HED_Pub] bit null,
+		[Health_Pub] bit null,
+		[Method_Match] varchar(200) null,
+		[AFT_Match_DateTime] datetime null,
+		[Job_Class] varchar(200) null,
+		[Most_Recent_Assement_Rating] varchar(200) null,
+		[Local_Job_Classification] varchar(200) null,
+		[Salary] varchar(200) null,
+		[Work_Unit] varchar(200) null,
+		[Worksite] varchar(200) null,
+		[Worksite_Area] varchar(200) null,
+		[Payment_Enrolled] varchar(200) null,
+		[Enrollment_Type] varchar(200) null,
+		[Local_Dues_Category] varchar(200) null,
+		[Employer] varchar(200) null,
+		[Non_Member_Type] varchar(200) null,
+		[Union_Status] varchar(200) null,
+		[Building_Rep] bit null,
+		[Officer_Info] varchar(200) null,
+		[Key_Contact] bit null,
+		[PAC_Contributor] bit null,
+		[PAC_Date] nvarchar(200) null,
+		[Cdate] datetime null,
+		[ProcessedDate] datetime null,
+		[Status] nvarchar(200) null
+
+PRIMARY KEY CLUSTERED
+(
+        [HistoryId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
