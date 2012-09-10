@@ -16,6 +16,7 @@ namespace SalsaImporter
         public static string PerformanceTest = "performanceTest";
         public static string Production = "production";
         public static string Demo = "demo";
+        public static string Uat = "Uat";
         public static string Stub = "stub";
         private static string _environment;
 

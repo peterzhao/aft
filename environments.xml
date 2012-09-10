@@ -103,7 +103,7 @@
   
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
-    <salsaUserName>aftdemo@example.com</salsaUserName>
+    <salsaUserName>aftsalsademo@example.com</salsaUserName>
     <salsaPassword>password</salsaPassword>
     <salsaWritable/>
     <dbHost>.</dbHost>

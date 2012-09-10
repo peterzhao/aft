@@ -33,7 +33,7 @@ namespace SalsaImporterTests
         public void ShouldGetConfigForDifferentEnvironments()
         {
             Config.Environment = Config.Demo;
-            Assert.AreEqual("aftdemo@example.com", Config.SalsaUserName);
+            Assert.AreEqual("aftsalsademo@example.com", Config.SalsaUserName);
             Assert.AreEqual("https://sandbox.salsalabs.com/", Config.SalsaApiUri);
             Assert.IsNotNull(Config.SalsaPassword);
 

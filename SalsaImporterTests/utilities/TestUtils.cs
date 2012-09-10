@@ -13,6 +13,7 @@ using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporterTests.Utilities
 {
@@ -121,6 +122,10 @@ namespace SalsaImporterTests.Utilities
                                        {"label", name},
                                        {"type", type}
                                    };
+            var xElement = salsaClient.GetObjectBy("custom_column", "name", name);
+            if ("type" == xElement.StringValueOrNull("type"))
+                return;
+
             salsaClient.CreateSupporterCustomColumn(customColumn);
         }
     }

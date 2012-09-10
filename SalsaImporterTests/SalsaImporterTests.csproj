@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FunctionalTests\DemoTests.cs" />
     <Compile Include="FunctionalTests\FieldMappingForTests.cs" />
     <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="MailService\MockMailService.cs" />

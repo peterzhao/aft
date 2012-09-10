@@ -25,11 +25,11 @@ namespace SalsaImporterTests.FunctionalTests
         {
             Config.Environment = Config.Test;
             TestUtils.ClearAllSessions();
-            TestUtils.RemoveAllSalsa("custom_column", false);
             TestUtils.RemoveAllSalsa("supporter");
             TestUtils.RemoveAllSalsa("chapter");
             TestUtils.ClearAllQueues();
 
+            //TestUtils.RemoveAllSalsa("custom_column", false);
             TestUtils.EnsureSupporterCustomColumn("CustomDateTime0", "datetime");
 
             _supporterOne = MakeSupporter("One");
