@@ -48,7 +48,7 @@ VALUES('supporter','Occupation','Occupation' ,'string', 'aftWins');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','cdb_guid','IndividualID' ,'string', 'aftWins');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
-VALUES('supporter','Leadership_Code','Leadership_Code' ,'string', 'aftWins');
+VALUES('supporter','leadership_code','Leadership_Code' ,'string', 'aftWins');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','membership_status_2','MCODE' ,'string', 'aftWins');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
