@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\InvalidDataTypeException.cs" />
     <Compile Include="Exceptions\SaveToSalsaException.cs" />
+    <Compile Include="Mappers\DataType.cs" />
     <Compile Include="Mappers\DataTypeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
     <Compile Include="Mappers\MappingRules.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Synchronization\AftDbContext.cs" />
     <Compile Include="Synchronization\Exporter.cs" />
     <Compile Include="Synchronization\SyncConfig.cs" />
+    <Compile Include="Synchronization\SyncDirection.cs" />
     <Compile Include="Synchronization\SyncObject.cs" />
     <Compile Include="Repositories\QueueRepository.cs" />
     <Compile Include="Sync.cs" />
@@ -98,6 +100,8 @@
     <Compile Include="Synchronization\JobContext.cs" />
     <Compile Include="Synchronization\SyncSession.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
+    <Compile Include="Utilities\DbUtility.cs" />
+    <Compile Include="Utilities\SanityChecker.cs" />
     <Compile Include="Utilities\StringUtility.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
   </ItemGroup>

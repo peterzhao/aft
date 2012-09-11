@@ -6,6 +6,7 @@ namespace SalsaImporter.Mappers
         public static string onlyIfBlank = "onlyIfBlank";
         public static string salsaWins = "salsaWins";
         public static string readOnly = "readOnly";
+        public static string writeOnly = "writeOnly";
         public static string primaryKey = "primaryKey";
     }
 }

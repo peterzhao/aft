@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Xml.Linq;
-using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -17,9 +14,8 @@ using SalsaImporter.Utilities;
 
 namespace SalsaImporterTests.Utilities
 {
-    class TestUtils
+    internal class TestUtils
     {
-
         private static SalsaClient SalsaClient
         {
             get { return new SalsaClient(); }
@@ -40,14 +36,14 @@ namespace SalsaImporterTests.Utilities
             objects.ToList().ForEach(SalsaRepository.Save);
         }
 
-        public static void UpdateSalsa(params SyncObject[] objects) 
+        public static void UpdateSalsa(params SyncObject[] objects)
         {
             objects.ToList().ForEach(SalsaRepository.Save);
         }
 
         public static void ClearAllSessions()
         {
-            using(var db = new AftDbContext())
+            using (var db = new AftDbContext())
             {
                 db.Database.ExecuteSqlCommand("delete  from SyncEvents");
                 db.Database.ExecuteSqlCommand("delete  from JobContexts");
@@ -76,9 +72,8 @@ namespace SalsaImporterTests.Utilities
 
         public static List<Dictionary<string, object>> ReadAllFromTable(string tableName)
         {
-
             using (var dataAdaptor = new SqlDataAdapter(String.Format("SELECT * FROM {0}", tableName),
-                                                 Config.DbConnectionString))
+                                                        Config.DbConnectionString))
             {
                 var dataSet = new DataSet();
                 dataAdaptor.Fill(dataSet);
@@ -107,12 +102,12 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-     
 
         public static List<XElement> GetAllFromSalsa(string objectType)
         {
             var salsa = new SalsaClient();
             return salsa.GetObjects(objectType, 100, 0, new DateTime(1991,1,1));
+
         }
 
         public static void EnsureSupporterCustomColumn(string name, string type)
@@ -124,11 +119,90 @@ namespace SalsaImporterTests.Utilities
                                        {"label", name},
                                        {"type", type}
                                    };
-            var xElement = salsaClient.GetObjectBy("custom_column", "name", name);
+            XElement xElement = salsaClient.GetObjectBy("custom_column", "name", name);
             if (type == xElement.StringValueOrNull("type"))
                 return;
 
             salsaClient.CreateSupporterCustomColumn(customColumn);
+        }
+
+        public static void RemoveAllSyncConfigs()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("delete from syncEvents");
+                db.Database.ExecuteSqlCommand("delete from fieldMappings");
+                db.Database.ExecuteSqlCommand("delete from SyncConfigs");
+            }
+        }
+
+        public static void CreateDefaultSyncConfigs()
+        {
+            RemoveAllSyncConfigs();
+            using (var db = new AftDbContext())
+            {
+                db.SyncConfigs.Add(new SyncConfig {ObjectType = "supporter", SyncDirection = "export", Order = 1});
+                db.SyncConfigs.Add(new SyncConfig {ObjectType = "supporter", SyncDirection = "import", Order = 2});
+                db.SaveChanges();
+            }
+        }
+
+        public static void CreateSyncConfig(string objectType, string syncDirection, int order)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.SyncConfigs.Add(new SyncConfig { ObjectType = objectType, SyncDirection = syncDirection, Order = order });
+                db.SaveChanges();
+            }
+        }
+
+        public static void RemoveFieldMappings()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("delete from FieldMappings");
+                db.SaveChanges();
+            }
+        }
+
+        public static void CreateFieldMappings(FieldMapping fieldMapping)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.FieldMappings.Add(fieldMapping);
+                db.SaveChanges();
+            }
+        }
+
+        public static void RecreateFieldMappingForTest()
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand("delete from FieldMappings");
+                db.SaveChanges();
+
+                new List<FieldMapping>
+                    {
+                        new FieldMapping{ObjectType = "supporter",AftField = "Title",SalsaField = "Title",
+                                         DataType = "string",MappingRule = MappingRules.salsaWins},
+                        new FieldMapping{ObjectType = "supporter",AftField = "First_Name",SalsaField = "First_Name",
+                                         DataType = "string",MappingRule = MappingRules.onlyIfBlank},
+                        new FieldMapping{ObjectType = "supporter",AftField = "Last_Name",SalsaField = "Last_Name",
+                                         DataType = "string",MappingRule = MappingRules.onlyIfBlank},
+                        new FieldMapping{ObjectType = "supporter",AftField = "Email",SalsaField = "Email",
+                                         DataType = "string",MappingRule = MappingRules.primaryKey},
+                        new FieldMapping{ObjectType = "supporter",AftField = "AFT_Match_DateTime",SalsaField = "cdb_match_date",
+                                         DataType = "datetime",MappingRule = MappingRules.aftWins},
+                        new FieldMapping{ObjectType = "supporter",AftField = "Chapter_KEY",SalsaField = "chapter_KEY",
+                                         DataType = "int",MappingRule = MappingRules.aftWins},
+                        new FieldMapping{ObjectType = "chapter",AftField = "Name",SalsaField = "Name",
+                                         DataType = "string",MappingRule = MappingRules.aftWins},
+                        new FieldMapping{ObjectType = "supporter",AftField = "Last_Modified",SalsaField = "Last_Modified",
+                                         DataType = "datetime",MappingRule = MappingRules.readOnly},
+                    }.ForEach(f => db.FieldMappings.Add(f));
+
+                db.SaveChanges();
+            }
         }
     }
 }

@@ -52,7 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionalTests\DemoTests.cs" />
-    <Compile Include="FunctionalTests\FieldMappingForTests.cs" />
     <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="MailService\MockMailService.cs" />
     <Compile Include="MailService\NotificationServiceTests.cs" />
@@ -62,6 +61,8 @@
     <Compile Include="Salsa\SalsaClientTests.cs" />
     <Compile Include="Synchronization\ExporterTests.cs" />
     <Compile Include="Synchronization\ImporterTests.cs" />
+    <Compile Include="Synchronization\DbUtilityTests.cs" />
+    <Compile Include="Synchronization\SyncConfigTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Synchronization\SyncObjectTests.cs" />
     <Compile Include="Mappers\MapperFactoryTests.cs" />
@@ -73,6 +74,9 @@
     <Compile Include="Synchronization\SyncSessionTests.cs" />
     <Compile Include="Synchronization\JobContextStub.cs" />
     <Compile Include="Utilities\DateTimeUtilityTests.cs" />
+    <Compile Include="Utilities\SanityCheckerTests_NoFields_Errors.cs" />
+    <Compile Include="Utilities\SanityCheckerTests__NoQueues_Errors.cs" />
+    <Compile Include="Utilities\SanityCheckerTests_Happy_Path.cs" />
     <Compile Include="Utilities\StringUtilityTests.cs" />
     <Compile Include="Utilities\TestUtils.cs" />
     <Compile Include="Utilities\XDocumentExtensionTests.cs" />

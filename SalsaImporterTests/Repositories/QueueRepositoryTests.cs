@@ -118,7 +118,7 @@ namespace SalsaImporterTests.Repositories
             Enqueue("foo2@abc.com", "jim");
             var rows = TestUtils.ReadAllFromTable(TableName);
             var processedDate = DateTime.Now;
-            _repository.UpdateStatus(TableName, (int)rows.First()["Id"], "imported", processedDate);
+            _repository.UpdateStatus(TableName, int.Parse(rows.First()["Id"].ToString()), "imported", processedDate);
             var newRows = TestUtils.ReadAllFromTable(TableName);
             Assert.AreEqual("imported", newRows.First()["Status"]);
             Assert.AreEqual(processedDate.ToString(), newRows.First()["ProcessedDate"].ToString());
@@ -130,7 +130,7 @@ namespace SalsaImporterTests.Repositories
             Enqueue("foo1@abc.com", "peter");
             Enqueue("foo2@abc.com", "jim");
             var rows = TestUtils.ReadAllFromTable(TableName);
-            _repository.UpdateStatus(TableName, (int)rows.First()["Id"], "imported");
+            _repository.UpdateStatus(TableName, int.Parse(rows.First()["Id"].ToString()), "imported");
             var newRows = TestUtils.ReadAllFromTable(TableName);
             Assert.AreEqual("imported", newRows.First()["Status"]);
             Assert.AreEqual(DBNull.Value, newRows.First()["ProcessedDate"]);
@@ -142,7 +142,7 @@ namespace SalsaImporterTests.Repositories
             Enqueue("foo1@abc.com", "peter");
             Enqueue("foo2@abc.com", "jim");
             var rows = TestUtils.ReadAllFromTable(TableName);
-            _repository.Dequeue(TableName,(int)rows.First()["Id"]);
+            _repository.Dequeue(TableName,int.Parse(rows.First()["Id"].ToString()));
 
             var historyRows = TestUtils.ReadAllFromTable(TableName + "_History");
 

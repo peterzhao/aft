@@ -26,6 +26,7 @@ namespace SalsaImporterTests.Mappers
                                               new FieldMapping{AftField = "NickName", SalsaField = "nick_name", DataType = "string", MappingRule = MappingRules.salsaWins},
                                               new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = MappingRules.readOnly},
                                               new FieldMapping{AftField = "CustomDate1", SalsaField = "custom_date1", DataType = "dateTime", MappingRule = MappingRules.aftWins},
+                                              new FieldMapping{AftField = "ChapterKey", SalsaField = "chapter_KEY", DataType = "int", MappingRule = MappingRules.writeOnly},
                                           };
             _mapper = new Mapper("SomeObject", _mappings);
         }
@@ -61,6 +62,7 @@ namespace SalsaImporterTests.Mappers
                                                 <email>foo@abc.com</email>
                                                 <address>main st</address>
                                                 <key>5678</key>
+                                                <chapter_KEY>1234</chapter_KEY>
                                             </item>");
 
 
@@ -69,6 +71,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("foo@abc.com", syncObject["Email"]);
             Assert.AreEqual("main st", syncObject["Address"]);
             Assert.AreEqual(5678, syncObject.SalsaKey);
+            Assert.IsFalse(syncObject.FieldNames.Contains("ChapterKey"));
         }
 
         [Test]

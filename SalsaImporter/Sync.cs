@@ -6,6 +6,7 @@ using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
 using SalsaImporter.Service;
 using SalsaImporter.Synchronization;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter
 {
@@ -74,21 +75,12 @@ namespace SalsaImporter
 
             var batchSize = Config.BatchSize;
 
-            switch (syncConfig.SyncDirection.ToLower())
-            {
-                case "export":
-                    {
-                        var queueName = string.Format("AftToSalsaQueue_{0}", syncConfig.ObjectType);
-                        return new Exporter(_queueRepository, _salsaRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, queueName);
-                    }
-                case "import":
-                    {
-                        var queueName = string.Format("SalsaToAftQueue_{0}", syncConfig.ObjectType);
-                        return new Importer(_salsaRepository, _queueRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, queueName);
-                    }
-                default:
-                    throw new ApplicationException(string.Format("Invalid SyncDirection '{0}' for this SyncConfigs record. Supported types include 'import' and 'export'.", syncConfig.SyncDirection));
-            }
+            if (syncConfig.SyncDirection.EqualsIgnoreCase(SyncDirection.Export))
+                return new Exporter(_queueRepository, _salsaRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, syncConfig.QueueName);
+            else if (syncConfig.SyncDirection.EqualsIgnoreCase(SyncDirection.Import))
+                return new Importer(_salsaRepository, _queueRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, syncConfig.QueueName);
+            else
+                throw new ApplicationException(string.Format("Invalid SyncDirection '{0}' for this SyncConfigs record. Supported types include 'import' and 'export'.", syncConfig.SyncDirection));
         }
 
         private void NotifySyncEvents()

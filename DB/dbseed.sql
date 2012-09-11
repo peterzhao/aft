@@ -11,7 +11,7 @@ VALUES('supporter','Last_Modified','Last_Modified' ,'dateTime', 'readOnly');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Date_Created','Date_Created' ,'dateTime', 'readOnly');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
-VALUES('supporter','chapter_KEY','Chapter_KEY' ,'int', 'aftWins');
+VALUES('supporter','chapter_KEY','Chapter_KEY' ,'int', 'writeOnly');
 
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Title','Title' ,'string', 'onlyIfBlank');
@@ -132,8 +132,7 @@ GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
          [Id] [int] IDENTITY(1,1) NOT NULL,
-        [SalsaKey] [int] NOT NULL,
-        [Chapter_KEY] int NULL,
+        [SalsaKey] [int] NOT NULL,  
 		[Title] varchar(200) null,
 		[First_Name] varchar(200) null,
 		[MI] varchar(200) null,
@@ -280,9 +279,8 @@ GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter_History(
         [HistoryId] [int] IDENTITY(1,1) NOT NULL,
-        [Id] [bigint] NOT NULL,
+        [Id] [int] NOT NULL,
         [SalsaKey] [int] NOT NULL,
-        [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
 		[First_Name] varchar(200) null,
 		[MI] varchar(200) null,
@@ -358,8 +356,10 @@ DROP TABLE dbo.AftToSalsaQueue_Supporter_History
 GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter_History(
-        [HistoryId] [int] IDENTITY(1,1) NOT NULL,
-        [Id] [bigint] NOT NULL,
+
+         [HistoryId] [int] IDENTITY(1,1) NOT NULL,
+         [Id] [int] NOT NULL,
+
         [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -464,7 +464,7 @@ GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter_Chapter_History (
         [HistoryId] [int] IDENTITY(1,1) NOT NULL,
-        [Id] [bigint] NOT NULL,
+        [Id] [int] NOT NULL,
         [SalsaKey] [int] NOT NULL,
 		[Cdate] datetime NULL,
 		[ProcessedDate] datetime NULL,

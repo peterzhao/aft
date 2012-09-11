@@ -64,9 +64,9 @@ namespace SalsaImporter.Mappers
             var syncObject = new SyncObject(_objectType);
             foreach (var mapping in _mappings)
             {
+                if(mapping.MappingRule == MappingRules.writeOnly) continue;
                 var converter = DataTypeConverter.GetConverter(mapping.DataType);
-                
-                string value = element.StringValueOrNull(mapping.SalsaField);
+                var value = element.StringValueOrNull(mapping.SalsaField);
                 if (value == null) continue;
                 syncObject[mapping.AftField] = converter.ReadSalsaValue(mapping.SalsaField, element);
             }

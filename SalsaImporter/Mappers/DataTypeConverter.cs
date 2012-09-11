@@ -15,11 +15,11 @@ namespace SalsaImporter.Mappers
 
         private static readonly List<DataTypeConverter> DataTypeConverters = new List<DataTypeConverter>
         {
-            new DataTypeConverter("bool", (field, element) => element.BoolValueOrFalse(field), BooleanToString),
-            new DataTypeConverter("datetime", (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
-            new DataTypeConverter("float", (field, element) => element.FloatValueOrNull(field)),
-            new DataTypeConverter("int", (field, element) => element.IntValueOrNull(field)),
-            new DataTypeConverter("string", (field, element) => element.StringValueOrNull(field), value => value is string ? value as string : null)
+            new DataTypeConverter(DataType.Boolean, (field, element) => element.BoolValueOrFalse(field), BooleanToString),
+            new DataTypeConverter(DataType.DateTime, (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
+            new DataTypeConverter(DataType.Float, (field, element) => element.FloatValueOrNull(field)),
+            new DataTypeConverter(DataType.Int, (field, element) => element.IntValueOrNull(field)),
+            new DataTypeConverter(DataType.String, (field, element) => element.StringValueOrNull(field), value => value is string ? value as string : null)
         };
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue, Func<object, string> makeSalsaValue)

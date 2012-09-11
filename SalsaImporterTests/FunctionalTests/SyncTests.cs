@@ -37,7 +37,7 @@ namespace SalsaImporterTests.FunctionalTests
             _chapterOne = MakeChapter("One");
             _chapterTwo = MakeChapter("Two");
 
-            FieldMappingForTests.CreateInDatabase();
+            TestUtils.RecreateFieldMappingForTest();
         }
 
         private SyncObject MakeSupporter(string arg0)
