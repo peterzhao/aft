@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NLog.Layouts;
-using NLog.Targets;
-
+using System.Threading;
 
 namespace SalsaImporter
 {
@@ -11,57 +7,66 @@ namespace SalsaImporter
     {
         private static int Main(string[] args)
         {
-            DateTime begin = DateTime.Now;
-
-            try
+            using (var mutex = new Mutex(false, "SalsaImporter"))
             {
-                if (args.Length < 1)
+                if (!mutex.WaitOne(0, false))
                 {
-                    ShowUsage();
+                    Logger.Error("There is another instance of SalsaImporter is already running! Cannot run multiple instances!");
                     return 1;
                 }
-                Config.Environment = args.Length > 1 ? args[1] : Config.Test;
-                Logger.Info(string.Format("Sync under environment:{0} ({1}{2} {3})", 
-                    Config.Environment, 
-                    Config.SalsaWritable ? "" : "READ ONLY ",
-                    Config.SalsaApiUri, 
-                    Config.SalsaUserName));
-                Logger.Info("Start Salsa importer...");
 
-                var sync = new Sync();
-                switch (args[0])
-                {  
-                    case "sync":
-                        sync.Start();
-                        break;
-                    case "redo":
-                        sync.Redo();
-                        break;
-                    case "rebase":
-                        sync.Rebase();
-                        break;
-                    case "count":
-                        sync.CountSupportOnSalsa();
-                        break;
-                    case "delete":
-                        sync.DeleteAllSupporters();
-                        break;
-                    default:
+
+                DateTime begin = DateTime.Now;
+
+                try
+                {
+                    if (args.Length < 1)
+                    {
                         ShowUsage();
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Fatal("Encounter unexpected error.", e);
-                Console.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
-                return 1;
-            }
-            DateTime finished = DateTime.Now;
-            Logger.Info("finished:" + (finished - begin).TotalSeconds);
-            return 0;
-        }
+                        return 1;
+                    }
+                    Config.Environment = args.Length > 1 ? args[1] : Config.Test;
+                    Logger.Info(string.Format("Sync under environment:{0} ({1}{2} {3})",
+                                              Config.Environment,
+                                              Config.SalsaWritable ? "" : "READ ONLY ",
+                                              Config.SalsaApiUri,
+                                              Config.SalsaUserName));
+                    Logger.Info("Start Salsa importer...");
 
+                    var sync = new Sync();
+                    switch (args[0])
+                    {
+                        case "sync":
+                            sync.Start();
+                            break;
+                        case "redo":
+                            sync.Redo();
+                            break;
+                        case "rebase":
+                            sync.Rebase();
+                            break;
+                        case "count":
+                            sync.CountSupportOnSalsa();
+                            break;
+                        case "delete":
+                            sync.DeleteAllSupporters();
+                            break;
+                        default:
+                            ShowUsage();
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Fatal("Encounter unexpected error.", e);
+                    Console.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
+                    return 1;
+                }
+                DateTime finished = DateTime.Now;
+                Logger.Info("finished:" + (finished - begin).TotalSeconds);
+                return 0;
+            }
+        }
 
         private static void ShowUsage()
         {
