@@ -23,12 +23,11 @@ namespace SalsaImporter
         {
             var mapperFactory = new MapperFactory();
 
-            _errorHandler = new SyncErrorHandler(10);
+            _errorHandler = new SyncErrorHandler(Config.ErrorToleranceThreshold);
             _salsaClient = new SalsaClient();
             _syncEventTracker = new SyncEventTracker();
             _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
             _queueRepository = new QueueRepository(mapperFactory);
-            _salsaClient.Login();
             _notificationService = new NotificationService(new EmailService());
             _syncSession = new SyncSession(_notificationService);
         }
@@ -50,6 +49,7 @@ namespace SalsaImporter
 
         private void Run(string sessionRunningFlag)
         {
+            _salsaClient.Login();//test if connection is good
             ConfigSync();
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
@@ -72,7 +72,7 @@ namespace SalsaImporter
         {
             var name = string.Format("{0} {1}",syncConfig.SyncDirection.ToUpper(), syncConfig.ObjectType.ToUpper());
 
-            const int batchSize = 500;
+            var batchSize = Config.BatchSize;
 
             switch (syncConfig.SyncDirection.ToLower())
             {

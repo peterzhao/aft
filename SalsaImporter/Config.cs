@@ -131,6 +131,16 @@ namespace SalsaImporter
             }
         }
 
+        public static int BatchSize
+        {
+            get { return int.Parse(GetSetting("batchSize")); }
+        }
+
+        public static int ErrorToleranceThreshold
+        {
+            get { return int.Parse(GetSetting("errorToleranceThreshold")); }
+        }
+
         private static void AddDbTargetToNLog()
         {
             string name = "db";

@@ -19,6 +19,8 @@
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\aftTest</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </test>
   <performanceTest>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -37,6 +39,8 @@
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\aftPerformanceTest</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </performanceTest>
   <tomPlay>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -54,6 +58,8 @@
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\tomplay</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </tomPlay>
   <uat>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -77,6 +83,8 @@
     <smtpRequireLogin>False</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </uat>
   <production>
     <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
@@ -98,8 +106,9 @@
     <smtpRequireLogin>False</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </production>
-
   
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
@@ -118,5 +127,7 @@
     <smtpRequireSsl>True</smtpRequireSsl>
     <smtpRequireLogin>True</smtpRequireLogin>
     <applicationWorkingDir>c:\temp\aftdemo</applicationWorkingDir>
+    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <batchSize>500</batchSize>
   </demo>
 </environments>
