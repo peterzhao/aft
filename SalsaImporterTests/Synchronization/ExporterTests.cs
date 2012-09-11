@@ -5,6 +5,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Repositories;
 using SalsaImporter.Synchronization;
 
@@ -20,6 +21,7 @@ namespace SalsaImporterTests.Synchronization
         private Exporter _exporter;
         private Mock<ISalsaRepository> _destination;
         private Mock<IQueueRepository> _source;
+        private Mock<ISyncErrorHandler> _errorHandler;
         private JobContextStub _jobContext;
 
 
@@ -30,31 +32,41 @@ namespace SalsaImporterTests.Synchronization
             _destination = new Mock<ISalsaRepository>();
             _source = new Mock<IQueueRepository>();
             _jobContext = new JobContextStub();
-            _exporter = new Exporter(_source.Object, _destination.Object, BatchSize, "testJob", ObjectType, QueueName);
+            _errorHandler = new Mock<ISyncErrorHandler>();
+            _exporter = new Exporter(_source.Object, _destination.Object, _errorHandler.Object, BatchSize, "testJob", ObjectType, QueueName);
         }
 
         [Test]
-        public void ShouldSynchronize()
+        public void ShouldExportObjectsFromQueue()
         {
             const int currentRecord = 4560;
 
             _jobContext.SetCurrentRecord(currentRecord);
 
-            var syncObject1 = new SyncObject(ObjectType) { Id = 4561 };
-            var syncObject2 = new SyncObject(ObjectType) { Id = 4562 };
-            var syncObject3 = new SyncObject(ObjectType) { Id = 4563 };
+            var syncObject1 = new SyncObject(ObjectType) { QueueId = 4561 };
+            var syncObject2 = new SyncObject(ObjectType) { QueueId = 4562 };
+            var syncObject3 = new SyncObject(ObjectType) { QueueId = 4563 };
             var pulledObjects1 = new List<SyncObject> { syncObject1, syncObject2 };
             var pulledObjects2 = new List<SyncObject> { syncObject3 };
 
-            _source.Setup(source => source.DequequBatchOfObjects(ObjectType, QueueName,BatchSize, currentRecord)).Returns(pulledObjects1);
-            _source.Setup(source => source.DequequBatchOfObjects(ObjectType, QueueName, BatchSize, syncObject2.Id)).Returns(pulledObjects2);
-            _source.Setup(source => source.DequequBatchOfObjects(ObjectType, QueueName, BatchSize, syncObject3.Id)).Returns(new List<SyncObject>());
+            _source.Setup(source => source.GetBatchOfObjects(ObjectType, QueueName, BatchSize, currentRecord)).Returns(pulledObjects1);
+            _source.Setup(source => source.GetBatchOfObjects(ObjectType, QueueName, BatchSize, syncObject2.QueueId)).Returns(pulledObjects2);
+            _source.Setup(source => source.GetBatchOfObjects(ObjectType, QueueName, BatchSize, syncObject3.QueueId)).Returns(new List<SyncObject>());
 
+            var exception = new SaveToSalsaException("test failure");
+            _destination.Setup(d => d.Save(syncObject1)).Throws(exception);
             _exporter.Start(_jobContext);
 
-            _destination.Verify(destination => destination.Save(syncObject1));
+            _errorHandler.Verify(h => h.HandleSyncObjectFailure(syncObject1, _exporter, exception));
             _destination.Verify(destination => destination.Save(syncObject2));
             _destination.Verify(destination => destination.Save(syncObject3));
+
+            _source.Verify(s => s.UpdateStatus(QueueName, 4561, "Error", null));
+            _source.Verify(s => s.UpdateStatus(QueueName, 4562, "Exported", It.IsAny<DateTime>()));
+            _source.Verify(s => s.UpdateStatus(QueueName, 4563, "Exported", It.IsAny<DateTime>()));
+            _source.Verify(s => s.Dequeue(QueueName, 4561), Times.Never());
+            _source.Verify(s => s.Dequeue(QueueName, 4562));
+            _source.Verify(s => s.Dequeue(QueueName, 4563));
         }
     }
 }

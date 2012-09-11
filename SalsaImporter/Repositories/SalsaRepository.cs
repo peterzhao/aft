@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Mappers;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
@@ -57,7 +58,7 @@ namespace SalsaImporter.Repositories
             }
             catch(Exception ex)
             {
-                _syncErrorHandler.HandleSyncObjectFailure(syncObject, this, ex);
+                throw new SaveToSalsaException("Got error when save object into Salsa.", ex);
             }
         }
 

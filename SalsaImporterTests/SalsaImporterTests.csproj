@@ -60,6 +60,7 @@
     <Compile Include="Mappers\MapperTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
+    <Compile Include="Synchronization\ExporterTests.cs" />
     <Compile Include="Synchronization\ImporterTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Synchronization\SyncObjectTests.cs" />

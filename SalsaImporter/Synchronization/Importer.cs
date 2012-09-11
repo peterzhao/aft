@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
@@ -7,6 +8,7 @@ namespace SalsaImporter.Synchronization
     {
         private readonly ISalsaRepository _source;
         private readonly IQueueRepository _destination;
+        private readonly ISyncErrorHandler _errorHandler;
         private readonly int _batchSize;
         private readonly string _objectType;
         private readonly string _queueName;
@@ -14,13 +16,14 @@ namespace SalsaImporter.Synchronization
         public string Name { get; set; }
 
 
-        public Importer(ISalsaRepository source, IQueueRepository destination, int batchSize, string name, string objectType, string queueName)
+        public Importer(ISalsaRepository source, IQueueRepository destination, ISyncErrorHandler errorHandler, int batchSize, string name, string objectType, string queueName)
         {
             Name = name;
             _objectType = objectType;
             _queueName = queueName;
             _source = source;
             _destination = destination;
+            _errorHandler = errorHandler;
             _batchSize = batchSize;
         }
 
@@ -35,7 +38,7 @@ namespace SalsaImporter.Synchronization
                                                          _batchSize,
                                                          jobContext.CurrentRecord,
                                                          jobContext.MinimumModificationDate).ToList();
-                currentBatch.ForEach(obj => _destination.Push(obj, _queueName));
+                currentBatch.ForEach(Enqueue);
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().SalsaKey);
                 else
@@ -43,6 +46,16 @@ namespace SalsaImporter.Synchronization
             };
         }
 
-      
+        private void Enqueue(SyncObject obj)
+        {
+            try
+            {
+                _destination.Enqueue(_queueName, obj);
+            }
+            catch(Exception ex)
+            {
+                _errorHandler.HandleSyncObjectFailure(obj, this, ex);
+            }
+        }
     }
 }

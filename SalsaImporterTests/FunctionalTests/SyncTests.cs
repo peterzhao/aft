@@ -69,7 +69,7 @@ namespace SalsaImporterTests.FunctionalTests
 
             new Sync().Start();
             
-            var queue = TestUtils.ReadAllFromQueue("SalsaToAftQueue_Supporter");
+            var queue = TestUtils.ReadAllFromTable("SalsaToAftQueue_Supporter");
 
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterOne["Email"])));
             Assert.IsTrue(queue.Any(d => d["Email"].Equals(_supporterTwo["Email"])));

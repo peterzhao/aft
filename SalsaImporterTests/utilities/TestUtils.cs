@@ -60,7 +60,9 @@ namespace SalsaImporterTests.Utilities
             using (var db = new AftDbContext())
             {
                 db.Database.ExecuteSqlCommand("delete from SalsaToAftQueue_Supporter");
+                db.Database.ExecuteSqlCommand("delete from SalsaToAftQueue_Supporter_History");
                 db.Database.ExecuteSqlCommand("delete from AftToSalsaQueue_Supporter");
+                db.Database.ExecuteSqlCommand("delete from AftToSalsaQueue_Supporter_History");
             }
         }
 
@@ -72,7 +74,7 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static List<Dictionary<string, object>> ReadAllFromQueue(string tableName)
+        public static List<Dictionary<string, object>> ReadAllFromTable(string tableName)
         {
 
             using (var dataAdaptor = new SqlDataAdapter(String.Format("SELECT * FROM {0}", tableName),

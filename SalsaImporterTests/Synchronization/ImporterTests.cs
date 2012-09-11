@@ -17,9 +17,10 @@ namespace SalsaImporterTests.Synchronization
         private const string ObjectType = "TheObjectType";
         private const string QueueName = "QueueName";
 
-        private Importer _pusher;
+        private Importer _importer;
         private Mock<ISalsaRepository> _sourceMock;
         private Mock<IQueueRepository> _destinationMock;
+        private Mock<ISyncErrorHandler> _errorHandler;
         private JobContextStub _jobContext;
 
 
@@ -30,7 +31,9 @@ namespace SalsaImporterTests.Synchronization
             _sourceMock = new Mock<ISalsaRepository>();
             _destinationMock = new Mock<IQueueRepository>();
             _jobContext = new JobContextStub();
-            _pusher = new Importer(_sourceMock.Object, _destinationMock.Object, BatchSize, null, ObjectType, QueueName);
+            _errorHandler = new Mock<ISyncErrorHandler>();
+            _importer = new Importer(_sourceMock.Object, _destinationMock.Object, _errorHandler.Object,
+                BatchSize, null, ObjectType, QueueName);
         }
 
         [Test]
@@ -50,12 +53,13 @@ namespace SalsaImporterTests.Synchronization
 
             _sourceMock.Setup(source => source.GetBatchOfObjects(ObjectType, BatchSize, currentRecord, minimumModificationDate)).Returns(pulledObjects1);
             _sourceMock.Setup(source => source.GetBatchOfObjects(ObjectType, BatchSize, syncObject2.SalsaKey, minimumModificationDate)).Returns(pulledObjects2);
+            var error = new Exception("test error");
+            _destinationMock.Setup(d => d.Enqueue(QueueName, syncObject1)).Throws(error);
 
-            _pusher.Start(_jobContext);
-
-            _destinationMock.Verify(queueRepository => queueRepository.Push(syncObject1, QueueName));
-            _destinationMock.Verify(queueRepository => queueRepository.Push(syncObject2, QueueName));
-            _destinationMock.Verify(queueRepository => queueRepository.Push(syncObject3, QueueName));
+            _importer.Start(_jobContext);
+            _errorHandler.Verify(h => h.HandleSyncObjectFailure(syncObject1, _importer, error));
+            _destinationMock.Verify(queueRepository => queueRepository.Enqueue(QueueName, syncObject2));
+            _destinationMock.Verify(queueRepository => queueRepository.Enqueue(QueueName, syncObject3));
         }
     }
 }

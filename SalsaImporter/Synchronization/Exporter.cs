@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
@@ -10,18 +11,20 @@ namespace SalsaImporter.Synchronization
     public class Exporter:ISyncJob
     {
         private readonly ISalsaRepository _destination;
+        private readonly ISyncErrorHandler _errorHandler;
         private readonly IQueueRepository _source;
         private readonly int _batchSize;
         private readonly string _objectType;
         private readonly string _queueName;
         public string Name { get;  set; }
 
-        public Exporter(IQueueRepository source, ISalsaRepository destination, int batchSize, string name, string objectType, string queueName)
+        public Exporter(IQueueRepository source, ISalsaRepository destination, ISyncErrorHandler errorHandler, int batchSize, string name, string objectType, string queueName)
         {
             Name = name;
             _objectType = objectType;
             _queueName = queueName;
             _destination = destination;
+            _errorHandler = errorHandler;
             _source = source;
             _batchSize = batchSize;
         }
@@ -34,17 +37,58 @@ namespace SalsaImporter.Synchronization
             for (int batchCount = 1; ; batchCount++) 
             {
                 Logger.Debug("Dequeue in batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
-                var currentBatch = _source.DequeueBatchOfObjects(_objectType,
+                var currentBatch = _source.GetBatchOfObjects(_objectType,
                                                           _queueName,
                                                          _batchSize,
                                                          jobContext.CurrentRecord).ToList();
-                var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => _destination.Save(syncObject), null));
+                var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => ExportSyncObject(syncObject), null));
                 Task.WaitAll(tasks.ToArray());
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().QueueId);
                 else
                     break;                    
             };
+        }
+
+        private void ExportSyncObject(SyncObject syncObject)
+        {
+            try
+            {
+                _destination.Save(syncObject);
+                UpdateStatusAndDequeue(syncObject);
+            }
+            catch (SaveToSalsaException ex)
+            {
+                _errorHandler.HandleSyncObjectFailure(syncObject, this, ex);
+                UpdateErroStatus(syncObject);
+            }
+        }
+
+        private void UpdateStatusAndDequeue(SyncObject syncObject)
+        {
+            try
+            {
+                _source.UpdateStatus(_queueName, syncObject.QueueId, "Exported", DateTime.Now);
+                _source.Dequeue(_queueName, syncObject.QueueId);
+            }catch(Exception ex)
+            {
+                var message = string.Format("Failed to update object status and dequeue from exporting queue. {0}", syncObject);
+                Logger.Error(message, ex);
+                throw new ApplicationException(message, ex);
+            }
+        }
+
+        private void UpdateErroStatus(SyncObject syncObject)
+        {
+            try
+            {
+                _source.UpdateStatus(_queueName, syncObject.QueueId, "Error");
+            }catch(Exception ex)
+            {
+                var message = string.Format("Failed to update object error status in exporting queue. {0}", syncObject);
+                Logger.Error(message, ex);
+                throw new ApplicationException(message, ex);
+            }
         }
     }
 }

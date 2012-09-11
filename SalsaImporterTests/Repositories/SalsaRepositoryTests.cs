@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Moq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
@@ -145,103 +146,22 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
+        [ExpectedException(typeof(SaveToSalsaException))]
         public void ShouldHandleExceptionWhenSavingObject()
         {
             var id = 7890;
-            var supporter = new SyncObject(ObjectType) { QueueId = id,};
+            var supporter = new SyncObject(ObjectType) {QueueId = id,};
             supporter["Email"] = "foo@abc.com";
-            
-            var primaryFieldMapping = new FieldMapping { AftField = "Email", SalsaField = "email" };
+
+            var primaryFieldMapping = new FieldMapping {AftField = "Email", SalsaField = "email"};
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
             var error = new Exception("test error");
-            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter[primaryFieldMapping.AftField].ToString())).Throws(error);
+            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter["Email"].ToString()))
+                .Throws(error);
 
             _repository.Save(supporter);
-
-           _errorHandlerMock.Verify(errorHandler => errorHandler.HandleSyncObjectFailure(supporter, _repository, error));
         }
 
-      
-//
-//        [Test]
-//        public void ShouldReturnSalsaClientCurrentTime()
-//        {
-//            DateTime expectedDateTime = DateTime.Now;
-//            _salsaMock.SetupGet(s => s.CurrentTime).Returns(expectedDateTime);
-//            Assert.AreEqual(expectedDateTime, _repository.CurrentTime);
-//        }
-//
-//        [Test]
-//        [Category("IntegrationTest")]
-//        public void ShouldSaveAndGetSupporter()
-//        {
-//            new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
-//                                                                     {
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
-//                                                                     });
-//
-//            var name = Guid.NewGuid().ToString().Substring(0, 6);
-//            var supporter = new Supporter
-//                                {
-//                                    First_Name = name,
-//                                    Last_Name = "SalsaRepoTest",
-//                                    Email = name + "@abc.com",
-//                                    Organization = " LCBO  ", //salsa will trim 
-//                                    CustomDateTime0 = new DateTime(2007, 3, 11, 1, 21, 17, 137), //million second will be ignored by salsa; 
-//                                };
-//            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory(), new SyncErrorHandler(10));
-//
-//
-//            var supporterId = repository.Add(supporter);
-//            var externalSupporter = repository.Get<ISyncObject>(supporterId);
-//            Assert.AreEqual(supporter, externalSupporter);
-//        }
-//
-//        [Test]
-//        [Category("IntegrationTest")]
-//        public void ShouldSaveAndGetSupporterWithDayLightSavingAdjustment()
-//        {
-//            new CreateTestingCustomColumns().CreateCustomColumns(new List<SupporterCustomColumnsRequest>()
-//                                                                     {
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "String", HowManyToMake = 10, SalsaType = "varchar"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "Boolean", HowManyToMake = 10, SalsaType = "bool"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "Integer", HowManyToMake = 5, SalsaType = "int"},
-//                                                                         new SupporterCustomColumnsRequest
-//                                                                             {CustomColumnName = "DateTime", HowManyToMake = 1, SalsaType = "datetime"}
-//                                                                     });
-//
-//            var name = Guid.NewGuid().ToString().Substring(0, 6);
-//            var supporter = new Supporter
-//            {
-//                First_Name = name,
-//                Last_Name = "SalsaRepoTest",
-//                Email = name + "@abc.com",
-//                CustomDateTime0 = new DateTime(2007, 3, 11, 2, 21, 0), //2007/3/11 2:00 - 2:59 does not exist, will be convert to 3:00-3:59
-//            };
-//            var repository = new SalsaRepository(new SalsaClient(), new MapperFactory(), new SyncErrorHandler(10));
-//
-//
-//            var supporterId = repository.Add(supporter);
-//            var externalSupporter = repository.Get<ISyncObject>(supporterId);
-//
-//            Assert.AreNotEqual(supporter, externalSupporter);
-//            Assert.IsNotNull(externalSupporter.CustomDateTime0);
-//            Assert.AreEqual(3, externalSupporter.CustomDateTime0.Value.Hour);
-//        }
-//
-//
-
-     
 
     }
 }

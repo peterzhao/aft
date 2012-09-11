@@ -133,7 +133,7 @@ DROP TABLE dbo.SalsaToAftQueue_Supporter
 GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter(
-         [Id] [bigint] IDENTITY(1,1) NOT NULL,
+         [Id] [int] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NOT NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -212,7 +212,7 @@ DROP TABLE dbo.AftToSalsaQueue_Supporter
 GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter(
-         [Id] [bigint] IDENTITY(1,1) NOT NULL,
+         [Id] [int] IDENTITY(1,1) NOT NULL,
         [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -282,7 +282,7 @@ DROP TABLE dbo.SalsaToAftQueue_Supporter_History
 GO
 
 CREATE TABLE [dbo].SalsaToAftQueue_Supporter_History(
-        [HistoryId] [bigint] IDENTITY(1,1) NOT NULL,
+        [HistoryId] [int] IDENTITY(1,1) NOT NULL,
         [Id] [bigint] NOT NULL,
         [SalsaKey] [int] NOT NULL,
         [Chapter_KEY] int NULL,
@@ -362,7 +362,7 @@ DROP TABLE dbo.AftToSalsaQueue_Supporter_History
 GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter_History(
-         [HistoryId] [bigint] IDENTITY(1,1) NOT NULL,
+         [HistoryId] [int] IDENTITY(1,1) NOT NULL,
           [Id] [bigint] NOT NULL,
         [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,

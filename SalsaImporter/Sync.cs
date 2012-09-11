@@ -79,12 +79,12 @@ namespace SalsaImporter
                 case "export":
                     {
                         var queueName = string.Format("AftToSalsaQueue_{0}", syncConfig.ObjectType);
-                        return new Exporter(_queueRepository, _salsaRepository, batchSize, name, syncConfig.ObjectType, queueName);
+                        return new Exporter(_queueRepository, _salsaRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, queueName);
                     }
                 case "import":
                     {
                         var queueName = string.Format("SalsaToAftQueue_{0}", syncConfig.ObjectType);
-                        return new Importer(_salsaRepository, _queueRepository, batchSize, name, syncConfig.ObjectType, queueName);
+                        return new Importer(_salsaRepository, _queueRepository, _errorHandler, batchSize, name, syncConfig.ObjectType, queueName);
                     }
                 default:
                     throw new ApplicationException(string.Format("Invalid SyncDirection '{0}' for this SyncConfigs record. Supported types include 'import' and 'export'.", syncConfig.SyncDirection));

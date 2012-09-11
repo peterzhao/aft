@@ -18,15 +18,29 @@ namespace SalsaImporter.Repositories
             _mapperFactory = mapperFactory;
         }
 
-        public void Push(SyncObject syncObject, string tableName)
+        public void Enqueue(string tableName, SyncObject syncObject)
         {
-            InsertToQueue(syncObject, tableName, syncObject.FieldNames);
+            List<string> fields = syncObject.FieldNames;
+            using (var connection = new SqlConnection(Config.DbConnectionString))
+            {
+                connection.Open();
+                var columnNames = String.Join(",", fields);
+                var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
+                var insertStatement = String.Format("INSERT {0} ({1}) VALUES ({2});", tableName, columnNames,
+                                                    parameterPlaceholders);
+
+                var command = new SqlCommand(insertStatement, connection);
+                var parameters = fields
+                    .Select(f => new SqlParameter(f, syncObject[f])).ToList();
+                command.Parameters.AddRange(parameters.ToArray());
+                command.ExecuteNonQuery();
+            }
             NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Import, Destination = this, SyncObject = syncObject });
         }
 
         public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
 
-        public List<SyncObject> DequeueBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
+        public List<SyncObject> GetBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {
             var mapper = _mapperFactory.GetMapper(objectType);
             var aftFields = mapper.Mappings.Select(m => m.AftField).ToList();
@@ -56,11 +70,22 @@ namespace SalsaImporter.Repositories
                     returnValue.Add(syncObject);
                 }
             }
-            if ( returnValue.Count > 0 ) 
-                ExecuteSql(string.Format("delete from {0} where Id <= {1}", tableName, returnValue.Last().QueueId));
 
             return returnValue;
 
+        }
+
+        public void Dequeue(string tableName, int id)
+        {
+            ExecuteSql(string.Format("insert into {0}_History select * from {0} where Id={1}", tableName, id));
+            ExecuteSql(string.Format("delete from {0} where id={1}", tableName, id));
+        }
+
+        public void UpdateStatus(string tableName, int id, string status, DateTime? processedDate = null)
+        {
+            ExecuteSql(string.Format("update  {0} set status='{1}' where Id={2}", tableName, status, id));
+            if(processedDate != null)
+                ExecuteSql(string.Format("update  {0} set ProcessedDate='{1}' where Id={2}", tableName, processedDate, id));
         }
 
         private void ExecuteSql(string sql)
@@ -69,31 +94,6 @@ namespace SalsaImporter.Repositories
             {
                 connection.Open();
                 var command = new SqlCommand(sql, connection);
-                command.ExecuteNonQuery();
-            }
-        }
-
-        private void InsertToQueue(SyncObject syncObject, string tableName, List<string> fields)
-        {
-
-            using (var connection = new SqlConnection(Config.DbConnectionString))
-            {
-                connection.Open();
-
-
-                var columnNames = String.Join(",", fields);
-                var parameterPlaceholders = String.Join(",", fields.Select(f => String.Format("@{0}", f)));
-                var insertStatement = String.Format("INSERT {0} ({1}) VALUES ({2});", tableName, columnNames,
-                                                    parameterPlaceholders);
-
-                var command = new SqlCommand(insertStatement, connection);
-
-                var parameters = fields
-                    .Select(f => new SqlParameter(f, syncObject[f])).ToList();
-
-
-                command.Parameters.AddRange(parameters.ToArray());
-
                 command.ExecuteNonQuery();
             }
         }
