@@ -112,7 +112,7 @@ namespace SalsaImporterTests.Utilities
         public static List<XElement> GetAllFromSalsa(string objectType)
         {
             var salsa = new SalsaClient();
-            return salsa.GetObjects(objectType, 100, "0", new DateTime(1991,1,1));
+            return salsa.GetObjects(objectType, 100, 0, new DateTime(1991,1,1));
         }
 
         public static void EnsureSupporterCustomColumn(string name, string type)

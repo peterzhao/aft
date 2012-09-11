@@ -30,8 +30,6 @@ namespace SalsaImporterTests.Repositories
         [SetUp]
         public void SetUp()
         {
-            Config.Environment = Config.Test;
-            
             _salsaMock = new Mock<ISalsaClient>();
             _mapperMock = new Mock<IMapper>();
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
@@ -45,7 +43,6 @@ namespace SalsaImporterTests.Repositories
 
             _fieldMappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" } };
             _expectedSalsaFields = new List<string> { "Email" };
-
         }
 
         [Test]
@@ -70,7 +67,7 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {xElement};
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
             _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
             _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
@@ -85,7 +82,7 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> { xElement, xElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.SetupSequence(m => m.ToAft(xElement))
                .Returns(syncObject)
@@ -105,7 +102,7 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {  xUnmappableElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects("supporter", 10, "200", dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaMock.Setup(s => s.GetObjects("supporter", 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.Setup(m => m.ToAft(xUnmappableElement))
                .Throws(expectedException);

@@ -26,7 +26,7 @@ namespace SalsaImporter.Repositories
             var mapper = _mapperFactory.GetMapper(objectType);
             List<string> salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
             
-            var xElements = _salsa.GetObjects(objectType, batchSize, startKey.ToString(), minimumModifiedDate, salsaFields);
+            var xElements = _salsa.GetObjects(objectType, batchSize, startKey, minimumModifiedDate, salsaFields);
             var batchOfObjects = new List<SyncObject>();
             foreach (var element in xElements)
             {
@@ -58,7 +58,7 @@ namespace SalsaImporter.Repositories
             }
             catch(Exception ex)
             {
-                throw new SaveToSalsaException("Got error when save object into Salsa.", ex);
+                throw new SaveToSalsaException("Got error when saving object to Salsa.", ex);
             }
         }
 

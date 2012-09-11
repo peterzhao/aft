@@ -7,6 +7,7 @@ using System.Threading;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Exceptions;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 
@@ -96,13 +97,21 @@ namespace SalsaImporterTests.Salsa
             }
             Thread.Sleep(2000);
 
-            List<string> batch1 = client.GetObjects(objectType, 3, "0", lastPulledDate).Select(x => x.Element("supporter_KEY").Value).ToList();
-            List<string> batch2 = client.GetObjects(objectType, 3, batch1.Last(), lastPulledDate).Select(x => x.Element("supporter_KEY").Value).ToList();
-            List<string> batch3 = client.GetObjects(objectType, 3, batch2.Last(), lastPulledDate).Select(x => x.Element("supporter_KEY").Value).ToList();
+            List<int> batch1 = client.GetObjects(objectType, 3, 0, lastPulledDate).Select(x => int.Parse(x.Element("supporter_KEY").Value)).ToList();
+            List<int> batch2 = client.GetObjects(objectType, 3, batch1.Last(), lastPulledDate).Select(x => int.Parse(x.Element("supporter_KEY").Value)).ToList();
+            List<int> batch3 = client.GetObjects(objectType, 3, batch2.Last(), lastPulledDate).Select(x => int.Parse(x.Element("supporter_KEY").Value)).ToList();
 
-            Assert.IsTrue(batch1.All(id => newSupporters.Any(nameValues => nameValues["supporter_KEY"] == id)));
-            Assert.IsTrue(batch2.All(id => newSupporters.Any(nameValues => nameValues["supporter_KEY"] == id)));
+            Assert.IsTrue(batch1.All(id => newSupporters.Any(nameValues => int.Parse(nameValues["supporter_KEY"]) == id)));
+            Assert.IsTrue(batch2.All(id => newSupporters.Any(nameValues => int.Parse(nameValues["supporter_KEY"]) == id)));
             Assert.AreEqual(0, batch3.Count);
+        }
+
+        [ExpectedException(typeof(ApplicationException))]
+        [Test]
+        public void ShouldDetectInvalidFieldsWhenGettingObjects()
+        {
+            string objectType = "supporter";
+            client.GetObjects(objectType, 3, 0, new DateTime(1991, 1, 1), new List<string> {"InvalidFieldName"});
         }
 
         [Test]
@@ -170,7 +179,7 @@ namespace SalsaImporterTests.Salsa
             Assert.AreEqual(valueOnSupporter, supporterFromSalsa.Element(name).Value);
         }
 
-        /*********** interface implimentation tests ******************/
+        /*********** interface implementation tests ******************/
 
         [Test]
         public void ShouldUpdateObject()
@@ -190,8 +199,6 @@ namespace SalsaImporterTests.Salsa
             Assert.AreNotEqual(oldFirstName, xml.Element("First_Name").Value);
             Assert.AreNotEqual(oldEmail, xml.Element("Email").Value);
         }
-
-      
 
         [Test]
         public void ShouldHaveAnIncrementingCurrentTime()

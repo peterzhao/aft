@@ -13,8 +13,7 @@ namespace SalsaImporter.Salsa
         XElement GetObjectBy(string objectType, string salsaField, string value);
         CookieContainer Login();
 
-        List<XElement> GetObjects(string objectType, int batchSize, string startKey, DateTime lastPulledDate,
-                                  IEnumerable<String> fieldsToReturn = null);
+        List<XElement> GetObjects(string objectType, int batchSize, int startKey, DateTime lastPulledDate, IEnumerable<string> fieldsToReturn = null);
 
         DateTime CurrentTime { get; }
         void DeleteAllObjects(string objectType, int batchSize, bool fetchOnlyKeys);
