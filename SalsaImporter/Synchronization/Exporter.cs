@@ -10,6 +10,9 @@ namespace SalsaImporter.Synchronization
 {
     public class Exporter:ISyncJob
     {
+        private const string QueueStatusExported = "Exported";
+        private const string QueueStatusError = "Error";
+
         private readonly ISalsaRepository _destination;
         private readonly ISyncErrorHandler _errorHandler;
         private readonly IQueueRepository _source;
@@ -38,7 +41,7 @@ namespace SalsaImporter.Synchronization
             {
                 Logger.Debug("Dequeue in batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
                 var currentBatch = _source.GetBatchOfObjects(_objectType,
-                                                          _queueName,
+                                                         _queueName,
                                                          _batchSize,
                                                          jobContext.CurrentRecord).ToList();
                 var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => ExportSyncObject(syncObject), null));
@@ -55,13 +58,13 @@ namespace SalsaImporter.Synchronization
             try
             {
                 _destination.Save(syncObject);
-                _source.UpdateStatus(_queueName, syncObject.QueueId, "Exported", DateTime.Now);
+                _source.UpdateStatus(_queueName, syncObject.QueueId, QueueStatusExported, DateTime.Now);
                 _source.Dequeue(_queueName, syncObject.QueueId);
             }
             catch (SaveToSalsaException ex)
             {
                 _errorHandler.HandleSyncObjectFailure(syncObject, this, ex);
-                _source.UpdateStatus(_queueName, syncObject.QueueId, "Error");
+                _source.UpdateStatus(_queueName, syncObject.QueueId, QueueStatusError);
             }
         }
     }

@@ -83,7 +83,7 @@ namespace SalsaImporter.Repositories
 
         public void UpdateStatus(string tableName, int id, string status, DateTime? processedDate = null)
         {
-            ExecuteSql(string.Format("update  {0} set status='{1}' where Id={2}", tableName, status, id));
+            ExecuteSql(string.Format("update {0} set status='{1}' where Id={2}", tableName, status, id));
             if(processedDate != null)
                 ExecuteSql(string.Format("update  {0} set ProcessedDate='{1}' where Id={2}", tableName, processedDate, id));
         }
