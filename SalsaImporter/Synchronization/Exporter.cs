@@ -55,39 +55,13 @@ namespace SalsaImporter.Synchronization
             try
             {
                 _destination.Save(syncObject);
-                UpdateStatusAndDequeue(syncObject);
+                _source.UpdateStatus(_queueName, syncObject.QueueId, "Exported", DateTime.Now);
+                _source.Dequeue(_queueName, syncObject.QueueId);
             }
             catch (SaveToSalsaException ex)
             {
                 _errorHandler.HandleSyncObjectFailure(syncObject, this, ex);
-                UpdateErroStatus(syncObject);
-            }
-        }
-
-        private void UpdateStatusAndDequeue(SyncObject syncObject)
-        {
-            try
-            {
-                _source.UpdateStatus(_queueName, syncObject.QueueId, "Exported", DateTime.Now);
-                _source.Dequeue(_queueName, syncObject.QueueId);
-            }catch(Exception ex)
-            {
-                var message = string.Format("Failed to update object status and dequeue from exporting queue. {0}", syncObject);
-                Logger.Error(message, ex);
-                throw new ApplicationException(message, ex);
-            }
-        }
-
-        private void UpdateErroStatus(SyncObject syncObject)
-        {
-            try
-            {
                 _source.UpdateStatus(_queueName, syncObject.QueueId, "Error");
-            }catch(Exception ex)
-            {
-                var message = string.Format("Failed to update object error status in exporting queue. {0}", syncObject);
-                Logger.Error(message, ex);
-                throw new ApplicationException(message, ex);
             }
         }
     }

@@ -121,6 +121,14 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.AreEqual(titleTwo, xmlTwo.StringValueOrNull("Title"));
             Assert.AreEqual(dateTimeTwo, xmlTwo.DateTimeValueOrNull("cdb_match_date"));
 
+            var rowsInQueue = TestUtils.ReadAllFromTable("AftToSalsaQueue_Supporter");
+            Assert.AreEqual(0, rowsInQueue.Count);
+
+            var rowsInHistory = TestUtils.ReadAllFromTable("AftToSalsaQueue_Supporter_History");
+            Assert.AreEqual(2, rowsInHistory.Count);
+            Assert.IsTrue(rowsInHistory.Any(r => r["Email"].Equals(emailOne)));
+            Assert.IsTrue(rowsInHistory.Any(r => r["Email"].Equals(emailTwo)));
+            Assert.IsTrue(rowsInHistory.All(r => r["Status"].Equals("Exported")));
         }
 
         [Test]
