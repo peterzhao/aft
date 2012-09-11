@@ -129,7 +129,7 @@
       <MSBuildTasks Include="$(MSBuildProjectDirectory)\dependencies\msbuild-community-tasks\**\*.*"/>
       <BuildFiles Include="$(MSBuildProjectDirectory)\*.build"/>
       <BinFiles Include="$(MSBuildProjectDirectory)\SalsaImporter\bin\debug\*.*"/>
-      <BatchFiles Include="$(MSBuildProjectDirectory)\*.bat"/>
+      <BatchFiles Include="$(MSBuildProjectDirectory)\deploy.bat"/>
       <XmlFiles Include="$(MSBuildProjectDirectory)\*.xml"/>
     </ItemGroup>
     <Copy SourceFiles="@(DbFiles)" DestinationFiles="@(DbFiles->'$(PackageDirectory)\db\%(RecursiveDir)%(Filename)%(Extension)')"/>
