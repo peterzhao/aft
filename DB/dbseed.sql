@@ -2,6 +2,8 @@
 delete from FieldMappings
 delete from SyncConfigs
 
+-- supporter tables
+
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Email','Email' ,'string', 'primaryKey');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
@@ -10,7 +12,6 @@ INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType
 VALUES('supporter','Date_Created','Date_Created' ,'dateTime', 'readOnly');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','chapter_KEY','Chapter_KEY' ,'int', 'aftWins');
-
 
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Title','Title' ,'string', 'onlyIfBlank');
@@ -113,20 +114,17 @@ VALUES('supporter','pac_contributor','PAC_Contributor' ,'bool', 'aftWins');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','pac_date','PAC_Date' ,'string', 'aftWins');
 
-
 GO
+
 INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'export',1)
 INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter' ,'import',2)
 GO
-
-
 
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
 
 IF OBJECT_ID('dbo.SalsaToAftQueue_Supporter', 'U') IS NOT NULL
 DROP TABLE dbo.SalsaToAftQueue_Supporter
@@ -206,7 +204,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
 IF OBJECT_ID('dbo.AftToSalsaQueue_Supporter', 'U') IS NOT NULL
 DROP TABLE dbo.AftToSalsaQueue_Supporter
 GO
@@ -275,7 +272,7 @@ PRIMARY KEY CLUSTERED
 
 GO
 
---history tables
+-- supporter history tables
 
 IF OBJECT_ID('dbo.SalsaToAftQueue_Supporter_History', 'U') IS NOT NULL
 DROP TABLE dbo.SalsaToAftQueue_Supporter_History
@@ -356,14 +353,13 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
 IF OBJECT_ID('dbo.AftToSalsaQueue_Supporter_History', 'U') IS NOT NULL
 DROP TABLE dbo.AftToSalsaQueue_Supporter_History
 GO
 
 CREATE TABLE [dbo].AftToSalsaQueue_Supporter_History(
-         [HistoryId] [int] IDENTITY(1,1) NOT NULL,
-          [Id] [bigint] NOT NULL,
+        [HistoryId] [int] IDENTITY(1,1) NOT NULL,
+        [Id] [bigint] NOT NULL,
         [SalsaKey] [int] NULL,
         [Chapter_KEY] int NULL,
 		[Title] varchar(200) null,
@@ -426,3 +422,67 @@ PRIMARY KEY CLUSTERED
 
 GO
 
+-- supporter_chapter
+
+INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
+VALUES('supporter_chapter','supporter_KEY','SupporterKey' ,'int', 'readOnly');
+INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
+VALUES('supporter_chapter','chapter_KEY','ChapterKey' ,'int', 'readOnly');
+INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
+VALUES('supporter_chapter','unsubscribed','Unsubscribed' ,'int', 'readOnly');
+
+INSERT INTO [dbo].[SyncConfigs]([ObjectType],[SyncDirection] ,[Order]) VALUES('supporter_chapter', 'import', 3)
+GO
+
+IF OBJECT_ID('dbo.SalsaToAftQueue_Supporter_Chapter', 'U') IS NOT NULL
+DROP TABLE dbo.SalsaToAftQueue_Supporter_Chapter
+GO
+
+CREATE TABLE [dbo].SalsaToAftQueue_Supporter_Chapter (
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SalsaKey] [int] NOT NULL,
+		[Cdate] datetime NULL default(getdate()),
+		[ProcessedDate] datetime NULL,
+		[Status] nvarchar(200) NULL,
+		[SupporterKey] int NULL,
+		[ChapterKey] int NULL,
+		[Unsubscribed] int NULL
+PRIMARY KEY CLUSTERED
+(
+        [Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+GO
+
+
+IF OBJECT_ID('dbo.SalsaToAftQueue_Supporter_Chapter_History', 'U') IS NOT NULL
+DROP TABLE dbo.SalsaToAftQueue_Supporter_Chapter_History
+GO
+
+CREATE TABLE [dbo].SalsaToAftQueue_Supporter_Chapter_History (
+        [HistoryId] [int] IDENTITY(1,1) NOT NULL,
+        [Id] [bigint] NOT NULL,
+        [SalsaKey] [int] NOT NULL,
+		[Cdate] datetime NULL,
+		[ProcessedDate] datetime NULL,
+		[Status] nvarchar(200) NULL,
+		[SupporterKey] int NULL,
+		[ChapterKey] int NULL,
+		[Unsupported] int NULL
+ 
+PRIMARY KEY CLUSTERED
+(
+        [HistoryId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
