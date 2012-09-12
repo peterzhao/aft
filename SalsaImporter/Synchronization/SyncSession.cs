@@ -125,7 +125,7 @@ namespace SalsaImporter.Synchronization
         {
             jobContext.JobContextChanged += (obj, arg) => _db.SaveChanges();
             if(jobContext.StartTime == null) jobContext.StartTime = DateTime.Now;
-            Logger.Info("Start job " + job.Name);
+            Logger.Info(string.Format("Start job {0} at record {1}", job.Name, jobContext.CurrentRecord));
             _db.SaveChanges();
 
             job.Start(jobContext);

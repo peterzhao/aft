@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using SalsaImporter.Synchronization;
 
 namespace SalsaImporter
 {
@@ -26,13 +27,12 @@ namespace SalsaImporter
                         return 1;
                     }
                     Config.Environment = args.Length > 1 ? args[1] : Config.Test;
-                    Logger.Info(string.Format("Sync under environment:{0} ({1}{2} {3})",
+                    Logger.Info(string.Format("Using environment: {0} ({1}{2} {3})",
                                               Config.Environment,
                                               Config.SalsaWritable ? "" : "READ ONLY ",
                                               Config.SalsaApiUri,
                                               Config.SalsaUserName));
-                    Logger.Info("Start Salsa importer...");
-
+                    
                     var sync = new Sync();
                     switch (args[0])
                     {
@@ -70,12 +70,14 @@ namespace SalsaImporter
 
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: sync|redo|rebase|count|delete [environment]\n .");
-            Console.WriteLine("sync: will start a new session if last session was finished or resume last session from the broken point if last session was aborted.");
-            Console.WriteLine("redo: will re-run last session");
-            Console.WriteLine("rebase: will start a new session which will synchronize data from 1991-1-1");
-            Console.WriteLine("count: fetch the count of supporters on salsa");
-            Console.WriteLine("delete: delete all supporters on salsa(cannot be run on production environment)");
+            Console.WriteLine("Usage: sync|redo|rebase|count|delete [environment]");
+            Console.WriteLine("");
+            Console.WriteLine("     sync: will start a new session if last session was finished or resume last session from the broken point if last session was aborted.");
+            Console.WriteLine("     redo: will re-run last session");
+            Console.WriteLine("   rebase: will start a new session which will synchronize data from " + SyncSession.BaseModifiedDate);
+            Console.WriteLine("    count: fetch the count of supporters on salsa");
+            Console.WriteLine("   delete: delete all supporters on salsa (cannot be run on production environment)");
+            Console.WriteLine("");
             Console.WriteLine("The default environment is test.");
         }
     }
