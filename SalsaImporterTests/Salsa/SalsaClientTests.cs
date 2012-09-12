@@ -10,6 +10,7 @@ using SalsaImporter;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
+using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Salsa
 {
@@ -292,6 +293,16 @@ namespace SalsaImporterTests.Salsa
                 return "OK";
             };
             Assert.Throws<SalsaClientException>(() => SalsaClient.Try<string, InvalidDataException>(func, 3));
+        }
+
+        [Test]
+        [Ignore]
+        public void ShouldGetNextKey()
+        {
+            var modifiedTime = DateTime.Now.AddMinutes(-1);
+            var firstKey =  client.Save("supporter", GenerateSupporter(NewName()));
+            var nextKey =  client.Save("supporter", GenerateSupporter(NewName()));
+            Assert.AreEqual(int.Parse(nextKey), client.GetNextKey("supporter", int.Parse(firstKey), modifiedTime));
         }
       
         private bool DoesSupporterExist(string id)

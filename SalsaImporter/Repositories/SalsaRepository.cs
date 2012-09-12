@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Mappers;
 using SalsaImporter.Salsa;
@@ -23,16 +24,37 @@ namespace SalsaImporter.Repositories
 
         public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
         {
+           
             var mapper = _mapperFactory.GetMapper(objectType);
             List<string> salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
-            
-            var xElements = _salsa.GetObjects(objectType, batchSize, startKey, minimumModifiedDate, salsaFields);
+
+            try
+            {
+                var xElements = _salsa.GetObjects(objectType, batchSize, startKey, minimumModifiedDate, salsaFields);
+                return MapToSyncObjects(objectType, xElements);
+            }
+            catch (SalsaClientException exception)
+            {
+                if (batchSize == 1)
+                {
+                    var nextKey = _salsa.GetNextKey(objectType, startKey, minimumModifiedDate );
+                    _syncErrorHandler.HandleSalsaClientException(objectType, nextKey, this, exception);
+                    return GetBatchOfObjects(objectType, batchSize, nextKey, minimumModifiedDate);
+
+                }
+                return GetBatchOfObjects(objectType, batchSize / 2, startKey, minimumModifiedDate);
+            }
+        }
+
+        private List<SyncObject> MapToSyncObjects(string objectType, List<XElement> xElements)
+        {
+            var mapper = _mapperFactory.GetMapper(objectType);
+
             var batchOfObjects = new List<SyncObject>();
             foreach (var element in xElements)
             {
                 try
                 {
-                   
                     var syncObject = mapper.ToAft(element);
                     batchOfObjects.Add(syncObject);
                 }

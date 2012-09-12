@@ -13,7 +13,7 @@ namespace SalsaImporter.Synchronization
 
      
         public string Data { get; set; }
-        public int SalsKey { get; set; }
+        public int SalsaKey { get; set; }
         public string ObjectType { get; set; }
 
         public SyncObject SyncObject
@@ -21,7 +21,7 @@ namespace SalsaImporter.Synchronization
             set { 
                 ObjectType = value.ObjectType;
                 Data = value.ToString();
-                SalsKey = value.SalsaKey;
+                SalsaKey = value.SalsaKey;
             }
         }
     }

@@ -19,27 +19,28 @@ namespace SalsaImporterTests.Repositories
     {
         private const string ObjectType = "supporter";
         private SalsaRepository _repository;
-        private Mock<ISalsaClient> _salsaMock;
+        private Mock<ISalsaClient> _salsaClient;
         private Mock<IMapperFactory> _mapperFactoryMock;
         private Mock<IMapper> _mapperMock;
         private Mock<ISyncErrorHandler> _errorHandlerMock;
-        private SyncEventArgs syncEventArgs;
+        private SyncEventArgs _syncEventArgs;
         private List<FieldMapping> _fieldMappings;
         private List<string> _expectedSalsaFields;
 
         [SetUp]
         public void SetUp()
         {
-            _salsaMock = new Mock<ISalsaClient>();
+            _salsaClient = new Mock<ISalsaClient>();
             _mapperMock = new Mock<IMapper>();
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
             
             _mapperFactoryMock = new Mock<IMapperFactory>();
             _mapperFactoryMock.Setup(f => f.GetMapper(ObjectType)).Returns(_mapperMock.Object);
 
-            _repository = new SalsaRepository(_salsaMock.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
+            _repository = new SalsaRepository(_salsaClient.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
 
-            _repository.NotifySyncEvent += (sender, args) => syncEventArgs = args;
+            _syncEventArgs = null;
+            _repository.NotifySyncEvent += (sender, args) => _syncEventArgs = args;
 
             _fieldMappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" } };
             _expectedSalsaFields = new List<string> { "Email" };
@@ -52,7 +53,7 @@ namespace SalsaImporterTests.Repositories
             var supporter = new SyncObject(ObjectType);
             var xElement = XElement.Parse("<item><key>1234</key></item>");
 
-            _salsaMock.Setup(s => s.GetObject(ObjectType, key.ToString())).Returns(xElement);
+            _salsaClient.Setup(s => s.GetObject(ObjectType, key.ToString())).Returns(xElement);
             _mapperMock.Setup(m => m.ToAft(xElement)).Returns(supporter);
 
             Assert.AreEqual(supporter, _repository.Get(ObjectType, key));
@@ -67,11 +68,57 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {xElement};
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
             _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
             _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
             Assert.AreEqual(syncObject, _repository.GetBatchOfObjects(ObjectType, 10, 200, dateTime).First());
+        }
+
+        [Test]
+        public void ShouldRequestSmallerBatchWhenGetObjectsFails()
+        {
+            var syncObject = new SyncObject(ObjectType) { QueueId = 123 };
+            var xElement = XElement.Parse("<item/>");
+            var xElements = new List<XElement> { xElement };
+            var dateTime = new DateTime(2012, 7, 20);
+
+            var originalBatchSize = 10;
+            var originalStartKey = 200;
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, originalBatchSize, originalStartKey, dateTime, _expectedSalsaFields)).Throws(new SalsaClientException("bad data"));
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, originalBatchSize/2, originalStartKey, dateTime, _expectedSalsaFields)).Returns(xElements);
+            _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
+
+            Assert.AreEqual(new List<SyncObject> {syncObject}, _repository.GetBatchOfObjects(ObjectType, originalBatchSize, originalStartKey, dateTime));
+        }
+
+        [Test]
+        public void ShouldSkipObjectWhenGettingOneObjectFails()
+        {
+            var syncObject = new SyncObject(ObjectType) { QueueId = 123 };
+            var xElement = XElement.Parse("<item/>");
+            var xElements = new List<XElement> { xElement };
+            var dateTime = new DateTime(2012, 7, 20);
+
+            var originalBatchSize = 1;
+            var originalStartKey = 200;
+            var nextKey = 202;
+            _salsaClient.Setup(s => s.GetNextKey(ObjectType, originalStartKey, dateTime)).Returns(nextKey);
+            
+            var salsaClientException = new SalsaClientException("bad data");
+
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, originalBatchSize, originalStartKey, dateTime, _expectedSalsaFields)).Throws(salsaClientException);
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, originalBatchSize, nextKey, dateTime, _expectedSalsaFields)).Returns(xElements);
+            
+            _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
+
+            Assert.AreEqual(new List<SyncObject> { syncObject }, _repository.GetBatchOfObjects(ObjectType, originalBatchSize, originalStartKey, dateTime));
+
+            _errorHandlerMock.Verify(handler =>
+                handler.HandleSalsaClientException(ObjectType, nextKey, _repository, salsaClientException));
+
         }
 
         [Test]
@@ -82,7 +129,7 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> { xElement, xElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.SetupSequence(m => m.ToAft(xElement))
                .Returns(syncObject)
@@ -102,7 +149,7 @@ namespace SalsaImporterTests.Repositories
             var xElements = new List<XElement> {  xUnmappableElement };
             var dateTime = new DateTime(2012, 7, 20);
 
-            _salsaMock.Setup(s => s.GetObjects("supporter", 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
+            _salsaClient.Setup(s => s.GetObjects("supporter", 10, 200, dateTime, _expectedSalsaFields)).Returns(xElements);
 
             _mapperMock.Setup(m => m.ToAft(xUnmappableElement))
                .Throws(expectedException);
@@ -126,19 +173,19 @@ namespace SalsaImporterTests.Repositories
             aftObj["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
-            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, aftObj[primaryFieldMapping.AftField].ToString())).Returns(salsaXml);
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, aftObj[primaryFieldMapping.AftField].ToString())).Returns(salsaXml);
             _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
             _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
-            _salsaMock.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
+            _salsaClient.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
 
 
              _repository.Save(aftObj);
 
-            Assert.IsNotNull(syncEventArgs);
-            Assert.AreEqual(_repository, syncEventArgs.Destination);
-            Assert.AreEqual(SyncEventType.Export, syncEventArgs.EventType);
+            Assert.IsNotNull(_syncEventArgs);
+            Assert.AreEqual(_repository, _syncEventArgs.Destination);
+            Assert.AreEqual(SyncEventType.Export, _syncEventArgs.EventType);
             Assert.AreEqual(key, aftObj.SalsaKey);
-            Assert.AreEqual(aftObj.ToString(), syncEventArgs.Data);
+            Assert.AreEqual(aftObj.ToString(), _syncEventArgs.Data);
             
         }
 
@@ -153,7 +200,7 @@ namespace SalsaImporterTests.Repositories
             var primaryFieldMapping = new FieldMapping {AftField = "Email", SalsaField = "email"};
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
             var error = new Exception("test error");
-            _salsaMock.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter["Email"].ToString()))
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter["Email"].ToString()))
                 .Throws(error);
 
             _repository.Save(supporter);

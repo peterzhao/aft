@@ -25,8 +25,10 @@ namespace SalsaImporterTests.FunctionalTests
         {
             Config.Environment = Config.Test;
             TestUtils.ClearAllSessions();
+            TestUtils.RemoveAllSalsa("supporter_chapter");
             TestUtils.RemoveAllSalsa("supporter");
             TestUtils.RemoveAllSalsa("chapter");
+
             TestUtils.ClearAllQueues();
 
             TestUtils.EnsureSupporterCustomColumn("cdb_match_date", "datetime");
