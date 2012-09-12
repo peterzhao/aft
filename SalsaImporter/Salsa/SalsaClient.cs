@@ -284,6 +284,10 @@ namespace SalsaImporter.Salsa
                     throw new InvalidSalsaResponseException(String.Format("Response from server indicates error:\n{0}", response));  
                 }
             }
+            catch(InvalidSalsaResponseException ex)
+            {
+                throw ex;
+            }
             catch (Exception ex)
             {
                 throw new InvalidSalsaResponseException(String.Format("Invalid response from server when getting objects:\n{0}", response), ex);
@@ -315,7 +319,7 @@ namespace SalsaImporter.Salsa
                     {
                         string message = String.Format("Rethrow {0} after try {1} times. Error: {2} ", exceptionName, tryTimes, exception.Message);
                         Logger.Error(message, exception);
-                        throw new ApplicationException(message);
+                        throw new SalsaClientException(message);
                     }
                     else
                     {

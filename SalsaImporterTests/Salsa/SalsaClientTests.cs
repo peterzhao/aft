@@ -106,7 +106,7 @@ namespace SalsaImporterTests.Salsa
             Assert.AreEqual(0, batch3.Count);
         }
 
-        [ExpectedException(typeof(ApplicationException))]
+        [ExpectedException(typeof(SalsaClientException))]
         [Test]
         public void ShouldDetectInvalidFieldsWhenGettingObjects()
         {
@@ -291,7 +291,7 @@ namespace SalsaImporterTests.Salsa
 
                 return "OK";
             };
-            Assert.Throws<ApplicationException>(() => SalsaClient.Try<string, InvalidDataException>(func, 3));
+            Assert.Throws<SalsaClientException>(() => SalsaClient.Try<string, InvalidDataException>(func, 3));
         }
       
         private bool DoesSupporterExist(string id)
