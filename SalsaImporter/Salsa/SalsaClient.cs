@@ -91,7 +91,7 @@ namespace SalsaImporter.Salsa
             {
                 List<string> fieldsToReturn = null;
                 if (fetchOnlyKeys)
-                    fieldsToReturn = new List<string> { objectType + "_KEY" };
+                    fieldsToReturn = ListOfOnlyPrimaryKeyFieldName(objectType);
  
                 List<XElement> items = GetObjects(objectType, blockSize, start, DateBeforeCreationOfAllObjects, fieldsToReturn);
  
@@ -100,6 +100,11 @@ namespace SalsaImporter.Salsa
                 if (items.Count < blockSize) break;
             }
             Logger.Info(String.Format("All {0}s deleted.", objectType));
+        }
+
+        private static List<string> ListOfOnlyPrimaryKeyFieldName(string objectType)
+        {
+            return new List<string> { objectType + "_KEY" };
         }
 
         public void DeleteObject(string objectType, string key)
@@ -124,20 +129,9 @@ namespace SalsaImporter.Salsa
 
         public int GetNextKey(string objectType, int startKey, DateTime lastModifiedDate)
         {
-            var formats = "yyyy-MM-dd HH:mm:ss";
-
-            var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={1}_KEY>{2}&condition=Last_Modified>{3}&limit=1&orderBy={1}_KEY&include={1}_KEY",
-                                       _salsaUrl, objectType, startKey, lastModifiedDate.ToString(formats));
-
-
-             Try<int, InvalidSalsaResponseException>(
-                () =>
-                {
-                    var response = Get(url);
-                    VerifyGetObjectsResponse(response, objectType);
-                    return int.Parse(XDocument.Parse(response).Element(ItemElementName).Element(objectType + "_KEY").Value);
-                }, 3);
-            return 0;
+            var xElements = GetObjects(objectType, 1, startKey, lastModifiedDate, ListOfOnlyPrimaryKeyFieldName(objectType));
+            var firstElement = xElements.First();
+            return int.Parse(firstElement.Element(objectType + "_KEY").Value);
         }
 
         public int CountObjectsMatchingQuery(string objectType, string conditionName, string comparator, string conditionValue ) 

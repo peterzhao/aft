@@ -296,7 +296,6 @@ namespace SalsaImporterTests.Salsa
         }
 
         [Test]
-        [Ignore]
         public void ShouldGetNextKey()
         {
             var modifiedTime = DateTime.Now.AddMinutes(-1);
