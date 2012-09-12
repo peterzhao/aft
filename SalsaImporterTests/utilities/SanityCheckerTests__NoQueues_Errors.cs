@@ -17,7 +17,7 @@ namespace SalsaImporterTests.Utilities
         public void SetUp()
         {
             Config.Environment = Config.Test;
-            TestUtils.RemoveAllSyncConfigs();
+            TestUtils.RemoveSyncConfigForObjectType("donation");
             TestUtils.CreateSyncConfig("donation", SyncDirection.Export, 1);
             TestUtils.CreateSyncConfig("donation", SyncDirection.Import, 2);
 
@@ -27,20 +27,21 @@ namespace SalsaImporterTests.Utilities
         [TearDown]
         public void TearDown()
         {
-            TestUtils.CreateDefaultSyncConfigs();
+            TestUtils.RemoveSyncConfigForObjectType("donation");
         }
 
         [Test]
         public void ShouldCheckQueueExisting()
         {
-            Assert.IsTrue(_result.Any(m => m.Equals("Could not find the table for the queue AftToSalsaQueue_donation")));
-            Assert.IsTrue(_result.Any(m => m.Equals("Could not find the table for the queue SalsaToAftQueue_donation")));
+            Assert.Contains("Could not find the table for the queue AftToSalsaQueue_donation", _result);
+            Assert.Contains("Could not find the table for the queue SalsaToAftQueue_donation", _result);
         }
         [Test]
         public void ShouldCheckHistoryTableExisting()
         {
-            Assert.IsTrue(_result.Any(m=> m.Equals("Could not find the history table SalsaToAftQueue_donation_History")));
-            Assert.IsTrue(_result.Any(m=> m.Equals("Could not find the history table AftToSalsaQueue_donation_History")));
+            Assert.Contains("Could not find the history table SalsaToAftQueue_donation_History", _result);
+            Assert.Contains("Could not find the history table AftToSalsaQueue_donation_History", _result);
+
         }
     }
 }

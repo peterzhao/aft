@@ -194,7 +194,7 @@ namespace SalsaImporterTests.Utilities
                         new FieldMapping{ObjectType = "supporter",AftField = "AFT_Match_DateTime",SalsaField = "cdb_match_date",
                                          DataType = "datetime",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "Chapter_KEY",SalsaField = "chapter_KEY",
-                                         DataType = "int",MappingRule = MappingRules.aftWins},
+                                         DataType = "int",MappingRule = MappingRules.writeOnly},
                         new FieldMapping{ObjectType = "chapter",AftField = "Name",SalsaField = "Name",
                                          DataType = "string",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "Last_Modified",SalsaField = "Last_Modified",
@@ -202,6 +202,39 @@ namespace SalsaImporterTests.Utilities
                     }.ForEach(f => db.FieldMappings.Add(f));
 
                 db.SaveChanges();
+            }
+        }
+
+        public static void RemoveSyncConfigForObjectType(string objectType)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(string.Format("delete from SyncConfigs where ObjectType='{0}'", objectType));
+            }
+        }
+
+        public static void RemoveFieldMappingsForObjectType(string objectType)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(string.Format("delete from FieldMappings where ObjectType='{0}'", objectType));
+            }
+        }
+
+        public static void CreateEmptyTable(string tableName)
+        {
+            DropTable(tableName);
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(string.Format("CREATE TABLE {0}([f1] [int])", tableName));
+            }
+        }
+
+        public static void DropTable(string tableName)
+        {
+            using (var db = new AftDbContext())
+            {
+                db.Database.ExecuteSqlCommand(string.Format("IF OBJECT_ID('dbo.{0}', 'U') IS NOT NULL DROP TABLE dbo.{0}", tableName));
             }
         }
     }

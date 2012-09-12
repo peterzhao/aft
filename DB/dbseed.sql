@@ -471,7 +471,7 @@ CREATE TABLE [dbo].SalsaToAftQueue_Supporter_Chapter_History (
 		[Status] nvarchar(200) NULL,
 		[SupporterKey] int NULL,
 		[ChapterKey] int NULL,
-		[Unsupported] int NULL
+		[Unsubscribed] int NULL
  
 PRIMARY KEY CLUSTERED
 (

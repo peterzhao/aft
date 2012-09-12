@@ -50,6 +50,7 @@ namespace SalsaImporter
 
         private void Run(string sessionRunningFlag)
         {
+            SanityCheck();
             _salsaClient.Login();//test if connection is good
             ConfigSync();
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
@@ -58,6 +59,15 @@ namespace SalsaImporter
 
             _syncSession.Run(sessionRunningFlag);
             NotifySyncEvents();
+        }
+
+        private static void SanityCheck()
+        {
+           var result =  new SanityChecker().Verify();
+            if(result.Count == 0) return;
+
+            throw new ApplicationException("Verification of sync configs and field mappings agaist current database schema failed. They are not matched. " + string.Join(", ", result)
+                );
         }
 
         private void ConfigSync()
