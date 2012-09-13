@@ -37,19 +37,31 @@ namespace SalsaImporter.Salsa
 
         public string Save(string objectType, NameValueCollection data)
         {
-            return Try<string, InvalidSalsaResponseException>(() =>
-            {
-                string response = Post("save", objectType, data);
-                return VerifySaveResponse(response, data);
-            }, 3);
+            return Post("save", objectType, data, response =>
+                                                      {
+                                                          string key = null;
+                                                          try
+                                                          {
+                                                              var document = XDocument.Parse(response);
+                                                              key = document.Element(DataElementName).Element("success").Attribute("key").Value;
+                                                          }
+                                                          catch (Exception ex)
+                                                          {
+                                                              throw new InvalidSalsaResponseException(String.Format("Failed to get object key from server response:{0}.", response), ex);
+                                                          }
 
+                                                          return key;
+                                                      });
         }
 
         public XElement GetObject(string objectType, string key)
         {
-            var result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
-            var xml = XDocument.Parse(result);
-            return xml.Element(DataElementName).Element(objectType).Element(ItemElementName); //Todo: check xml format for error.
+            var url = String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key);
+            return Get(url, (result) =>
+                                {
+                                    var xml = XDocument.Parse(result);
+                                    return xml.Element(DataElementName).Element(objectType).Element(ItemElementName);
+                                });
         }
 
         public XElement GetObjectBy(string objectType, string salsaField, string value, IEnumerable<string> fieldsToReturn = null)
@@ -58,16 +70,15 @@ namespace SalsaImporter.Salsa
             var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value);
             if (fieldsToReturn != null)
                 url += "&include=" + String.Join(",", fieldsToReturn);
-            return Try<XElement, Exception>(
-                () =>
-                    {
-                        var result = Get(url);
-                        var xml = XDocument.Parse(result);
-
-                        var objectTopElement = xml.Element(DataElementName).Element(objectType);
-                        if (objectTopElement.Element(CountElementName).Value == "0") return XElement.Parse("<item/>");
-                        return objectTopElement.Element(ItemElementName); //Todo: check xml format for error.
-                    }, 3);
+            return Get(url, (result) =>
+                                {
+                                    var xml = XDocument.Parse(result);
+                                    var objectTopElement = xml.Element(DataElementName).Element(objectType);
+                                    return objectTopElement.Element(CountElementName).Value == "0"
+                                        ? XElement.Parse("<item/>") 
+                                        : objectTopElement.Element(ItemElementName);
+                                });
+          
         }
     
 
@@ -118,7 +129,7 @@ namespace SalsaImporter.Salsa
         public void DeleteObject(string objectType, string key)
         {
             var data = new NameValueCollection { { "key", key } };
-            Post("delete", objectType, data);
+            Post("delete", objectType, data, response => "");
         }
 
         public void DeleteObjects(string objectType, IEnumerable<string> keys)
@@ -145,9 +156,13 @@ namespace SalsaImporter.Salsa
         public int CountObjectsMatchingQuery(string objectType, string conditionName, string comparator, string conditionValue ) 
         {
             var queryString = GetQueryString(objectType, conditionName, comparator, conditionValue);
-            string result = Get(_salsaUrl + queryString);
-            string value = XDocument.Parse(result).Descendants(CountElementName).First().Value;
-            return Int32.Parse(value);
+            var url = _salsaUrl + queryString;
+            return Get(url, (result) =>
+                                {
+                                    var value = XDocument.Parse(result).Descendants(CountElementName).First().Value;
+                                    return Int32.Parse(value);
+                                });
+            
         }
 
         public static string GetQueryString(string objectType, string conditionName, string comparator, string conditionValue)
@@ -176,13 +191,12 @@ namespace SalsaImporter.Salsa
             if (fieldsToReturn != null)
                 url += "&include=" + String.Join(",", fieldsToReturn);
 
-            return Try<List<XElement>, InvalidSalsaResponseException>(
-                () =>
-                {
-                    var response = Get(url);
-                    VerifyGetObjectsResponse(response, objectType);
-                    return XDocument.Parse(response).Descendants(ItemElementName).ToList();
-                }, 3);
+            return Get(url, response =>
+                                {
+                                    VerifyGetObjectsResponse(response, objectType);
+                                    return XDocument.Parse(response).Descendants(ItemElementName).ToList();
+                                });
+          
         }
 
         public void CreateSupporterCustomColumn(NameValueCollection customField)
@@ -191,7 +205,7 @@ namespace SalsaImporter.Salsa
             customField.Set("key", "0"); // this is to indicate creation
             customField.Set("expose_to_chapters", "1");
             customField.Set("required", "label,name,type");
-            Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField);
+            Post("salsa/hq/addCustomColumn.jsp", "custom_column", customField, resonse => "");
         }
 
         public DateTime CurrentTime
@@ -222,65 +236,50 @@ namespace SalsaImporter.Salsa
             }
         }
 
-        private static string VerifySaveResponse(string response, NameValueCollection data)
-        {
-            string key = null;
-            try
-            {
-                var document = XDocument.Parse(response);
-                key = document.Element(DataElementName).Element("success").Attribute("key").Value;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidSalsaResponseException(String.Format("Failed to get object key from server response:{0}.", response), ex);
-            }
-
-            return key;
-        }
-
-        private string Post(string action, string objectType, NameValueCollection data)
+        private T Post<T>(string action, string objectType, NameValueCollection data, Func<string, T> callBack )
         {
             EnsureWriteAccess(); 
 
             var cookieContainer = Login();
-            return Try<string, WebException>(() =>
+            
+            return Try<T, Exception>(() =>
             {
                 string response;
-                using (var client1 = new ExtentedWebClient(cookieContainer))
+                using (var client = new ExtentedWebClient(cookieContainer))
                 {
                     data.Set("xml", "");
                     data.Set("object", objectType);
 
                     var url = _salsaUrl + action;
                     Logger.Trace("post:" + url + " data:" + String.Join("&", data.AllKeys.ToList().Select(key => key + "=" + data[key])));
-                    var result = client1.UploadValues(url, "POST", data);
+                    var result = client.UploadValues(url, "POST", data);
                     response = Encoding.UTF8.GetString(result);
                     Logger.Trace("response from post: " + response);
                 }
-                return response;
+                return callBack(response);
             }, 3);
         }
 
-        private string Get(string url)
+        private T Get<T>(string url, Func<string, T> callBack)
         {
-            Logger.Trace("Geting: " + url);
-            CookieContainer cookieContainer = Login();
-            string response = Try<string, WebException>(() =>
-            {
-                using (var webClient = new ExtentedWebClient(cookieContainer))
-                {
-                    string result = webClient.DownloadString(url);
-                    return result;
-                }
-            }, 3);
-            Logger.Trace("response from Get: " + response);
-            return response;
+            var cookieContainer = Login();
+            return Try<T, Exception>(() =>
+                                         {
+                                             Logger.Trace("Geting: " + url);
+                                             string response = null;
+                                             using (var webClient = new ExtentedWebClient(cookieContainer))
+                                             {
+                                                 response = webClient.DownloadString(url);
+                                             }
+          
+                                             Logger.Trace("response from Get: " + response);
+                                             return callBack(response);
+                                         }, 3);
         }
 
         private void VerifyGetObjectsResponse(string response, string objectType)
         {
-            try
-            {
+           
                 var document = XDocument.Parse(response);
                 
                 var objectTypeElement = document.Element(DataElementName).Element(objectType);
@@ -298,15 +297,7 @@ namespace SalsaImporter.Salsa
                 {
                     throw new InvalidSalsaResponseException(String.Format("Response from server indicates error:\n{0}", response));  
                 }
-            }
-            catch(InvalidSalsaResponseException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidSalsaResponseException(String.Format("Invalid response from server when getting objects:\n{0}", response), ex);
-            }
+           
         }
 
         private void EnsureWriteAccess()
