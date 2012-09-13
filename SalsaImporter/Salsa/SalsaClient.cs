@@ -80,6 +80,7 @@ namespace SalsaImporter.Salsa
                                 {
                                     try
                                     {
+                                        VerifyGetObjectsResponse(response, objectType);
                                         var xml = XDocument.Parse(response);
                                         var objectTopElement = xml.Element(DataElementName).Element(objectType);
                                         return objectTopElement.Element(CountElementName).Value == "0"

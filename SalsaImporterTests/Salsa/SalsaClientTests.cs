@@ -112,7 +112,15 @@ namespace SalsaImporterTests.Salsa
         public void ShouldDetectInvalidFieldsWhenGettingObjects()
         {
             string objectType = "supporter";
-            client.GetObjects(objectType, 3, 0, new DateTime(1991, 1, 1), new List<string> {"InvalidFieldName"});
+            client.GetObjects(objectType, 3, 0, new DateTime(1991, 1, 1), new List<string> { "InvalidFieldName" });
+        }
+
+        [ExpectedException(typeof(SalsaClientException))]
+        [Test]
+        public void ShouldDetectInvalidFieldsWhenGettingSingleObject()
+        {
+            string objectType = "supporter";
+            client.GetObjectBy(objectType, "Email", "test@test.com", new List<string> { "InvalidFieldName" });
         }
 
         [Test]
@@ -308,6 +316,8 @@ namespace SalsaImporterTests.Salsa
             var nextKey =  client.Save("supporter", GenerateSupporter(NewName()));
             Assert.AreEqual(int.Parse(nextKey), client.GetNextKey("supporter", int.Parse(firstKey), modifiedTime));
         }
+
+
       
         private bool DoesSupporterExist(string id)
         {
