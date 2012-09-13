@@ -67,7 +67,7 @@ namespace SalsaImporter
            var result =  new SanityChecker().Verify();
             if(result.Count == 0) return;
 
-            throw new ApplicationException("Verification of sync configs and field mappings agaist current database schema failed. They are not matched. " + string.Join(", ", result)
+            throw new ApplicationException("Sync configs/field mapping verification against database schema failed. The following could not be matched: " + string.Join(", ", result)
                 );
         }
 

@@ -9,8 +9,6 @@ using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Salsa;
-using SalsaImporter.Synchronization;
-using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Salsa
 {
