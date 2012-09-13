@@ -57,10 +57,16 @@ namespace SalsaImporter.Salsa
         public XElement GetObject(string objectType, string key)
         {
             var url = String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key);
-            return Get(url, (result) =>
+            return Get(url, (response) =>
                                 {
-                                    var xml = XDocument.Parse(result);
-                                    return xml.Element(DataElementName).Element(objectType).Element(ItemElementName);
+                                    try
+                                    {
+                                        var xml = XDocument.Parse(response);
+                                        return xml.Element(DataElementName).Element(objectType).Element(ItemElementName);
+                                    }catch(Exception ex)
+                                    {
+                                        throw new InvalidSalsaResponseException(string.Format("Could not parse response to get object. {0}", response),ex);
+                                    }
                                 });
         }
 
@@ -70,13 +76,19 @@ namespace SalsaImporter.Salsa
             var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value);
             if (fieldsToReturn != null)
                 url += "&include=" + String.Join(",", fieldsToReturn);
-            return Get(url, (result) =>
+            return Get(url, (response) =>
                                 {
-                                    var xml = XDocument.Parse(result);
-                                    var objectTopElement = xml.Element(DataElementName).Element(objectType);
-                                    return objectTopElement.Element(CountElementName).Value == "0"
-                                        ? XElement.Parse("<item/>") 
-                                        : objectTopElement.Element(ItemElementName);
+                                    try
+                                    {
+                                        var xml = XDocument.Parse(response);
+                                        var objectTopElement = xml.Element(DataElementName).Element(objectType);
+                                        return objectTopElement.Element(CountElementName).Value == "0"
+                                                   ? XElement.Parse("<item/>")
+                                                   : objectTopElement.Element(ItemElementName);
+                                     }catch(Exception ex)
+                                    {
+                                        throw new InvalidSalsaResponseException(string.Format("Could not parse response to get object. {0}", response),ex);
+                                    }
                                 });
           
         }
