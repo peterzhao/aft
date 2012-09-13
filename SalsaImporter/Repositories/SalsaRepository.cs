@@ -39,9 +39,12 @@ namespace SalsaImporter.Repositories
                 {
                     var nextKey = _salsa.GetNextKey(objectType, startKey, minimumModifiedDate );
                     _syncErrorHandler.HandleSalsaClientException(objectType, nextKey, this, exception);
-                    return GetBatchOfObjects(objectType, batchSize, nextKey, minimumModifiedDate);
 
+                    Logger.Debug(string.Format("Skipped record {0}, getting with batch size: {1}", nextKey, batchSize));
+                    return GetBatchOfObjects(objectType, batchSize, nextKey, minimumModifiedDate);
                 }
+
+                Logger.Debug(string.Format("Reducing batch size temporarily, getting with batch size: {0}", batchSize));
                 return GetBatchOfObjects(objectType, batchSize / 2, startKey, minimumModifiedDate);
             }
         }

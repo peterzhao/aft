@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Xml.Linq;
 using SalsaImporter.Exceptions;
-using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
@@ -17,8 +15,6 @@ namespace SalsaImporter.Synchronization
         }
 
       
-
-    
         public void HandleSyncObjectFailure(SyncObject obj, object destination, Exception ex)
         {
             Logger.Error(String.Format("Failed to sync object: {0}", obj), ex);
@@ -39,8 +35,6 @@ namespace SalsaImporter.Synchronization
                                     };
             HandleFailure(syncEventArgs);
         }
-
-      
 
         public void HandleSalsaClientException(string objectType, int salsaKey, object destination, Exception ex)
         {
