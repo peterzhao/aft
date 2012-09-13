@@ -51,6 +51,7 @@ namespace SalsaImporter
         private void Run(string sessionRunningFlag)
         {
             SanityCheck();
+            new LogTrimmer().TrimLogsOlderThan(2);
             _salsaClient.Login();//test if connection is good
             ConfigSync();
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);

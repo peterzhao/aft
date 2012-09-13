@@ -102,6 +102,7 @@
     <Compile Include="Synchronization\SyncSession.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
     <Compile Include="Utilities\DbUtility.cs" />
+    <Compile Include="Utilities\LogTrimmer.cs" />
     <Compile Include="Utilities\SanityChecker.cs" />
     <Compile Include="Utilities\StringUtility.cs" />
     <Compile Include="Utilities\XElementExtension.cs" />
