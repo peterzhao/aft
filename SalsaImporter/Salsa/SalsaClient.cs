@@ -251,7 +251,12 @@ namespace SalsaImporter.Salsa
 
         private T Post<T>(string action, string objectType, NameValueCollection data, Func<string, T> callBack )
         {
-            EnsureWriteAccess(); 
+            EnsureWriteAccess();
+            var url = _salsaUrl + action;
+            data.Set("xml", "");
+            data.Set("object", objectType);
+            var dataString = String.Join("&", data.AllKeys.ToList().Select(key => key + "=" + data[key]));
+            var info = "Post:" + url + " data:" + dataString;
 
             var cookieContainer = Login();
             
@@ -260,17 +265,13 @@ namespace SalsaImporter.Salsa
                 string response;
                 using (var client = new ExtentedWebClient(cookieContainer))
                 {
-                    data.Set("xml", "");
-                    data.Set("object", objectType);
-
-                    var url = _salsaUrl + action;
-                    Logger.Trace("post:" + url + " data:" + String.Join("&", data.AllKeys.ToList().Select(key => key + "=" + data[key])));
+                    Logger.Trace(info);
                     var result = client.UploadValues(url, "POST", data);
                     response = Encoding.UTF8.GetString(result);
                     Logger.Trace("response from post: " + response);
                 }
                 return callBack(response);
-            }, 3);
+            }, 3, info);
         }
 
         private T Get<T>(string url, Func<string, T> callBack)
@@ -287,7 +288,7 @@ namespace SalsaImporter.Salsa
           
                                              Logger.Trace("response from Get: " + response);
                                              return callBack(response);
-                                         }, 3);
+                                         }, 3, string.Format("Try to get: {0}.",url));
         }
 
         private void VerifyGetObjectsResponse(string response, string objectType)
@@ -321,7 +322,7 @@ namespace SalsaImporter.Salsa
             }
         }
 
-        public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes) where TException : Exception
+        public static TResult Try<TResult, TException>(Func<TResult> func, int tryTimes, string info = null) where TException : Exception
         {
             int count = 0;
             while (true)
@@ -336,7 +337,7 @@ namespace SalsaImporter.Salsa
                     count += 1;
                     if (count >= tryTimes)
                     {
-                        string message = String.Format("Rethrow {0} after try {1} times. Error: {2} ", exceptionName, tryTimes, exception.Message);
+                        string message = String.Format("Rethrow {0} after try {1} times. {2} Error: {3} ", exceptionName, tryTimes, info, exception.Message);
                         Logger.Error(message, exception);
                         throw new SalsaClientException(message);
                     }
