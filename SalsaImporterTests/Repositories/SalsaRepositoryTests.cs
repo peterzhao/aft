@@ -168,12 +168,16 @@ namespace SalsaImporterTests.Repositories
             var salsaObj = new SyncObject(ObjectType);
             var salsaXml = XElement.Parse("<item></item>");
             var primaryFieldMapping = new FieldMapping{AftField = "Email", SalsaField = "email"};
+            var mappings = new List<FieldMapping>{new FieldMapping{SalsaField = "Email"}, new FieldMapping{SalsaField = "Address"}};
 
             var aftObj = new SyncObject(ObjectType) {SalsaKey = 1234};
             aftObj["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
-            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, aftObj[primaryFieldMapping.AftField].ToString())).Returns(salsaXml);
+            _mapperMock.SetupGet(m => m.Mappings).Returns(mappings);
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, 
+                aftObj[primaryFieldMapping.AftField].ToString(),
+                It.IsAny<IEnumerable<string>>())).Returns(salsaXml);
             _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
             _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
             _salsaClient.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
@@ -200,7 +204,9 @@ namespace SalsaImporterTests.Repositories
             var primaryFieldMapping = new FieldMapping {AftField = "Email", SalsaField = "email"};
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
             var error = new Exception("test error");
-            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField, supporter["Email"].ToString()))
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, 
+                primaryFieldMapping.SalsaField, supporter["Email"].ToString(), 
+                It.IsAny<IEnumerable<string>>()))
                 .Throws(error);
 
             _repository.Save(supporter);

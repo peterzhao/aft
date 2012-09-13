@@ -47,21 +47,29 @@ namespace SalsaImporter.Salsa
 
         public XElement GetObject(string objectType, string key)
         {
-            string result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
-            XDocument xml = XDocument.Parse(result);
+            var result = Get(String.Format("{0}api/getObject.sjs?object={1}&key={2}", _salsaUrl, objectType, key));
+            var xml = XDocument.Parse(result);
             return xml.Element(DataElementName).Element(objectType).Element(ItemElementName); //Todo: check xml format for error.
         }
 
-        public XElement GetObjectBy(string objectType, string salsaField, string value)
+        public XElement GetObjectBy(string objectType, string salsaField, string value, IEnumerable<string> fieldsToReturn = null)
         {
             if (salsaField == "key") return GetObject(objectType, value);
-            string result = Get(String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value));
-            XDocument xml = XDocument.Parse(result);
+            var url = String.Format("{0}api/getObjects.sjs?object={1}&condition={2}={3}", _salsaUrl, objectType, salsaField, value);
+            if (fieldsToReturn != null)
+                url += "&include=" + String.Join(",", fieldsToReturn);
+            return Try<XElement, Exception>(
+                () =>
+                    {
+                        var result = Get(url);
+                        var xml = XDocument.Parse(result);
 
-            var objectTopElement = xml.Element(DataElementName).Element(objectType);
-            if (objectTopElement.Element(CountElementName).Value == "0") return XElement.Parse("<item/>");
-            return objectTopElement.Element(ItemElementName); //Todo: check xml format for error.
+                        var objectTopElement = xml.Element(DataElementName).Element(objectType);
+                        if (objectTopElement.Element(CountElementName).Value == "0") return XElement.Parse("<item/>");
+                        return objectTopElement.Element(ItemElementName); //Todo: check xml format for error.
+                    }, 3);
         }
+    
 
         public CookieContainer Login()
         {

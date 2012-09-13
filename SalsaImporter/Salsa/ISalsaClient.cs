@@ -10,7 +10,7 @@ namespace SalsaImporter.Salsa
     {
         string Save(string objectType, NameValueCollection data);
         XElement GetObject(string objectType, string key);
-        XElement GetObjectBy(string objectType, string salsaField, string value);
+        XElement GetObjectBy(string objectType, string salsaField, string value, IEnumerable<string> fieldsToReturn = null);
         CookieContainer Login();
 
         List<XElement> GetObjects(string objectType, int batchSize, int startKey, DateTime lastPulledDate, IEnumerable<string> fieldsToReturn = null);

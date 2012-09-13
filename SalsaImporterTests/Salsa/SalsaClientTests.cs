@@ -128,25 +128,30 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShouldGetSupporterByPrimaryKey()
         {
-            string firstName = NewName();
+            var firstName = NewName();
             var supporterData = GenerateSupporter(firstName);
-            string id = client.Save("supporter", supporterData);
-            XElement support = client.GetObjectBy("supporter","Email", supporterData["Email"]);
+            var id = client.Save("supporter", supporterData);
+            var fields = new List<string> { "First_Name" , "Email"};
+
+            var support = client.GetObjectBy("supporter","Email", supporterData["Email"], fields);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
             Assert.AreEqual(supporterData["Email"], support.Element("Email").Value);
+            Assert.IsNull(support.Element("Last_Name"));
+            Assert.AreEqual(5, support.Elements().Count());
         }
 
         [Test]
         public void ShouldGetSupporterByKey()
         {
-            string firstName = NewName();
+            var firstName = NewName();
             var supporterData = GenerateSupporter(firstName);
-            string id = client.Save("supporter", supporterData);
-            XElement support = client.GetObjectBy("supporter", "key", id);
+            var id = client.Save("supporter", supporterData);
+            var support = client.GetObjectBy("supporter", "key", id);
 
             Assert.AreEqual(firstName, support.Element("First_Name").Value);
             Assert.AreEqual(id, support.Element("key").Value);
+           
         }
 
         [Test]
