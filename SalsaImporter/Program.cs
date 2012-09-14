@@ -77,6 +77,7 @@ namespace SalsaImporter
             Console.WriteLine("     sync: will start a new session if last session was finished or resume last session from the broken point if last session was aborted.");
             Console.WriteLine("     redo: will re-run last session");
             Console.WriteLine("   rebase: will start a new session which will synchronize data from " + SyncSession.BaseModifiedDate);
+            Console.WriteLine("   verify: verify sync configs/field mappings");
             Console.WriteLine("    count: fetch the count of supporters on salsa");
             Console.WriteLine("   delete: delete all supporters on salsa (cannot be run on production environment)");
             Console.WriteLine("");
