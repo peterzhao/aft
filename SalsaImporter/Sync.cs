@@ -58,8 +58,14 @@ namespace SalsaImporter
             _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
             _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
 
-            _syncSession.Run(sessionRunningFlag);
-            NotifySyncEvents();
+            try
+            {
+                _syncSession.Run(sessionRunningFlag);
+            }
+            finally
+            {
+                NotifySyncEvents();
+            }
         }
 
         public  void SanityCheck()

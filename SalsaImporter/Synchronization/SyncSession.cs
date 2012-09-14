@@ -98,7 +98,7 @@ namespace SalsaImporter.Synchronization
             }
             catch (Exception ex)
             {
-                var message = "Encourtered unexpected error. Sync aborted. Please try to resume this session later.";
+                var message = "Encountered unexpected error. Sync aborted. Please try to resume this session later.";
                 Logger.Fatal(message, ex);
 
                 message = String.Format(message + " Exception: {0}", ex.Message);

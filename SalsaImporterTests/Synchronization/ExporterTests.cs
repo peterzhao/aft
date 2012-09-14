@@ -61,9 +61,9 @@ namespace SalsaImporterTests.Synchronization
             _destination.Verify(destination => destination.Save(syncObject2));
             _destination.Verify(destination => destination.Save(syncObject3));
 
-            _source.Verify(s => s.UpdateStatus(QueueName, 4561, "Error", null));
-            _source.Verify(s => s.UpdateStatus(QueueName, 4562, "Exported", It.IsAny<DateTime>()));
-            _source.Verify(s => s.UpdateStatus(QueueName, 4563, "Exported", It.IsAny<DateTime>()));
+            _source.Verify(s => s.UpdateStatus(QueueName, 4561, QueueRepository.QueueStatusError, null));
+            _source.Verify(s => s.UpdateStatus(QueueName, 4562, QueueRepository.QueueStatusExported, It.IsAny<DateTime>()));
+            _source.Verify(s => s.UpdateStatus(QueueName, 4563, QueueRepository.QueueStatusExported, It.IsAny<DateTime>()));
             _source.Verify(s => s.Dequeue(QueueName, 4561), Times.Never());
             _source.Verify(s => s.Dequeue(QueueName, 4562));
             _source.Verify(s => s.Dequeue(QueueName, 4563));
