@@ -47,6 +47,9 @@ namespace SalsaImporter
                         case "count":
                             sync.CountSupportOnSalsa();
                             break;
+                        case "verify":
+                            sync.SanityCheck();
+                            break;
                         case "delete":
                             sync.DeleteAllSupporters();
                             break;
@@ -57,7 +60,7 @@ namespace SalsaImporter
                 }
                 catch (Exception e)
                 {
-                    Logger.Fatal("Encounter unexpected error.", e);
+                    Logger.Fatal("Encounter the error:", e);
                     Console.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
                     return 1;
                 }

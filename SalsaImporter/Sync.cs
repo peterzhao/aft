@@ -62,7 +62,7 @@ namespace SalsaImporter
             NotifySyncEvents();
         }
 
-        private  void SanityCheck()
+        public  void SanityCheck()
         {
 
             var sanityChecker = new SanityChecker(_salsaClient);
