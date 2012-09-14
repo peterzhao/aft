@@ -11,7 +11,10 @@ namespace SalsaImporter.Repositories
 {
     public class QueueRepository : IQueueRepository
     {
-        private IMapperFactory _mapperFactory;
+        public const string QueueStatusExported = "Exported";
+        public const string QueueStatusError = "Error";
+
+        private readonly IMapperFactory _mapperFactory;
 
         public QueueRepository(IMapperFactory mapperFactory)
         {
@@ -45,7 +48,7 @@ namespace SalsaImporter.Repositories
             var mapper = _mapperFactory.GetMapper(objectType);
             var aftFields = mapper.Mappings.Select(m => m.AftField).ToList();
 
-            var sql = string.Format("SELECT top {0} * FROM {1} where Id > {2} order by Id", batchSize, tableName, startKey);
+            var sql = String.Format("SELECT top {0} * FROM {1} WHERE (Status != '{2}' OR Status IS NULL) AND Id > {3} ORDER BY Id", batchSize, tableName, QueueStatusError, startKey);
             var returnValue = new List<SyncObject>();
             using (var dataAdaptor = new SqlDataAdapter(sql, Config.DbConnectionString))
             {
@@ -60,7 +63,7 @@ namespace SalsaImporter.Repositories
                     {
                         if (column.ColumnName == "Id")
                         {
-                            syncObject.QueueId = int.Parse(row[column].ToString());
+                            syncObject.QueueId = Int32.Parse(row[column].ToString());
                         }
                         else if (aftFields.Contains(column.ColumnName) && row[column] != DBNull.Value)
                         {
@@ -72,20 +75,19 @@ namespace SalsaImporter.Repositories
             }
 
             return returnValue;
-
         }
 
         public void Dequeue(string tableName, int id)
         {
-            ExecuteSql(string.Format("insert into {0}_History select * from {0} where Id={1}", tableName, id));
-            ExecuteSql(string.Format("delete from {0} where id={1}", tableName, id));
+            ExecuteSql(String.Format("INSERT INTO {0}_History select * FROM {0} WHERE Id={1}", tableName, id));
+            ExecuteSql(String.Format("DELETE FROM {0} WHERE id={1}", tableName, id));
         }
 
         public void UpdateStatus(string tableName, int id, string status, DateTime? processedDate = null)
         {
-            ExecuteSql(string.Format("update {0} set status='{1}' where Id={2}", tableName, status, id));
+            ExecuteSql(String.Format("UPDATE {0} SET status='{1}' WHERE Id={2}", tableName, status, id));
             if(processedDate != null)
-                ExecuteSql(string.Format("update  {0} set ProcessedDate='{1}' where Id={2}", tableName, processedDate, id));
+                ExecuteSql(String.Format("UPDATE {0} SET ProcessedDate='{1}' WHERE Id={2}", tableName, processedDate, id));
         }
 
         private void ExecuteSql(string sql)

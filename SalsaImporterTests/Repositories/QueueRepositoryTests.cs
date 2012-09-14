@@ -21,6 +21,7 @@ namespace SalsaImporterTests.Repositories
         private SyncObject _syncObject;
         private Mock<IMapperFactory> _mapperFactoryMock;
         private IMapper _mapper;
+        
         [SetUp]
         public void SetUp()
         {
@@ -35,12 +36,9 @@ namespace SalsaImporterTests.Repositories
             TestUtils.ClearAllQueues();
         }
 
-      
-
         [Test]
-        public void ShouldInsertObejctIntoQueue()
+        public void ShouldInsertObjectIntoQueue()
         {
-            var startDate = DateTime.Now;
             const string expectedFirstName = "firstname";
             const string expectedEmail = "foo@abc.com";
 
@@ -57,7 +55,6 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(expectedFirstName, firstQueueRecord["First_Name"]);
             Assert.AreEqual(expectedEmail, firstQueueRecord["Email"]);
             Assert.AreEqual(1234, firstQueueRecord["SalsaKey"]);
-
         }
 
         [Test]
@@ -94,8 +91,7 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual("peter3", batch2.First()["First_Name"]);
             Assert.AreEqual("zhao3", batch2.First()["Last_Name"]);
 
-
-           var batch3 = _repository.GetBatchOfObjects(ObjectType, TableName, 2, batch2.Last().QueueId); 
+            var batch3 = _repository.GetBatchOfObjects(ObjectType, TableName, 2, batch2.Last().QueueId);
             Assert.AreEqual(0, batch3.Count);
         }
 
@@ -130,10 +126,34 @@ namespace SalsaImporterTests.Repositories
             Enqueue("foo1@abc.com", "peter");
             Enqueue("foo2@abc.com", "jim");
             var rows = TestUtils.ReadAllFromTable(TableName);
-            _repository.UpdateStatus(TableName, int.Parse(rows.First()["Id"].ToString()), "imported");
+            _repository.UpdateStatus(TableName, int.Parse(rows.First()["Id"].ToString()), QueueRepository.QueueStatusExported);
             var newRows = TestUtils.ReadAllFromTable(TableName);
-            Assert.AreEqual("imported", newRows.First()["Status"]);
+            Assert.AreEqual(QueueRepository.QueueStatusExported, newRows.First()["Status"]);
             Assert.AreEqual(DBNull.Value, newRows.First()["ProcessedDate"]);
+        }
+
+        [Test]
+        public void ShouldNotRetriveObjectsInErrorFromTheQueue()
+        {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
+            Enqueue("foo@abc.com", "peter", "zhao");
+            Enqueue("foo2@abc.com", "peter2", "zhao2");
+            Enqueue("foo3@abc.com", "peter3", "zhao3");
+
+            var rows = TestUtils.ReadAllFromTable(TableName);
+            var queueIdOfFirstSupporter = int.Parse(rows.First(r => "peter" == (string) r["First_Name"])["Id"].ToString());
+            _repository.UpdateStatus(TableName, queueIdOfFirstSupporter, QueueRepository.QueueStatusError);
+
+            var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 2, 0);
+            Assert.AreEqual(2, batch1.Count);
+            Assert.AreEqual("peter2", batch1.First()["First_Name"]);
+            Assert.AreEqual("zhao2", batch1.First()["Last_Name"]);
+
+            Assert.AreEqual("peter3", batch1.Last()["First_Name"]);
+            Assert.AreEqual("zhao3", batch1.Last()["Last_Name"]);
+
+            var batch2 = _repository.GetBatchOfObjects(ObjectType, TableName, 2, batch1.Last().QueueId);
+            Assert.AreEqual(0, batch2.Count);
         }
 
         [Test]
