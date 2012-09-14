@@ -161,7 +161,7 @@ namespace SalsaImporter
             target.Parameters.Add(new DatabaseParameterInfo("@exception", new SimpleLayout("${exception:format=type,message,stacktrace:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}")));
 
             loggingConfiguration.AddTarget(name, target);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, target));
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
             LogManager.ReconfigExistingLoggers();
         }
 

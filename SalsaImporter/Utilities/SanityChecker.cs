@@ -28,7 +28,7 @@ namespace SalsaImporter.Utilities
                                           {
                                               new FieldMapping{AftField = "Id", DataType = DataType.Int},
                                               new FieldMapping{AftField = "SalsaKey", DataType = DataType.Int},
-                                              new FieldMapping{AftField ="CDate", DataType = DataType.DateTime},
+                                              new FieldMapping{AftField = "CDate", DataType = DataType.DateTime},
                                               new FieldMapping{AftField = "ProcessedDate", DataType = DataType.DateTime},
                                               new FieldMapping{AftField = "Status", DataType = DataType.String},
                                           };
@@ -37,8 +37,6 @@ namespace SalsaImporter.Utilities
         {
             _salsaClient = salsaClient;
         }
-
-        
 
         public List<string> VerifyQueues()
         {
@@ -100,8 +98,6 @@ namespace SalsaImporter.Utilities
 
         }
 
-     
-
         private bool CanMatch(DataColumn column, FieldMapping mapping, string syncDirection)
         {
             if (syncDirection.EqualsIgnoreCase(SyncDirection.Export) 
@@ -121,7 +117,5 @@ namespace SalsaImporter.Utilities
             return column.ColumnName.EqualsIgnoreCase(mapping.AftField) 
                    && _typeMappings[column.DataType.Name].EqualsIgnoreCase(mapping.DataType);
         }
-
-
     }
 }

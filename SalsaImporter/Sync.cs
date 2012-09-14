@@ -70,12 +70,13 @@ namespace SalsaImporter
 
         public  void SanityCheck()
         {
-
+            Logger.Info("Verifying SyncConfig / FieldMappings...");
             var sanityChecker = new SanityChecker(_salsaClient);
             var errors = sanityChecker.VerifyQueues();
             errors.AddRange(sanityChecker.VerifySalsaFields());
             if(errors.Count > 0)
-                throw new ApplicationException("Sync configs/field mappings verification failed. " + string.Join(", ", errors));
+                throw new ApplicationException("SyncConfig / FieldMapping verification failed. " + string.Join(", ", errors));
+            Logger.Info("SyncConfig / FieldMappings match queues and salsalabs.com");
         }
 
         private void ConfigSync()

@@ -38,28 +38,6 @@ namespace SalsaImporter.Synchronization
             _db = new AftDbContext();
         }
 
-        private void InitializeContext(string flag)
-        {
-            var lastContext = _db.SessionContexts.Include("JobContexts").OrderByDescending(s => s.Id).FirstOrDefault();
-            if (lastContext == null || flag == SessionRunningFlag.Rebase)
-                StartNewSession(BaseModifiedDate);
-            else if(flag == SessionRunningFlag.RedoLast)
-                StartNewSession(lastContext.MinimumModifiedDate);
-            else if (lastContext.State == SessionState.Finished)
-                StartNewSession(lastContext.StartTime.Value);
-            else
-                ResumeLastSession(lastContext);
-
-            _jobs.ForEach(job =>{if (CurrentContext.JobContexts.All(j => j.JobName != job.Name))
-                                      CurrentContext.JobContexts.Add(new JobContext { JobName = job.Name });
-                              });
-          
-            _db.SaveChanges();
-        }
-
-      
-
-
         public SessionContext CurrentContext
         {
             get { return _currentContext; }
@@ -81,8 +59,6 @@ namespace SalsaImporter.Synchronization
             return this;
         }
 
-     
-
         public void Run(string sessionRunningFlag)
         {
             InitializeContext(sessionRunningFlag);
@@ -91,7 +67,7 @@ namespace SalsaImporter.Synchronization
                 foreach (var job in _jobs)
                 {
                     var jobContext = CurrentContext.JobContexts.First(j => j.JobName == job.Name);
-                    if(jobContext.FinishedTime == null)
+                    if (jobContext.FinishedTime == null)
                         StartJob(jobContext, job);
                 }
                 UpdateSessionStateToFinished();
@@ -108,6 +84,27 @@ namespace SalsaImporter.Synchronization
                 _db.SaveChanges();
                 throw new SyncAbortedException(message, ex);
             }
+        }
+
+        private void InitializeContext(string flag)
+        {
+            var lastContext = _db.SessionContexts.Include("JobContexts").OrderByDescending(s => s.Id).FirstOrDefault();
+            if (lastContext == null || flag == SessionRunningFlag.Rebase)
+                StartNewSession(BaseModifiedDate);
+            else if (flag == SessionRunningFlag.RedoLast)
+                StartNewSession(lastContext.MinimumModifiedDate);
+            else if (lastContext.State == SessionState.Finished)
+                StartNewSession(lastContext.StartTime.Value);
+            else
+                ResumeLastSession(lastContext);
+
+            _jobs.ForEach(job =>
+            {
+                if (CurrentContext.JobContexts.All(j => j.JobName != job.Name))
+                    CurrentContext.JobContexts.Add(new JobContext { JobName = job.Name });
+            });
+
+            _db.SaveChanges();
         }
 
         private void StartNewSession(DateTime modifiedDate)
