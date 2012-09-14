@@ -16,7 +16,6 @@ namespace SalsaImporter
                     return 1;
                 }
 
-
                 DateTime begin = DateTime.Now;
 
                 try
@@ -70,7 +69,7 @@ namespace SalsaImporter
 
         private static void ShowUsage()
         {
-            Console.WriteLine("Usage: sync|redo|rebase|count|delete [environment]");
+            Console.WriteLine("Usage: SalsaImporter sync|redo|rebase|count|delete [environment]");
             Console.WriteLine("");
             Console.WriteLine("     sync: will start a new session if last session was finished or resume last session from the broken point if last session was aborted.");
             Console.WriteLine("     redo: will re-run last session");
