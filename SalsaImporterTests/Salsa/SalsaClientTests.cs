@@ -315,6 +315,15 @@ namespace SalsaImporterTests.Salsa
             Assert.AreEqual(int.Parse(nextKey), client.GetNextKey("supporter", int.Parse(firstKey), modifiedTime));
         }
 
+        [Test]
+        public void ShouldGetFieldList()
+        {
+            var fields = client.GetFieldList("supporter");
+            Assert.Contains("Email",fields);
+            Assert.Contains("key",fields);
+            Assert.Contains("First_Name",fields);
+        }
+
 
       
         private bool DoesSupporterExist(string id)

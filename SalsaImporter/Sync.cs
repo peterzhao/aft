@@ -62,13 +62,14 @@ namespace SalsaImporter
             NotifySyncEvents();
         }
 
-        private static void SanityCheck()
+        private  void SanityCheck()
         {
-           var result =  new SanityChecker().Verify();
-            if(result.Count == 0) return;
 
-            throw new ApplicationException("Sync configs/field mapping verification against database schema failed. The following could not be matched: " + string.Join(", ", result)
-                );
+            var sanityChecker = new SanityChecker(_salsaClient);
+            var errors = sanityChecker.VerifyQueues();
+            errors.AddRange(sanityChecker.VerifySalsaFields());
+            if(errors.Count > 0)
+                throw new ApplicationException("Sync configs/field mappings verification failed. " + string.Join(", ", errors));
         }
 
         private void ConfigSync()

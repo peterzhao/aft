@@ -19,5 +19,6 @@ namespace SalsaImporter.Salsa
         void DeleteAllObjects(string objectType, int batchSize, bool fetchOnlyKeys);
         int CountObjects(string objectType);
         int GetNextKey(string objectType, int originalStartKey, DateTime dateTime);
+        List<string> GetFieldList(string objectType);
     }
 }

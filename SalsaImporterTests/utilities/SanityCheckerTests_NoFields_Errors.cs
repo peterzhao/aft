@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Moq;
 using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Mappers;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
@@ -20,11 +22,11 @@ namespace SalsaImporterTests.Utilities
         private string _salsatoaftqueueHistory = "SalsaToAftQueue_donation_History";
         private const string ObjectType = "donation";
 
+
         [TestFixtureSetUp]
         public void SetUp()
         {
             Config.Environment = Config.Test;
-
             TestUtils.RemoveSyncConfigForObjectType(ObjectType);
             TestUtils.CreateSyncConfig(ObjectType, SyncDirection.Export, 1);
             TestUtils.CreateSyncConfig(ObjectType, SyncDirection.Import, 2);
@@ -41,7 +43,7 @@ namespace SalsaImporterTests.Utilities
             TestUtils.CreateFieldMappings(mapping1);
             TestUtils.CreateFieldMappings(mapping2);
 
-            _result = new SanityChecker().Verify();
+            _result = new SanityChecker(new SalsaClient()).VerifyQueues();
         }
 
         [TestFixtureTearDown]
@@ -55,7 +57,7 @@ namespace SalsaImporterTests.Utilities
             TestUtils.RemoveSyncConfigForObjectType(ObjectType);
         }
 
-
+      
 
         [Test]
         public void ShouldGetErrorWhenFieldTypesDonotMatch()

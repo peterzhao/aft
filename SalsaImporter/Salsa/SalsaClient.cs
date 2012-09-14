@@ -166,6 +166,18 @@ namespace SalsaImporter.Salsa
             return int.Parse(firstElement.Element(objectType + "_KEY").Value);
         }
 
+        public List<string> GetFieldList(string objectType)
+        {
+
+            var url = String.Format("{0}api/getObjects.sjs?object={1}&limit=1",_salsaUrl, objectType);
+
+            return Get(url, response =>
+            {
+                VerifyGetObjectsResponse(response, objectType);
+                return XDocument.Parse(response).Descendants(ItemElementName).First().Elements().Select(e => e.Name.LocalName).ToList();
+            });
+        }
+
         public int CountObjectsMatchingQuery(string objectType, string conditionName, string comparator, string conditionValue ) 
         {
             var queryString = GetQueryString(objectType, conditionName, comparator, conditionValue);

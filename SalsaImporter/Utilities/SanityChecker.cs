@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using SalsaImporter.Mappers;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 
 namespace SalsaImporter.Utilities
 {
     public class SanityChecker
     {
+        private ISalsaClient _salsaClient;
         readonly Dictionary<string, string> _typeMappings = new Dictionary<string, string>
                                                        {
                                                            {"Int32", DataType.Int},
@@ -30,12 +33,19 @@ namespace SalsaImporter.Utilities
                                               new FieldMapping{AftField = "Status", DataType = DataType.String},
                                           };
 
-        public List<string> Verify()
+        public SanityChecker(ISalsaClient salsaClient)
+        {
+            _salsaClient = salsaClient;
+        }
+
+        
+
+        public List<string> VerifyQueues()
         {
             var result = new List<string>();
             using (var db = new AftDbContext())
             {
-                List<SyncConfig> jobConfigs = db.SyncConfigs.ToList();
+                var jobConfigs = db.SyncConfigs.ToList();
                 jobConfigs.ForEach(job =>
                                        {
                                            if (DbUtility.IsTableExist(job.QueueName))
@@ -48,8 +58,31 @@ namespace SalsaImporter.Utilities
                                            else
                                                result.Add(string.Format("Could not find the history table {0}", job.QueueHistoryName));
                                        });
+
             }
             return result;
+        }
+
+        public List<string> VerifySalsaFields()
+        {
+            var result = new List<string>();
+            using (var db = new AftDbContext())
+            {
+                db.SyncConfigs.GroupBy(job => job.ObjectType).Select(g => g.Key).ToList()
+                    .ForEach(objectType => VerifySalsaFields(db, objectType, result));
+
+            }
+            return result;
+        } 
+
+        private void VerifySalsaFields(AftDbContext db, string objectType, List<string> result)
+        {
+            var mappings = db.FieldMappings.Where(m => m.ObjectType == objectType).ToList();
+            if (_salsaClient.CountObjects(objectType) == 0) return; //do not verify if there is no record on salsa
+            var fields = _salsaClient.GetFieldList(objectType);
+            var missingFields = mappings.Where(m => !fields.Contains(m.SalsaField)).Select(m => m.SalsaField).ToList();
+            if(missingFields.Count > 0)
+              result.Add(string.Format("Could not find field(s) {0} of {1} from Salsa", string.Join(",", missingFields), objectType));
         }
 
         private void VerifyFields(AftDbContext db, string objectType, string queueName, string syncDirection, List<string> result)

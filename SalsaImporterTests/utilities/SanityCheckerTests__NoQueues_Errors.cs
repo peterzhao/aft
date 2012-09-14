@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
 
@@ -21,7 +22,7 @@ namespace SalsaImporterTests.Utilities
             TestUtils.CreateSyncConfig("donation", SyncDirection.Export, 1);
             TestUtils.CreateSyncConfig("donation", SyncDirection.Import, 2);
 
-            _result = new SanityChecker().Verify();
+            _result = new SanityChecker(new SalsaClient()).VerifyQueues();
         }
 
         [TearDown]

@@ -78,6 +78,7 @@
     <Compile Include="Utilities\SanityCheckerTests_NoFields_Errors.cs" />
     <Compile Include="Utilities\SanityCheckerTests__NoQueues_Errors.cs" />
     <Compile Include="Utilities\SanityCheckerTests_Happy_Path.cs" />
+    <Compile Include="Utilities\SanityTests_VerifySalsaFields.cs" />
     <Compile Include="Utilities\StringUtilityTests.cs" />
     <Compile Include="Utilities\TestUtils.cs" />
     <Compile Include="Utilities\XDocumentExtensionTests.cs" />

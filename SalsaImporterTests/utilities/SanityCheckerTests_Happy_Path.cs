@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Salsa;
 using SalsaImporter.Utilities;
 
 namespace SalsaImporterTests.Utilities
@@ -15,7 +16,7 @@ namespace SalsaImporterTests.Utilities
         {
             Config.Environment = Config.Test;
 
-            List<string> actual = new SanityChecker().Verify();
+            List<string> actual = new SanityChecker(new SalsaClient()).VerifyQueues();
             Console.WriteLine(string.Join(",", actual));
             Assert.IsEmpty(actual);
         }
