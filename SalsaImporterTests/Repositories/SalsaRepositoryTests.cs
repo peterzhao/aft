@@ -120,6 +120,7 @@ namespace SalsaImporterTests.Repositories
 
         }
 
+        [Ignore("This test produces anoyingly long logging output...")]
         [Test]
         public void ShouldHandleLongSequenceOfInvalidObjects()
         {

@@ -12,7 +12,7 @@ namespace SalsaImporter.Utilities
         public static List<DataColumn>  GetColumnsInfo(string tableName)
         {
             var result = new List<DataColumn>();
-            using (var dataAdaptor = new SqlDataAdapter(String.Format("SELECT * FROM {0}", tableName),
+            using (var dataAdaptor = new SqlDataAdapter(String.Format("SELECT TOP 1 * FROM {0}", tableName),
                                                Config.DbConnectionString))
             {
                 var dataSet = new DataSet();
