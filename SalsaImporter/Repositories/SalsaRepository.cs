@@ -36,16 +36,35 @@ namespace SalsaImporter.Repositories
             catch (SalsaClientException exception)
             {
                 if (batchSize == 1)
-                {
-                    var nextKey = _salsa.GetNextKey(objectType, startKey, minimumModifiedDate );
-                    _syncErrorHandler.HandleSalsaClientException(objectType, nextKey, this, exception);
-
-                    Logger.Debug(string.Format("Skipped record {0}, getting with batch size: {1} starting at {2}", nextKey, batchSize, nextKey));
-                    return GetBatchOfObjects(objectType, batchSize, nextKey, minimumModifiedDate);
-                }
-
+                    return FindNextValidObject(objectType, startKey, minimumModifiedDate, exception, salsaFields);
+ 
                 Logger.Debug(string.Format("Reducing batch size, getting again with batch size: {0} starting at {1}", batchSize / 2, startKey));
                 return GetBatchOfObjects(objectType, batchSize / 2, startKey, minimumModifiedDate);
+            }
+        }
+
+        private IEnumerable<SyncObject> FindNextValidObject(string objectType, int firstStartKey, DateTime minimumModifiedDate,
+                                                SalsaClientException firstException, List<string> salsaFields)
+        {
+            SalsaClientException exception = firstException;
+            int startKey = firstStartKey;
+            
+            for (;;)
+            {
+                startKey = _salsa.GetNextKey(objectType, startKey, minimumModifiedDate);
+
+                _syncErrorHandler.HandleSalsaClientException(objectType, startKey, this, exception);
+                Logger.Debug(string.Format("Skipped record {0}", startKey));
+
+                try
+                {
+                    var xElements = _salsa.GetObjects(objectType, 1, startKey, minimumModifiedDate, salsaFields);
+                    return MapToSyncObjects(objectType, xElements);
+                } 
+                catch (SalsaClientException newException)
+                {
+                    exception = newException;
+                }
             }
         }
 

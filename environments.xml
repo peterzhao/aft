@@ -106,7 +106,7 @@
     <smtpRequireLogin>False</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
-    <errorToleranceThreshold>500</errorToleranceThreshold>
+    <errorToleranceThreshold>6000</errorToleranceThreshold>
     <batchSize>500</batchSize>
   </production>
 

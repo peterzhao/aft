@@ -5,7 +5,6 @@ using System.Linq;
 using System.Xml.Linq;
 using Moq;
 using NUnit.Framework;
-using SalsaImporter;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -119,6 +118,45 @@ namespace SalsaImporterTests.Repositories
             _errorHandlerMock.Verify(handler =>
                 handler.HandleSalsaClientException(ObjectType, nextKey, _repository, salsaClientException));
 
+        }
+
+        [Test]
+        public void ShouldHandleLongSequenceOfInvalidObjects()
+        {
+            var syncObject = new SyncObject(ObjectType) { QueueId = 123 };
+            var xElement = XElement.Parse("<item/>");
+            var xElements = new List<XElement> { xElement };
+            var dateTime = new DateTime(2012, 7, 20);
+
+            var originalBatchSize = 10;
+            var originalStartKey = 200;
+
+            var startBadKeys = 200;
+            var endBadKeys = 5000;
+
+            _salsaClient.Setup(s => s.GetNextKey(ObjectType, It.IsAny<int>(), dateTime)).Returns(
+                (string objectType, int key, DateTime time) => key + 1);
+
+            var salsaClientException = new SalsaClientException("bad data");
+
+            _salsaClient.Setup(s => s.GetObjects(ObjectType, It.IsAny<int>(), It.IsAny<int>(), dateTime, It.IsAny<IEnumerable<string>>())).Returns(
+                (string objectType, int batchSize, int startKey, DateTime lastPulledDate, IEnumerable<string> fieldsToReturn) =>
+                    {
+                        var startRequestedRange = startKey;
+                        var endRequestedRange = startKey + batchSize;
+                        if (   (startRequestedRange >= startBadKeys && startRequestedRange < endBadKeys)
+                            || (endRequestedRange >= startBadKeys && endRequestedRange < endBadKeys))
+                        {
+                            throw salsaClientException;
+                        }
+                        return xElements;
+                    }
+                );
+
+            _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
+            _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
+
+            Assert.AreEqual(new List<SyncObject> { syncObject }, _repository.GetBatchOfObjects(ObjectType, originalBatchSize, originalStartKey, dateTime));
         }
 
         [Test]

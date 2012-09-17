@@ -18,7 +18,7 @@ namespace SalsaImporter.Salsa
         DateTime CurrentTime { get; }
         void DeleteAllObjects(string objectType, int batchSize, bool fetchOnlyKeys);
         int CountObjects(string objectType);
-        int GetNextKey(string objectType, int originalStartKey, DateTime dateTime);
+        int GetNextKey(string objectType, int startKey, DateTime dateTime);
         List<string> GetFieldList(string objectType);
     }
 }
