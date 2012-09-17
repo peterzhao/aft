@@ -40,6 +40,7 @@ namespace SalsaImporter.Utilities
 
         public List<string> VerifyQueues()
         {
+            Logger.Debug("Verifying queue tables and history tables...");
             var result = new List<string>();
             using (var db = new AftDbContext())
             {
@@ -63,6 +64,7 @@ namespace SalsaImporter.Utilities
 
         public List<string> VerifySalsaFields()
         {
+            Logger.Debug("Verifying Salsa Fields...");
             var result = new List<string>();
             using (var db = new AftDbContext())
             {

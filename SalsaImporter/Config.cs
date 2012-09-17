@@ -31,7 +31,7 @@ namespace SalsaImporter
             set
             {
                 _environment = value;
-                AddDbTargetToNLog();
+                SetDbConnectionForLogging();
             }
         }
 
@@ -141,27 +141,19 @@ namespace SalsaImporter
             get { return int.Parse(GetSetting("errorToleranceThreshold")); }
         }
 
-        private static void AddDbTargetToNLog()
+        private static void SetDbConnectionForLogging()
         {
-            string name = "db";
-            LoggingConfiguration loggingConfiguration = LogManager.Configuration;
-            if (loggingConfiguration.AllTargets.ToList().Any(t => t.Name == name))
+            const string targetName = "db";
+            var loggingConfiguration = LogManager.Configuration;
+            var target = loggingConfiguration.AllTargets.ToList().FirstOrDefault(t => t.Name == targetName) as DatabaseTarget;
+            if (target == null)
             {
-                loggingConfiguration.RemoveTarget(name);
+                Logger.Warn("Could not find Nlog database target 'db' in NLog.config file. Not database logging is available.");
+                return;
             }
-            var target = new DatabaseTarget
-                             {
-                                 Name = name, ConnectionString = DbConnectionString, KeepConnection = true, UseTransactions = true,
-                                 CommandText = "INSERT INTO ImporterLogs([time_stamp], [level], [threadId], [message], [exception]) VALUES (@time_stamp,@level,@threadid,@message,@exception)"
-                             };
-            target.Parameters.Add(new DatabaseParameterInfo("@time_stamp", new SimpleLayout("${date}")));
-            target.Parameters.Add(new DatabaseParameterInfo("@level", new SimpleLayout("${level}")));
-            target.Parameters.Add(new DatabaseParameterInfo("@threadid", new SimpleLayout("${threadid}")));
-            target.Parameters.Add(new DatabaseParameterInfo("@message", new SimpleLayout("${message}")));
-            target.Parameters.Add(new DatabaseParameterInfo("@exception", new SimpleLayout("${exception:format=type,message,stacktrace:maxInnerExceptionLevel=5:innerFormat=shortType,message,method}")));
-
-            loggingConfiguration.AddTarget(name, target);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
+                
+            target.ConnectionString = DbConnectionString;
+            
             LogManager.ReconfigExistingLoggers();
         }
 
