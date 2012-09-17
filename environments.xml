@@ -68,7 +68,7 @@
     <salsaWritable/>
 
     <dbHost>sqlcdbdev02</dbHost>
-    <dbName>SALSAThoughtWorks</dbName>
+    <dbName>SALSADBV2</dbName>
     <dbTrustedConnection>False</dbTrustedConnection>
     <!-- please set environment variables 'dbUserName' and 'dbPassword' instead of writing in this file for security concern-->
     <smtpFromAddress>Salsaintegration@aft.org</smtpFromAddress>
@@ -90,8 +90,8 @@
     <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
     <!-- please set environment variables 'salsaUserName' and 'salsaPassword' instead of writing in this file for security concern
    -->
-    <dbHost>.</dbHost>
-    <dbName>AFT</dbName>
+    <dbHost>AFTSQL01</dbHost>
+    <dbName>SALSADBV2</dbName>
     <dbTrustedConnection>False</dbTrustedConnection>
     <!-- please set environment variables 'dbUserName' and 'dbPassword' instead of writing in this file for security concern-->
     <smtpFromAddress>Salsaintegration@aft.org</smtpFromAddress>
@@ -100,16 +100,16 @@
     <smtpNotificationRecipient>rishaq@aft.org</smtpNotificationRecipient>
     <smtpHost>smtp.aft.org</smtpHost>
 
-    <smtpPort>587</smtpPort>
+    <smtpPort>25</smtpPort>
     <smtpUserName>Salsaintegration@aft.org</smtpUserName>
     <smtpRequireSsl>False</smtpRequireSsl>
     <smtpRequireLogin>False</smtpRequireLogin>
     <!--the SalsaImporter.exe and other config files will be copied to following folder when deploying. Windows scheduler should point to it as the working dir as well-->
     <applicationWorkingDir>c:\aft\SalsaImporter</applicationWorkingDir>
-    <errorToleranceThreshold>10</errorToleranceThreshold>
+    <errorToleranceThreshold>500</errorToleranceThreshold>
     <batchSize>500</batchSize>
   </production>
-  
+
   <demo>
     <salsaApiUrl>https://sandbox.salsalabs.com/</salsaApiUrl>
     <salsaUserName>aftsalsademo@example.com</salsaUserName>
