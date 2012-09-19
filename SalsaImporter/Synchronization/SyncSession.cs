@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Service;
+using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Synchronization
 {
@@ -93,7 +94,7 @@ namespace SalsaImporter.Synchronization
                 StartNewSession(BaseModifiedDate);
             else if (flag == SessionRunningFlag.RedoLast)
                 StartNewSession(lastContext.MinimumModifiedDate);
-            else if (lastContext.State == SessionState.Finished)
+            else if (lastContext.State.EqualsIgnoreCase(SessionState.Finished))
                 StartNewSession(lastContext.StartTime.Value);
             else
                 ResumeLastSession(lastContext);

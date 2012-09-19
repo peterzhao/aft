@@ -19,6 +19,7 @@ namespace SalsaImporter
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
         private NotificationService _notificationService;
+        private LogTrimmer _logTrimmer;
         
         public Sync()
         {
@@ -31,6 +32,7 @@ namespace SalsaImporter
             _queueRepository = new QueueRepository(mapperFactory);
             _notificationService = new NotificationService(new EmailService());
             _syncSession = new SyncSession(_notificationService);
+            _logTrimmer = new LogTrimmer();
         }
 
         public void Start()
@@ -51,7 +53,7 @@ namespace SalsaImporter
         private void Run(string sessionRunningFlag)
         {
             SanityCheck();
-            new LogTrimmer().TrimLogsOlderThan(2);
+            _logTrimmer.TrimImporterLogsOlderThan(2);
             _salsaClient.Login();//test if connection is good
             ConfigSync();
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
@@ -66,7 +68,10 @@ namespace SalsaImporter
             {
                 NotifySyncEvents();
             }
+            _logTrimmer.TrimOldNonErrorSyncEvents(_syncSession.CurrentContext.Id);
         }
+
+     
 
         public  void SanityCheck()
         {
