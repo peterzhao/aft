@@ -19,14 +19,6 @@ namespace SalsaImporter.Utilities
             }
         }
 
-        public void TrimOldNonErrorSyncEvents(int currentSessionContextId)
-        {
-            using (var db = new AftDbContext())
-            {
-                var sql = string.Format("delete from syncEvents where sessionContext_id<{0} and eventType<>'error'", currentSessionContextId);
-                Logger.Debug("Delete non-error syncEvents except for those of current session:" + currentSessionContextId);
-                db.Database.ExecuteSqlCommand(sql);
-            }
-        }
+      
     }
 }

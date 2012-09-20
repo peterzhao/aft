@@ -38,10 +38,8 @@ namespace SalsaImporter.Repositories
                 command.Parameters.AddRange(parameters.ToArray());
                 command.ExecuteNonQuery();
             }
-            NotifySyncEvent(this, new SyncEventArgs { EventType = SyncEventType.Import, Destination = this, SyncObject = syncObject });
         }
 
-        public event EventHandler<SyncEventArgs> NotifySyncEvent = delegate { };
 
         public List<SyncObject> GetBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {

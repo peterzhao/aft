@@ -22,7 +22,6 @@ namespace SalsaImporterTests.Repositories
         private Mock<IMapperFactory> _mapperFactoryMock;
         private Mock<IMapper> _mapperMock;
         private Mock<ISyncErrorHandler> _errorHandlerMock;
-        private SyncEventArgs _syncEventArgs;
         private List<FieldMapping> _fieldMappings;
         private List<string> _expectedSalsaFields;
 
@@ -38,9 +37,7 @@ namespace SalsaImporterTests.Repositories
 
             _repository = new SalsaRepository(_salsaClient.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
 
-            _syncEventArgs = null;
-            _repository.NotifySyncEvent += (sender, args) => _syncEventArgs = args;
-
+         
             _fieldMappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" } };
             _expectedSalsaFields = new List<string> { "Email" };
         }
@@ -209,7 +206,7 @@ namespace SalsaImporterTests.Repositories
             var primaryFieldMapping = new FieldMapping{AftField = "Email", SalsaField = "email"};
             var mappings = new List<FieldMapping>{new FieldMapping{SalsaField = "Email"}, new FieldMapping{SalsaField = "Address"}};
 
-            var aftObj = new SyncObject(ObjectType) {SalsaKey = 1234};
+            var aftObj = new SyncObject(ObjectType) {SalsaKey = 0};
             aftObj["Email"] = "foo@abc.com";
             var nameValues = new NameValueCollection();
             _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
@@ -224,11 +221,7 @@ namespace SalsaImporterTests.Repositories
 
              _repository.Save(aftObj);
 
-            Assert.IsNotNull(_syncEventArgs);
-            Assert.AreEqual(_repository, _syncEventArgs.Destination);
-            Assert.AreEqual(SyncEventType.Export, _syncEventArgs.EventType);
             Assert.AreEqual(key, aftObj.SalsaKey);
-            Assert.AreEqual(aftObj.ToString(), _syncEventArgs.Data);
             
         }
 

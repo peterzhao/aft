@@ -6,9 +6,9 @@ using SalsaImporter.Repositories;
 
 namespace SalsaImporter.Synchronization
 {
-    public class SyncEventTracker : ISyncEventTracker
+    public class SyncErrorTracker : ISyncErrorTracker
     {
-        public void TrackEvent(SyncEventArgs args, SessionContext sessionContext)
+        public void TrackError(SyncEventArgs args, SessionContext sessionContext)
         {
             using(var db = new AftDbContext())
             {
@@ -28,12 +28,6 @@ namespace SalsaImporter.Synchronization
             }
         }
 
-        public void SyncEventsForSession(SessionContext sessionContext, Action<IQueryable<SyncEvent>> action )
-        {
-            using (var db = new AftDbContext())
-            {
-                action(db.SyncEvents.Where(ev => ev.SessionContext.Id == sessionContext.Id));
-            }
-        }
+      
     }
 }

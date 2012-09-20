@@ -15,7 +15,7 @@ namespace SalsaImporter
         private readonly SyncSession _syncSession;
         private readonly ISyncErrorHandler _errorHandler;
         private readonly ISalsaClient _salsaClient;
-        private readonly ISyncEventTracker _syncEventTracker;
+        private readonly ISyncErrorTracker _syncErrorTracker;
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
         private NotificationService _notificationService;
@@ -27,7 +27,7 @@ namespace SalsaImporter
 
             _errorHandler = new SyncErrorHandler(Config.ErrorToleranceThreshold);
             _salsaClient = new SalsaClient();
-            _syncEventTracker = new SyncEventTracker();
+            _syncErrorTracker = new SyncErrorTracker();
             _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
             _queueRepository = new QueueRepository(mapperFactory);
             _notificationService = new NotificationService(new EmailService());
@@ -56,9 +56,7 @@ namespace SalsaImporter
             _logTrimmer.TrimImporterLogsOlderThan(2);
             _salsaClient.Login();//test if connection is good
             ConfigSync();
-            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            _salsaRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
-            _queueRepository.NotifySyncEvent += (sender, syncEventArgs) => _syncEventTracker.TrackEvent(syncEventArgs, _syncSession.CurrentContext);
+            HandleErrors();
 
             try
             {
@@ -68,10 +66,15 @@ namespace SalsaImporter
             {
                 NotifySyncEvents();
             }
-            _logTrimmer.TrimOldNonErrorSyncEvents(_syncSession.CurrentContext.Id);
         }
 
-     
+        private void HandleErrors()
+        {
+            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) =>
+                                             _syncErrorTracker.TrackError(syncEventArgs, _syncSession.CurrentSessionContext);
+            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => { if (_syncSession.CurrentJobContext != null) _syncSession.CurrentJobContext.CountError(); };
+        }
+
 
         public  void SanityCheck()
         {
@@ -109,23 +112,14 @@ namespace SalsaImporter
 
         private void NotifySyncEvents()
         {
-            var messages = _syncSession.Jobs.GroupBy( job=>job.ObjectType).Select(g => PrintSyncEventsFor(g.Key)).ToList();
-            _notificationService.SendNotification(string.Join("\n", messages));
+            var message = "\n" + string.Join("\n",
+                _syncSession.CurrentSessionContext.JobContexts.Select(c => string.Format("{0}: finished:{1} error:{2}",
+                    c.JobName, c.SuccessCount ?? 0, c.ErrorCount ?? 0)).ToList());
+            Logger.Info(message);
+            _notificationService.SendNotification( message);
         }
 
-        private string PrintSyncEventsFor(string objectType)
-        {
-            int totalErrors = 0;
-            int totalAddedToLocal = 0;
-            int totalAddedToSalsa = 0;
-            var currentContext = _syncSession.CurrentContext;
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalErrors = events.Count(e => e.EventType == SyncEventType.Error && e.ObjectType == objectType));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToLocal = events.Count(e => e.EventType == SyncEventType.Import && e.ObjectType == objectType));
-            _syncEventTracker.SyncEventsForSession(currentContext, events => totalAddedToSalsa = events.Count(e => e.EventType == SyncEventType.Export && e.ObjectType == objectType));
-            var message = string.Format("{0}: total imported from Salsa:{1} total exported to Salsa:{2} total errors: {3}", objectType.ToUpper(), totalAddedToLocal, totalAddedToSalsa, totalErrors);
-            Logger.Info(message);
-            return message;
-        }
+     
 
         public void DeleteAllSupporters()
         {

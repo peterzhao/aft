@@ -38,7 +38,7 @@ namespace SalsaImporter.Synchronization
                                                          _batchSize,
                                                          jobContext.CurrentRecord,
                                                          jobContext.MinimumModificationDate).ToList();
-                currentBatch.ForEach(Enqueue);
+                currentBatch.ForEach(syncObject => Enqueue(syncObject, jobContext));
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().SalsaKey);
                 else
@@ -46,11 +46,13 @@ namespace SalsaImporter.Synchronization
             };
         }
 
-        private void Enqueue(SyncObject obj)
+        private void Enqueue(SyncObject obj, IJobContext jobContext)
         {
             try
             {
                 _destination.Enqueue(_queueName, obj);
+                jobContext.CountSuccess();
+                
             }
             catch(Exception ex)
             {

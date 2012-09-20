@@ -60,6 +60,8 @@ namespace SalsaImporterTests.Synchronization
             _errorHandler.Verify(h => h.HandleSyncObjectFailure(syncObject1, _importer, error));
             _destinationMock.Verify(queueRepository => queueRepository.Enqueue(QueueName, syncObject2));
             _destinationMock.Verify(queueRepository => queueRepository.Enqueue(QueueName, syncObject3));
+
+            Assert.AreEqual(2, _jobContext.SuccessCount);
         }
     }
 }

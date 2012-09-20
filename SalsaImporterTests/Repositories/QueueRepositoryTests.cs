@@ -57,18 +57,7 @@ namespace SalsaImporterTests.Repositories
             Assert.AreEqual(1234, firstQueueRecord["SalsaKey"]);
         }
 
-        [Test]
-        public void ShouldRaiseEventWhenPushed()
-        {
-            SyncEventArgs eventArgs = null;
-            _repository.NotifySyncEvent += (sender, args) => eventArgs = args;
-            _repository.Enqueue(TableName, _syncObject);
-
-            Assert.IsNotNull(eventArgs);
-            Assert.AreEqual(_syncObject.ObjectType, eventArgs.ObjectType);
-            Assert.AreEqual(SyncEventType.Import, eventArgs.EventType);
-            Assert.AreEqual(_repository, eventArgs.Destination);
-        }
+      
 
         [Test]
         public void ShouldGetBatchOfObjects()

@@ -67,6 +67,8 @@ namespace SalsaImporterTests.Synchronization
             _source.Verify(s => s.Dequeue(QueueName, 4561), Times.Never());
             _source.Verify(s => s.Dequeue(QueueName, 4562));
             _source.Verify(s => s.Dequeue(QueueName, 4563));
+
+            Assert.AreEqual(2, _jobContext.SuccessCount);
         }
     }
 }

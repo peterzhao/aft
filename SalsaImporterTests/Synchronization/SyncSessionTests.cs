@@ -47,7 +47,7 @@ namespace SalsaImporterTests.Synchronization
             Assert.IsTrue(job1Called);
 
             Assert.IsTrue(job2Called);
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentSessionContext.Id));
             Assert.AreEqual(SessionState.Finished, currentContext.State);
             Assert.IsTrue(currentContext.FinishedTime >= start);
             Assert.IsTrue(currentContext.StartTime >= start);
@@ -56,7 +56,7 @@ namespace SalsaImporterTests.Synchronization
             Assert.IsTrue(currentContext.JobContexts.First().FinishedTime >= start);
             Assert.IsTrue(currentContext.JobContexts.Last().FinishedTime >= start);
             Assert.AreEqual(200, currentContext.JobContexts.First().CurrentRecord);
-            Assert.AreEqual(SyncSession.BaseModifiedDate, session.CurrentContext.MinimumModifiedDate);
+            Assert.AreEqual(SyncSession.BaseModifiedDate, session.CurrentSessionContext.MinimumModifiedDate);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace SalsaImporterTests.Synchronization
 
             Assert.IsFalse(job1Called);
             Assert.IsTrue(job2Called);
-            Assert.AreEqual(_jobContext22.StartTime, session.CurrentContext.JobContexts.Last().StartTime);
+            Assert.AreEqual(_jobContext22.StartTime, session.CurrentSessionContext.JobContexts.Last().StartTime);
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace SalsaImporterTests.Synchronization
             Assert.IsTrue(job1Called);
          
             Assert.IsTrue(job2Called);
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id ==session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id ==session.CurrentSessionContext.Id));
             Assert.AreEqual(SessionState.Finished, currentContext.State);
             Assert.IsTrue(currentContext.FinishedTime >= start);
             Assert.IsTrue(currentContext.StartTime >= start);
@@ -127,12 +127,12 @@ namespace SalsaImporterTests.Synchronization
 
             Assert.IsTrue(job1Called);
             Assert.IsFalse(job2Called);
-            Assert.AreEqual(SessionState.Aborted, session.CurrentContext.State);
-            Assert.IsNull(session.CurrentContext.FinishedTime);
-            Assert.IsTrue(session.CurrentContext.StartTime >= start);
-            Assert.IsTrue(session.CurrentContext.JobContexts.First().StartTime >= start);
-            Assert.IsNull(session.CurrentContext.JobContexts.Last().StartTime);
-            Assert.IsNull(session.CurrentContext.JobContexts.First().FinishedTime);
+            Assert.AreEqual(SessionState.Aborted, session.CurrentSessionContext.State);
+            Assert.IsNull(session.CurrentSessionContext.FinishedTime);
+            Assert.IsTrue(session.CurrentSessionContext.StartTime >= start);
+            Assert.IsTrue(session.CurrentSessionContext.JobContexts.First().StartTime >= start);
+            Assert.IsNull(session.CurrentSessionContext.JobContexts.Last().StartTime);
+            Assert.IsNull(session.CurrentSessionContext.JobContexts.First().FinishedTime);
             _mockMailer.Verify();
 
         }
@@ -184,7 +184,7 @@ namespace SalsaImporterTests.Synchronization
 
             Assert.IsTrue(job1Called);
             Assert.IsTrue(job2Called);
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentSessionContext.Id));
             Assert.AreEqual(SessionState.Finished, currentContext.State);
             Assert.AreEqual(SyncSession.BaseModifiedDate, currentContext.MinimumModifiedDate);
         }
@@ -205,7 +205,7 @@ namespace SalsaImporterTests.Synchronization
 
             session.Run(SessionRunningFlag.Rebase);
 
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentSessionContext.Id));
 
             Assert.IsTrue(job1Context.StartTime > startTime);
             Assert.IsTrue(job2Context.StartTime > startTime);
@@ -231,7 +231,7 @@ namespace SalsaImporterTests.Synchronization
 
             Assert.IsTrue(job1Called);
             Assert.IsTrue(job2Called);
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentSessionContext.Id));
             Assert.AreEqual(SessionState.Finished, currentContext.State);
             Assert.AreEqual(_context2.MinimumModifiedDate, currentContext.MinimumModifiedDate);
         }
@@ -250,7 +250,7 @@ namespace SalsaImporterTests.Synchronization
 
             session.Run(SessionRunningFlag.RedoLast);
 
-            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentContext.Id));
+            var currentContext = Db(db => db.SessionContexts.Include("JobContexts").First(s => s.Id == session.CurrentSessionContext.Id));
 
             Assert.IsTrue(job1Context.StartTime > startTime);
             Assert.IsTrue(job2Context.StartTime > startTime);

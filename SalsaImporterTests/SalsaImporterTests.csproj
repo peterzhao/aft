@@ -62,6 +62,7 @@
     <Compile Include="Synchronization\ExporterTests.cs" />
     <Compile Include="Synchronization\ImporterTests.cs" />
     <Compile Include="Synchronization\DbUtilityTests.cs" />
+    <Compile Include="Synchronization\JobContextTests.cs" />
     <Compile Include="Synchronization\SyncConfigTests.cs" />
     <Compile Include="Synchronization\SyncEventTrackerTests.cs" />
     <Compile Include="Synchronization\SyncObjectTests.cs" />

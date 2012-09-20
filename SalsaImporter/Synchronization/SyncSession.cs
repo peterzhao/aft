@@ -27,7 +27,8 @@ namespace SalsaImporter.Synchronization
     public class SyncSession
     {
         private readonly List<ISyncJob> _jobs;
-        private SessionContext _currentContext;
+        private SessionContext _currentSessionContext;
+        private JobContext _currentJobContext;
         private readonly AftDbContext _db;
         private NotificationService _notificationService;
         public readonly static DateTime BaseModifiedDate = new DateTime(1991, 1, 1);
@@ -39,9 +40,14 @@ namespace SalsaImporter.Synchronization
             _db = new AftDbContext();
         }
 
-        public SessionContext CurrentContext
+        public SessionContext CurrentSessionContext
         {
-            get { return _currentContext; }
+            get { return _currentSessionContext; }
+        }
+
+        public JobContext CurrentJobContext
+        {
+            get { return _currentJobContext; }
         }
 
         public List<ISyncJob> Jobs
@@ -67,7 +73,8 @@ namespace SalsaImporter.Synchronization
             {
                 foreach (var job in _jobs)
                 {
-                    var jobContext = CurrentContext.JobContexts.First(j => j.JobName == job.Name);
+                    var jobContext = CurrentSessionContext.JobContexts.First(j => j.JobName == job.Name);
+                    _currentJobContext = jobContext;
                     if (jobContext.FinishedTime == null)
                         StartJob(jobContext, job);
                 }
@@ -78,7 +85,7 @@ namespace SalsaImporter.Synchronization
                 var message = String.Format("Encountered error. Sync aborted. Please try to resume this session later. Exception: {0}", ex.Message);
                 _notificationService.SendNotification(message);
 
-                CurrentContext.State = SessionState.Aborted;
+                CurrentSessionContext.State = SessionState.Aborted;
                 _db.SaveChanges();
                 throw new SyncAbortedException(message, ex);
             }
@@ -98,8 +105,8 @@ namespace SalsaImporter.Synchronization
 
             _jobs.ForEach(job =>
             {
-                if (CurrentContext.JobContexts.All(j => j.JobName != job.Name))
-                    CurrentContext.JobContexts.Add(new JobContext { JobName = job.Name });
+                if (CurrentSessionContext.JobContexts.All(j => j.JobName != job.Name))
+                    CurrentSessionContext.JobContexts.Add(new JobContext { JobName = job.Name });
             });
 
             _db.SaveChanges();
@@ -107,13 +114,13 @@ namespace SalsaImporter.Synchronization
 
         private void StartNewSession(DateTime modifiedDate)
         {
-                _currentContext = new SessionContext { 
+                _currentSessionContext = new SessionContext { 
                     State = SessionState.New,
                     StartTime = DateTime.Now,
                     JobContexts = new Collection<JobContext>(),
                     MinimumModifiedDate = modifiedDate};
                 Logger.Info("Start sync session...");
-                _db.SessionContexts.Add(_currentContext);
+                _db.SessionContexts.Add(_currentSessionContext);
         }
 
         private void StartJob(JobContext jobContext, ISyncJob job)
@@ -131,8 +138,8 @@ namespace SalsaImporter.Synchronization
 
         private void UpdateSessionStateToFinished()
         {
-            CurrentContext.State = SessionState.Finished;
-            CurrentContext.FinishedTime = DateTime.Now;
+            CurrentSessionContext.State = SessionState.Finished;
+            CurrentSessionContext.FinishedTime = DateTime.Now;
             _db.SaveChanges();
 
             Logger.Info("Finished sync session.");
@@ -140,8 +147,8 @@ namespace SalsaImporter.Synchronization
 
         private void ResumeLastSession(SessionContext lastContext)
         {
-            _currentContext = lastContext; //resume
-            CurrentContext.State = SessionState.Resumed;
+            _currentSessionContext = lastContext; //resume
+            CurrentSessionContext.State = SessionState.Resumed;
             Logger.Info("Resuming sync session...");
         }
     }

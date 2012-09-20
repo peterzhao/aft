@@ -42,7 +42,7 @@ namespace SalsaImporter.Synchronization
                                                          _queueName,
                                                          _batchSize,
                                                          jobContext.CurrentRecord).ToList();
-                var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => ExportSyncObject(syncObject), null));
+                var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => ExportSyncObject(syncObject, jobContext), null));
                 Task.WaitAll(tasks.ToArray());
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().QueueId);
@@ -51,13 +51,14 @@ namespace SalsaImporter.Synchronization
             };
         }
 
-        private void ExportSyncObject(SyncObject syncObject)
+        private void ExportSyncObject(SyncObject syncObject, IJobContext jobContext)
         {
             try
             {
                 _destination.Save(syncObject);
                 _source.UpdateStatus(_queueName, syncObject.QueueId, QueueRepository.QueueStatusExported, DateTime.Now);
                 _source.Dequeue(_queueName, syncObject.QueueId);
+                jobContext.CountSuccess();
             }
             catch (SaveToSalsaException ex)
             {

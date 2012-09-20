@@ -90,6 +90,7 @@
     <salsaApiUrl>https://hq-afl.salsalabs.com/</salsaApiUrl>
     <!-- please set environment variables 'salsaUserName' and 'salsaPassword' instead of writing in this file for security concern
    -->
+    <salsaWritable/>
     <dbHost>AFTSQL01</dbHost>
     <dbName>SALSADBV2</dbName>
     <dbTrustedConnection>False</dbTrustedConnection>

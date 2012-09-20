@@ -33,30 +33,6 @@ namespace SalsaImporterTests.Utilities
             Assert.IsFalse(rows.Any(r => r["message"].Equals("test2")));
         }
 
-        [Test]
-        public void ShouldRemoveOlderSyncEventsExludingErrors()
-        {
-            var oneDaysAgo = DateTime.Now.AddDays(-1);
-            var session1 = new SessionContext {State = "finished", StartTime = oneDaysAgo, MinimumModifiedDate = oneDaysAgo};
-            var session2 = new SessionContext {State = "started", StartTime = DateTime.Now, MinimumModifiedDate = oneDaysAgo};
-
-            using(var db = new AftDbContext())
-            {
-                db.SessionContexts.Add(session1);
-                db.SaveChanges();
-                db.SessionContexts.Add(session2);
-                db.SaveChanges();
-            }
-            TestUtils.ExecuteSql("delete from syncEvents");
-            TestUtils.ExecuteSql(string.Format("insert into syncEvents (eventType, data, salsaKey, sessionContext_id) values('import','test1',0, {0})", session1.Id));
-            TestUtils.ExecuteSql(string.Format("insert into syncEvents (eventType, data, salsaKey, sessionContext_id) values('error','test2',0, {0})", session1.Id));
-            TestUtils.ExecuteSql(string.Format("insert into syncEvents (eventType, data, salsaKey, sessionContext_id) values('import','test3',0, {0})", session2.Id));
-            new LogTrimmer().TrimOldNonErrorSyncEvents(session2.Id);
-
-            var rows = TestUtils.ReadAllFromTable("syncEvents");
-            Assert.IsTrue(rows.Any(r => r["Data"].Equals("test2")));
-            Assert.IsTrue(rows.Any(r => r["Data"].Equals("test3")));
-            Assert.IsFalse(rows.Any(r => r["Data"].Equals("test1")));
-        }
+       
     }
 }
