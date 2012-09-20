@@ -36,6 +36,7 @@ namespace SalsaImporter.Synchronization
         {
             for (int batchCount = 1; ; batchCount++) 
             {
+                if(!Config.SalsaWritable) throw new AccessViolationException(String.Format("Cannot export objects to Salsa. {0} is in read-only mode.", Config.Environment));
                 Logger.Debug("Dequeue in batch " + batchCount + " with batch size:" + _batchSize + " " + Name);
                 var currentBatch = _source.GetBatchOfObjects(_objectType,
                                                          _queueName,

@@ -129,7 +129,7 @@ namespace SalsaImporter
 
         public void DeleteAllSupporters()
         {
-            if(Config.Environment == Config.Production)
+            if (Config.Environment == Config.Production || Config.SalsaApiUri == "https://hq-afl.salsalabs.com/")
                 throw new InvalidOperationException("Cannot delete all supporters in production");
             _salsaClient.DeleteAllObjects("supporter", 100, true);
         }

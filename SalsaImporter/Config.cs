@@ -65,9 +65,9 @@ namespace SalsaImporter
             get
             {
                 if (DbTrustedConnection)
-                    return String.Format("Server={0};Database={1};Trusted_Connection=true", GetSetting("dbHost"), GetSetting("dbName"));
-                
-                return string.Format("Server={0};Database={1};User Id={2};Password={3};",
+                    return String.Format("Server={0};Database={1};Trusted_Connection=true;Connection Timeout=120", GetSetting("dbHost"), GetSetting("dbName"));
+
+                return string.Format("Server={0};Database={1};User Id={2};Password={3};Connection Timeout=120",
                         GetSetting("dbHost"), GetSetting("dbName"), GetSetting("dbUserName"), GetSetting("dbPassword"));
             }
         }

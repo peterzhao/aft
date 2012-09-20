@@ -16,7 +16,7 @@ namespace SalsaImporterTests
         [Test]
         public void ShouldGetDbConnectionString()
         {
-            Assert.AreEqual("Server=.;Database=Aft;Trusted_Connection=true", Config.DbConnectionString);
+            Assert.AreEqual("Server=.;Database=Aft;Trusted_Connection=true;Connection Timeout=120", Config.DbConnectionString);
         }
 
         [Test]

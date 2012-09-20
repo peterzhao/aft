@@ -329,7 +329,7 @@ namespace SalsaImporter.Salsa
         {
             if (!_writeAccessEnabled)
             {
-                throw new AccessViolationException(String.Format("{0} is in read-only mode", GetType().Name));
+                throw new AccessViolationException(String.Format("{0} is in read-only mode", Config.Environment));
             }
         }
 
