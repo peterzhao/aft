@@ -17,8 +17,8 @@ namespace SalsaImporter.Service
         public NotificationService(ISmtpClient mailer)
         {
             _sender = Config.SmtpFromAddress;
-            _recipient = Config.SmtpNotificationRecipient;
-            _subject = "Salsa Sync Notification";
+            _recipient = Config.SmtpNotificationRecipient.Replace(';',',');
+            _subject = string.Format("Salsa Sync Notification ({0})", Config.Environment);
             _mailer = mailer;
         }
 
