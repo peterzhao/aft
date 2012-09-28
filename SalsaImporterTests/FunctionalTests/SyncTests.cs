@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SalsaImporter;
+using SalsaImporter.Repositories;
 using SalsaImporter.Salsa;
 using SalsaImporter.Synchronization;
 using SalsaImporter.Utilities;
@@ -87,6 +89,8 @@ namespace SalsaImporterTests.FunctionalTests
         [Test]
         public void ShouldExportSupporters()
         {
+          
+
             _supporterOne["Last_Name"] = "";
             _supporterOne["Title"] = "Mister";
             TestUtils.InsertToSalsa(_supporterOne);
@@ -131,6 +135,9 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(rowsInHistory.Any(r => r["Email"].Equals(emailOne)));
             Assert.IsTrue(rowsInHistory.Any(r => r["Email"].Equals(emailTwo)));
             Assert.IsTrue(rowsInHistory.All(r => r["Status"].Equals("Exported")));
+
+            List<XElement> supporterChaptersOnSalsa = TestUtils.GetAllFromSalsa("supporter_chapter");
+          
         }
 
         [Test]
@@ -226,7 +233,43 @@ namespace SalsaImporterTests.FunctionalTests
                                                                            supporterChapter.IntValueOrDefault("chapter_KEY") == _chapterTwo.SalsaKey));
         }
 
-        
+        [Test]
+        public void ShouldNotExportSupporterAgainWhenObejctsAreIdentical()
+        {
+            TestUtils.InsertToSalsa(_chapterOne);
+
+            var email = "foo1@abc.com";
+            TestUtils.InsertSupporterToExportQueue(email, "peter", "zhao", 
+                new DateTime(2012, 08, 29, 12, 34, 56, 00), "Mr", 0, _chapterOne.SalsaKey);
+            new Sync().Start();
+
+            var supporter1OnSalsa = TestUtils.GetAllFromSalsa("supporter").First();
+
+            Thread.Sleep(2000);
+
+            //only if blank and salsa wins fields and salsa key and million second of datetime will be ignored when checking identical
+            TestUtils.InsertSupporterToExportQueue(email, "no matter for blank only rule", "no matter for blank only rule", 
+                new DateTime(2012, 08, 29, 12, 34, 56, 78), "no matter for salsawins", 23, _chapterOne.SalsaKey);
+
+            // Test
+            new Sync().Start();
+
+            var supporter2OnSalsa = TestUtils.GetAllFromSalsa("supporter").First();
+
+            Assert.AreEqual(supporter1OnSalsa.Element("Last_Modified").Value, supporter2OnSalsa.Element("Last_Modified").Value);
+
+            var rowsInHistory = TestUtils.ReadAllFromTable("AftToSalsaQueue_Supporter_History");
+            Assert.AreEqual(2, rowsInHistory.Count);
+            Assert.IsTrue(rowsInHistory.Any(r => r["Status"].Equals(QueueRepository.QueueStatusExported) && r["Email"].Equals(email)));
+            Assert.IsTrue(rowsInHistory.Any(r => r["Status"].Equals(QueueRepository.QueueStatusSkipped) && r["Email"].Equals(email)));
+
+
+
+        }
+
+
+
+
 
     }
 }

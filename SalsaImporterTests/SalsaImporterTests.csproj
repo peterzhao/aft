@@ -74,6 +74,7 @@
     <Compile Include="Synchronization\SyncJobStub.cs" />
     <Compile Include="Synchronization\SyncSessionTests.cs" />
     <Compile Include="Synchronization\JobContextStub.cs" />
+    <Compile Include="SyncObjectComparatorTests.cs" />
     <Compile Include="Utilities\DateTimeUtilityTests.cs" />
     <Compile Include="Utilities\LogTrimmerTests.cs" />
     <Compile Include="Utilities\SanityCheckerTests_NoFields_Errors.cs" />

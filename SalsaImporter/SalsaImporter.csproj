@@ -54,6 +54,7 @@
     <Compile Include="Exceptions\InvalidDataTypeException.cs" />
     <Compile Include="Exceptions\SalsaClientException.cs" />
     <Compile Include="Exceptions\SaveToSalsaException.cs" />
+    <Compile Include="ISyncObjectComparator.cs" />
     <Compile Include="Mappers\DataType.cs" />
     <Compile Include="Mappers\DataTypeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Synchronization\IJobContext.cs" />
     <Compile Include="Synchronization\JobContext.cs" />
     <Compile Include="Synchronization\SyncSession.cs" />
+    <Compile Include="SyncObjectComparator.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
     <Compile Include="Utilities\DbUtility.cs" />
     <Compile Include="Utilities\LogTrimmer.cs" />

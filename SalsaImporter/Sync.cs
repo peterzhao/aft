@@ -20,6 +20,7 @@ namespace SalsaImporter
         private readonly QueueRepository _queueRepository;
         private NotificationService _notificationService;
         private LogTrimmer _logTrimmer;
+        private ISyncObjectComparator _objectComparator;
         
         public Sync()
         {
@@ -27,8 +28,9 @@ namespace SalsaImporter
 
             _errorHandler = new SyncErrorHandler(Config.ErrorToleranceThreshold);
             _salsaClient = new SalsaClient();
+            _objectComparator = new SyncObjectComparator(_salsaClient);
             _syncErrorTracker = new SyncErrorTracker();
-            _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler);
+            _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler, _objectComparator);
             _queueRepository = new QueueRepository(mapperFactory);
             _notificationService = new NotificationService(new EmailService());
             _syncSession = new SyncSession(_notificationService);
@@ -114,8 +116,8 @@ namespace SalsaImporter
         {
             var details = string.Join(Environment.NewLine, _syncSession.CurrentSessionContext.JobContexts.Select(c =>
                 {
-                    return string.Format("{0}: {1} success; {2} error {3}", c.JobName, c.SuccessCount ?? 0, c.ErrorCount ?? 0,
-                        c.IdenticalObjectCount == null? "": c.IdenticalObjectCount + " identical")
+                    return string.Format("{0}: {1} success; {2} error{3}", c.JobName, c.SuccessCount ?? 0, c.ErrorCount ?? 0,
+                        c.IdenticalObjectCount == null? "": "; " + c.IdenticalObjectCount + " identical")
                     ;
                 }).ToList());
             

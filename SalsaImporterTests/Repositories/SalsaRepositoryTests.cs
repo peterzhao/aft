@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Moq;
 using NUnit.Framework;
+using SalsaImporter;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Mappers;
 using SalsaImporter.Repositories;
@@ -24,6 +25,7 @@ namespace SalsaImporterTests.Repositories
         private Mock<ISyncErrorHandler> _errorHandlerMock;
         private List<FieldMapping> _fieldMappings;
         private List<string> _expectedSalsaFields;
+        private Mock<ISyncObjectComparator> _objectComparator;
 
         [SetUp]
         public void SetUp()
@@ -31,11 +33,11 @@ namespace SalsaImporterTests.Repositories
             _salsaClient = new Mock<ISalsaClient>();
             _mapperMock = new Mock<IMapper>();
             _errorHandlerMock = new Mock<ISyncErrorHandler>();
-            
+            _objectComparator = new Mock<ISyncObjectComparator>();
             _mapperFactoryMock = new Mock<IMapperFactory>();
             _mapperFactoryMock.Setup(f => f.GetMapper(ObjectType)).Returns(_mapperMock.Object);
 
-            _repository = new SalsaRepository(_salsaClient.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object);
+            _repository = new SalsaRepository(_salsaClient.Object, _mapperFactoryMock.Object, _errorHandlerMock.Object, _objectComparator.Object);
 
          
             _fieldMappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" } };
@@ -243,7 +245,7 @@ namespace SalsaImporterTests.Repositories
                 aftObj[primaryFieldMapping.AftField].ToString(),
                 It.IsAny<IEnumerable<string>>())).Returns(salsaXml);
             _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
-            _mapperMock.Setup(m => m.IsIdentical(aftObj, salsaObj)).Returns(false);
+            _objectComparator.Setup(m => m.AreIdentical(aftObj, salsaObj, mappings)).Returns(false);
             _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
             _salsaClient.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
 
@@ -271,7 +273,7 @@ namespace SalsaImporterTests.Repositories
                 aftObj[primaryFieldMapping.AftField].ToString(),
                 It.IsAny<IEnumerable<string>>())).Returns(salsaXml);
             _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
-            _mapperMock.Setup(m => m.IsIdentical(aftObj, salsaObj)).Returns(true);
+            _objectComparator.Setup(m => m.AreIdentical(aftObj, salsaObj, mappings)).Returns(true);
 
             var saved = _repository.Save(aftObj);
             _salsaClient.Verify(s => s.Save(ObjectType, nameValues), Times.Never());

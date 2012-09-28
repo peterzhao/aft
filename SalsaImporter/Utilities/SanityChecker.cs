@@ -107,7 +107,8 @@ namespace SalsaImporter.Utilities
                 return true;
 
             if (syncDirection.EqualsIgnoreCase(SyncDirection.Import)
-               && mapping.MappingRule.EqualsIgnoreCase(MappingRules.writeOnly))
+               && (mapping.MappingRule.EqualsIgnoreCase(MappingRules.writeOnly) 
+               ||mapping.MappingRule.EqualsIgnoreCase(MappingRules.writeOnlyNewMembership)))
                 return true;
 
             if (!_typeMappings.Keys.Contains(column.DataType.Name))

@@ -23,7 +23,8 @@ namespace SalsaImporterTests.Utilities
 
         public static SalsaRepository SalsaRepository
         {
-            get { return new SalsaRepository(SalsaClient, new MapperFactory(), new SyncErrorHandler(10)); }
+            get { return new SalsaRepository(SalsaClient, new MapperFactory(), new SyncErrorHandler(10),
+                new SyncObjectComparator(SalsaClient)); }
         }
 
         public static void RemoveAllSalsa(string objectType, bool fetchOnlyKeys = true)
@@ -194,7 +195,7 @@ namespace SalsaImporterTests.Utilities
                         new FieldMapping{ObjectType = "supporter",AftField = "AFT_Match_DateTime",SalsaField = "cdb_match_date",
                                          DataType = "datetime",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "Chapter_KEY",SalsaField = "chapter_KEY",
-                                         DataType = "int",MappingRule = MappingRules.writeOnly},
+                                         DataType = "int",MappingRule = MappingRules.writeOnlyNewMembership},
                         new FieldMapping{ObjectType = "chapter",AftField = "Name",SalsaField = "Name",
                                          DataType = "string",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "Last_Modified",SalsaField = "Last_Modified",

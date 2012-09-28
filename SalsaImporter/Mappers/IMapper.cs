@@ -8,7 +8,6 @@ namespace SalsaImporter.Mappers
     public interface IMapper
     {
         NameValueCollection ToSalsa(SyncObject aftObject, SyncObject salsaObject);
-        bool IsIdentical(SyncObject aftObject, SyncObject salsaObject);
         SyncObject ToAft(XElement xElement);
         FieldMapping PrimaryKeyMapping { get; }
         List<FieldMapping> Mappings { get; }

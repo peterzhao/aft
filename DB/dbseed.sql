@@ -11,7 +11,7 @@ VALUES('supporter','Last_Modified','Last_Modified' ,'dateTime', 'readOnly');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Date_Created','Date_Created' ,'dateTime', 'readOnly');
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
-VALUES('supporter','chapter_KEY','Chapter_KEY' ,'int', 'writeOnly');
+VALUES('supporter','chapter_KEY','Chapter_KEY' ,'int', 'writeOnlyNewMembership');
 
 INSERT INTO [dbo].[FieldMappings]([ObjectType],[SalsaField],[AftField],[DataType], [MappingRule])
 VALUES('supporter','Title','Title' ,'string', 'onlyIfBlank');

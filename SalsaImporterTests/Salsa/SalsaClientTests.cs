@@ -9,6 +9,8 @@ using NUnit.Framework;
 using SalsaImporter;
 using SalsaImporter.Exceptions;
 using SalsaImporter.Salsa;
+using SalsaImporter.Synchronization;
+using SalsaImporterTests.Utilities;
 
 namespace SalsaImporterTests.Salsa
 {
@@ -27,6 +29,9 @@ namespace SalsaImporterTests.Salsa
         public void SetUp()
         {
             client = new SalsaClient();
+            TestUtils.RemoveAllSalsa("supporter_chapter");
+            TestUtils.RemoveAllSalsa("supporter");
+            TestUtils.RemoveAllSalsa("chapter");
         }
 
         [Test]
@@ -318,6 +323,9 @@ namespace SalsaImporterTests.Salsa
         [Test]
         public void ShouldGetFieldList()
         {
+            NameValueCollection supporter = GenerateSupporter();
+            client.Save("supporter", supporter);//need at least one record to get field list
+
             var fields = client.GetFieldList("supporter");
             Assert.Contains("Email",fields);
             Assert.Contains("key",fields);
@@ -325,6 +333,20 @@ namespace SalsaImporterTests.Salsa
         }
 
 
+        [Test]
+        public void ShouldCheckIfMembershipExist()
+        {
+            var chapter = new SyncObject("chapter");
+            chapter["Name"] = "Chapter0";
+            TestUtils.InsertToSalsa(chapter);
+            NameValueCollection supporter = GenerateSupporter();
+            supporter["chapter_KEY"] = chapter.SalsaKey.ToString();
+
+            var supporterKey = client.Save("supporter", supporter);
+
+            Assert.IsTrue(client.DoesMembershipExist("chapter", "supporter",chapter.SalsaKey.ToString(), supporterKey));
+            Assert.IsFalse(client.DoesMembershipExist("chapter", "supporter", chapter.SalsaKey.ToString(), "somethingNotExist"));
+        }
       
         private bool DoesSupporterExist(string id)
         {

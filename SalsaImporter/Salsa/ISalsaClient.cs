@@ -20,5 +20,7 @@ namespace SalsaImporter.Salsa
         int CountObjects(string objectType);
         int GetNextKey(string objectType, int startKey, DateTime dateTime);
         List<string> GetFieldList(string objectType);
+
+        bool DoesMembershipExist(string groupType, string objectType, string groupKey, string objectKey);
     }
 }

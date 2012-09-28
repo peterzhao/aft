@@ -27,103 +27,13 @@ namespace SalsaImporterTests.Mappers
                 new FieldMapping{AftField = "NickName", SalsaField = "nick_name", DataType = "string", MappingRule = MappingRules.salsaWins},
                 new FieldMapping{AftField = "SalsaLastModified", SalsaField = "LastModified", DataType = "datetime", MappingRule = MappingRules.readOnly},
                 new FieldMapping{AftField = "CustomDate1", SalsaField = "custom_date1", DataType = "dateTime", MappingRule = MappingRules.aftWins},
-                new FieldMapping{AftField = "ChapterKey", SalsaField = "chapter_KEY", DataType = "int", MappingRule = MappingRules.writeOnly},
+                new FieldMapping{AftField = "ChapterKey", SalsaField = "chapter_KEY", DataType = "int", MappingRule = MappingRules.writeOnlyNewMembership},
+                new FieldMapping{AftField = "GroupKey", SalsaField = "group_KEY", DataType = "int", MappingRule = MappingRules.writeOnly},
             };
             _mapper = new Mapper("SomeObject", _mappings);
         }
 
-        [Test]
-        public void ShouldBeIdenticalIgnoringFieldsWithSalsaWinsReadOnlyWriteOnlyAndPrimaryKeyRules()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["Email"] = "abc@cde.com";
-            aftObject["NickName"] = "Doo";
-            aftObject["SalsaLastModified"] = new DateTime(2012, 8, 23);
-            aftObject["ChapterKey"] = 20;
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["Email"] = "abc2@cde.com";
-            salsaObject["NickName"] = "Boo";
-            salsaObject["SalsaLastModified"] = new DateTime(2011, 9, 17);
-            salsaObject["ChapterKey"] = 98;
-
-            Assert.IsTrue(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-        [Test]
-        public void ShouldNotBeIdenticalIfAftWinsFieldsHaveDifferentValue()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["CustomDate1"] = new DateTime(2012, 8, 23);
-          
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["CustomDate1"] = new DateTime(2011, 9, 17);
-
-            Assert.IsFalse(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-        [Test]
-        public void ShouldBeIdenticalIfAftWinsFieldsHaveSameValue()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["CustomDate1"] = new DateTime(2012, 8, 23);
-
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["CustomDate1"] = new DateTime(2012, 8, 23);
-
-            Assert.IsTrue(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-       
-
-        [Test]
-        public void ShouldNotBeIdenticalIfOnlyIfBlankFieldIsBlankFromSalsaButNotBlankFromAft()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["Address"] = "Girk";
-
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["Address"] = null;
-
-            Assert.IsFalse(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-        [Test]
-        public void ShouldBeIdenticalIfOnlyIfBlankFieldIsNotBlankFromSalsa()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["Address"] = "Girk";
-
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["Address"] = "Duke";
-
-            Assert.IsTrue(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-        [Test]
-        public void ShouldBeIdenticalIfOnlyIfBlankFieldIsBlankFromSalsaButAftHasTheSameValue()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            aftObject["Address"] = null;
-
-
-            var salsaObject = new SyncObject(ObjectType);
-            salsaObject["Address"] = null;
-
-            Assert.IsTrue(_mapper.IsIdentical(aftObject, salsaObject));
-        }
-
-        [Test]
-        public void ShouldNotBeIdenticalWhenSalsaObjectIsNull()
-        {
-            var aftObject = new SyncObject(ObjectType);
-            Assert.IsFalse(_mapper.IsIdentical(aftObject, null));
-        }
-
+      
        
         [Test]
         public void ShouldGetPrimaryKeyMappingWhenPrimaryRuleIsPresented()
@@ -156,6 +66,7 @@ namespace SalsaImporterTests.Mappers
                                                 <address>main st</address>
                                                 <key>5678</key>
                                                 <chapter_KEY>1234</chapter_KEY>
+                                                <group_KEY>4321</group_KEY>
                                             </item>");
 
 
@@ -165,6 +76,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("main st", syncObject["Address"]);
             Assert.AreEqual(5678, syncObject.SalsaKey);
             Assert.IsFalse(syncObject.FieldNames.Contains("ChapterKey"));
+            Assert.IsFalse(syncObject.FieldNames.Contains("GroupKey"));
         }
 
         [Test]

@@ -14,12 +14,14 @@ namespace SalsaImporter.Repositories
         private readonly ISalsaClient _salsa;
         private readonly IMapperFactory _mapperFactory;
         private readonly ISyncErrorHandler _syncErrorHandler;
+        private ISyncObjectComparator _objectComparator;
 
-        public SalsaRepository(ISalsaClient salsa, IMapperFactory mapperFactory, ISyncErrorHandler syncErrorHandler)
+        public SalsaRepository(ISalsaClient salsa, IMapperFactory mapperFactory, ISyncErrorHandler syncErrorHandler, ISyncObjectComparator objectComparator)
         {
             _salsa = salsa;
             _mapperFactory = mapperFactory;
             _syncErrorHandler = syncErrorHandler;
+            _objectComparator = objectComparator;
         }
 
         public IEnumerable<SyncObject> GetBatchOfObjects(string objectType, int batchSize, int startKey, DateTime minimumModifiedDate)
@@ -99,7 +101,7 @@ namespace SalsaImporter.Repositories
                 var salsaXml = _salsa.GetObjectBy(aftObject.ObjectType, primaryKeyMapping.SalsaField,
                                                   aftObject[primaryKeyMapping.AftField].ToString(), salsaFields);
                  var salsaObject = mapper.ToAft(salsaXml);
-                if (mapper.IsIdentical(aftObject, salsaObject)) return false;
+                if (_objectComparator.AreIdentical(aftObject, salsaObject, mapper.Mappings)) return false;
                 aftObject.SalsaKey = int.Parse(_salsa.Save(aftObject.ObjectType, mapper.ToSalsa(aftObject, salsaObject)));
                 return true;
             }

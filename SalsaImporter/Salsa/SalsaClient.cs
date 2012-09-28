@@ -177,6 +177,22 @@ namespace SalsaImporter.Salsa
             });
         }
 
+        public bool DoesMembershipExist(string groupType, string objectType, string groupKey, string objectKey)
+        {
+            var condition1 = String.Format("condition={0}_KEY={1}", groupType, groupKey);
+            var condition2 = String.Format("condition={0}_KEY={1}", objectType, objectKey);
+            var queryString =  String.Format("api/getCount.sjs?object={0}_{1}&{2}&{3}&countColumn={0}_{1}_KEY",
+                                 objectType, groupType, condition1, condition2);
+                var url = _salsaUrl + queryString;
+                return Get(url, (result) =>
+                {
+                    var value = XDocument.Parse(result).Descendants(CountElementName).First().Value;
+                    var exist = Int32.Parse(value) > 0;
+                    Logger.Trace(string.Format("Membership exist? {0} for {1}_{2} with {1}_key: {3} {2}_key: {4}", exist, objectType, groupType, groupKey, objectKey));
+                    return exist;
+                }); 
+        }
+
         public int CountObjectsMatchingQuery(string objectType, string conditionName, string comparator, string conditionValue ) 
         {
             var queryString = GetQueryString(objectType, conditionName, comparator, conditionValue);
