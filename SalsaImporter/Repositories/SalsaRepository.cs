@@ -89,17 +89,19 @@ namespace SalsaImporter.Repositories
             return batchOfObjects;
         }
 
-        public void Save(SyncObject syncObject)
+        public bool Save(SyncObject aftObject)
         {
             try
             {
-                IMapper mapper = _mapperFactory.GetMapper(syncObject.ObjectType);
-                List<string> salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
+                var mapper = _mapperFactory.GetMapper(aftObject.ObjectType);
+                var salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
                 var primaryKeyMapping = mapper.PrimaryKeyMapping;
-                var salsaXml = _salsa.GetObjectBy(syncObject.ObjectType, primaryKeyMapping.SalsaField,
-                                                  syncObject[primaryKeyMapping.AftField].ToString(), salsaFields);
+                var salsaXml = _salsa.GetObjectBy(aftObject.ObjectType, primaryKeyMapping.SalsaField,
+                                                  aftObject[primaryKeyMapping.AftField].ToString(), salsaFields);
                  var salsaObject = mapper.ToAft(salsaXml);
-                 syncObject.SalsaKey = int.Parse(_salsa.Save(syncObject.ObjectType, mapper.ToSalsa(syncObject, salsaObject)));
+                if (mapper.IsIdentical(aftObject, salsaObject)) return false;
+                aftObject.SalsaKey = int.Parse(_salsa.Save(aftObject.ObjectType, mapper.ToSalsa(aftObject, salsaObject)));
+                return true;
             }
             catch(Exception ex)
             {

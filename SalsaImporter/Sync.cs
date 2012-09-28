@@ -112,7 +112,13 @@ namespace SalsaImporter
 
         private void NotifySyncEvents()
         {
-            var details = string.Join(Environment.NewLine, _syncSession.CurrentSessionContext.JobContexts.Select(c => string.Format("{0}: {1} success; {2} error", c.JobName, c.SuccessCount ?? 0, c.ErrorCount ?? 0)).ToList());
+            var details = string.Join(Environment.NewLine, _syncSession.CurrentSessionContext.JobContexts.Select(c =>
+                {
+                    return string.Format("{0}: {1} success; {2} error {3}", c.JobName, c.SuccessCount ?? 0, c.ErrorCount ?? 0,
+                        c.IdenticalObjectCount == null? "": c.IdenticalObjectCount + " identical")
+                    ;
+                }).ToList());
+            
             Logger.Info(string.Format("Synchronization in {0}:{1}{2}", Config.Environment, Environment.NewLine, details));
             _notificationService.SendNotification( details);
         }

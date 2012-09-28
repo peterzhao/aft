@@ -154,7 +154,8 @@ namespace SalsaImporterTests.Repositories
             _mapperMock.Setup(m => m.ToAft(xElement)).Returns(syncObject);
             _mapperMock.Setup(m => m.Mappings).Returns(_fieldMappings);
 
-            Assert.AreEqual(new List<SyncObject> { syncObject }, _repository.GetBatchOfObjects(ObjectType, originalBatchSize, originalStartKey, dateTime));
+            var batchOfObjects = _repository.GetBatchOfObjects(ObjectType, originalBatchSize, originalStartKey, dateTime);
+            Assert.AreEqual(new List<SyncObject> { syncObject }, batchOfObjects);
         }
 
         [Test]
@@ -198,10 +199,10 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
-        public void ShouldSaveObject()
+        public void ShouldAlwaysSaveObjectForNewObject()
         {
             var key = 1234;
-            var salsaObj = new SyncObject(ObjectType);
+            SyncObject salsaObj = null;
             var salsaXml = XElement.Parse("<item></item>");
             var primaryFieldMapping = new FieldMapping{AftField = "Email", SalsaField = "email"};
             var mappings = new List<FieldMapping>{new FieldMapping{SalsaField = "Email"}, new FieldMapping{SalsaField = "Address"}};
@@ -218,11 +219,64 @@ namespace SalsaImporterTests.Repositories
             _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
             _salsaClient.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
 
-
-             _repository.Save(aftObj);
-
+             var saved = _repository.Save(aftObj);
+            Assert.IsTrue(saved);
             Assert.AreEqual(key, aftObj.SalsaKey);
             
+        }
+
+        [Test]
+        public void ShouldSaveObjectIfObjectsAreNotIdentical()
+        {
+            var key = 1234;
+            var salsaObj = new SyncObject(ObjectType);
+            var salsaXml = XElement.Parse("<item></item>");
+            var primaryFieldMapping = new FieldMapping { AftField = "Email", SalsaField = "email" };
+            var mappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" }, new FieldMapping { SalsaField = "Address" } };
+
+            var aftObj = new SyncObject(ObjectType) { SalsaKey = 0 };
+            aftObj["Email"] = "foo@abc.com";
+            var nameValues = new NameValueCollection();
+            _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
+            _mapperMock.SetupGet(m => m.Mappings).Returns(mappings);
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField,
+                aftObj[primaryFieldMapping.AftField].ToString(),
+                It.IsAny<IEnumerable<string>>())).Returns(salsaXml);
+            _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
+            _mapperMock.Setup(m => m.IsIdentical(aftObj, salsaObj)).Returns(false);
+            _mapperMock.Setup(m => m.ToSalsa(aftObj, salsaObj)).Returns(nameValues);
+            _salsaClient.Setup(s => s.Save(ObjectType, nameValues)).Returns(key.ToString);
+
+            var saved = _repository.Save(aftObj);
+
+            Assert.AreEqual(key, aftObj.SalsaKey);
+            Assert.IsTrue(saved);
+
+        }
+
+        [Test]
+        public void ShouldNotSaveObjectIfObjectsAreIdentical()
+        {
+            var salsaObj = new SyncObject(ObjectType);
+            var salsaXml = XElement.Parse("<item></item>");
+            var primaryFieldMapping = new FieldMapping { AftField = "Email", SalsaField = "email" };
+            var mappings = new List<FieldMapping> { new FieldMapping { SalsaField = "Email" }, new FieldMapping { SalsaField = "Address" } };
+
+            var aftObj = new SyncObject(ObjectType) { SalsaKey = 0 };
+            aftObj["Email"] = "foo@abc.com";
+            var nameValues = new NameValueCollection();
+            _mapperMock.SetupGet(m => m.PrimaryKeyMapping).Returns(primaryFieldMapping);
+            _mapperMock.SetupGet(m => m.Mappings).Returns(mappings);
+            _salsaClient.Setup(s => s.GetObjectBy(ObjectType, primaryFieldMapping.SalsaField,
+                aftObj[primaryFieldMapping.AftField].ToString(),
+                It.IsAny<IEnumerable<string>>())).Returns(salsaXml);
+            _mapperMock.Setup(m => m.ToAft(salsaXml)).Returns(salsaObj);
+            _mapperMock.Setup(m => m.IsIdentical(aftObj, salsaObj)).Returns(true);
+
+            var saved = _repository.Save(aftObj);
+            _salsaClient.Verify(s => s.Save(ObjectType, nameValues), Times.Never());
+            Assert.IsFalse(saved);
+
         }
 
         [Test]

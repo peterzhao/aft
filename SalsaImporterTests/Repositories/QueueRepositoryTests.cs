@@ -27,9 +27,12 @@ namespace SalsaImporterTests.Repositories
         {
             Config.Environment = Config.Test;
             _mapperFactoryMock = new Mock<IMapperFactory>();
-            var fieldMapping1 = new FieldMapping {AftField = "First_Name", SalsaField = "First_Name", DataType = "string"};
-            var fieldMapping2 = new FieldMapping {AftField = "Last_Name", SalsaField = "Last_Name", DataType = "string"};
-            _mapper = new Mapper(ObjectType, new List<FieldMapping>{fieldMapping1, fieldMapping2});
+            var mapping1 = new FieldMapping {AftField = "First_Name", SalsaField = "First_Name", DataType = DataType.String};
+            var mapping2 = new FieldMapping {AftField = "Last_Name", SalsaField = "Last_Name", DataType = DataType.String};
+            var mapping3 = new FieldMapping { AftField = "ProcessedDate", DataType = DataType.DateTime };
+            var mapping4 = new FieldMapping {AftField = "Email",  DataType = DataType.String};
+            var mapping5 = new FieldMapping {AftField = "PE_Pub",  DataType = DataType.Boolean};
+            _mapper = new Mapper(ObjectType, new List<FieldMapping>{mapping1, mapping2, mapping3, mapping4, mapping5});
             _repository = new QueueRepository(_mapperFactoryMock.Object);
             _syncObject = new SyncObject(ObjectType);
 
@@ -85,15 +88,50 @@ namespace SalsaImporterTests.Repositories
         }
 
         [Test]
+        public void ShouldTrimSpacesWhenGetBatchOfObjects()
+        {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
+            Enqueue(" foo@abc.com ", " peter", "  ");
+
+            var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 2, 0);
+            Assert.AreEqual("peter", batch1.First()["First_Name"]);
+            Assert.IsNull(batch1.First()["Last_Name"]);
+            Assert.AreEqual("foo@abc.com", batch1.First()["Email"]);
+        }
+
+     
+
+        [Test]
         public void ShouldNotReadNullFieldsIntoSyncObject()
         {
             _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
             Enqueue("foo@abc.com", "peter");
 
             var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 1, 0);
-            Assert.AreEqual(1, batch1.Count);
             Assert.AreEqual("peter", batch1.First()["First_Name"]);
             Assert.IsFalse(batch1.First().FieldNames.Contains("Last_Name"));
+        }
+
+        [Test]
+        public void ShouldSetFalseForNullBooleanIntoSyncObject()
+        {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
+            Enqueue("foo@abc.com", "peter");
+
+            var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 1, 0);
+            Assert.AreEqual(false, batch1.First()["PE_Pub"]);
+        }
+
+        [Test]
+        public void ShouldRemoveMillionSecondsFromSyncObject()
+        {
+            _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
+            var dateTime = new DateTime(2012,8,23,23,30,25,112);
+            var expectedDateTime = new DateTime(2012, 8, 23, 23, 30, 25);
+            Enqueue("foo@abc.com", dateTime);
+
+            var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 1, 0);
+            Assert.AreEqual(expectedDateTime, batch1.First()["ProcessedDate"]);
         }
 
         [Test]
@@ -173,5 +211,12 @@ namespace SalsaImporterTests.Repositories
                 TableName, firstName, email));
         }
 
+        private void Enqueue(string email, DateTime processedDate)
+        {
+            var sql = string.Format("insert into {0} ([Email], ProcessedDate, SalsaKey) VALUES('{1}','{2}', 0)",
+                TableName, email,processedDate.ToString("yyyy-MM-dd HH:mm:ss:fff"));
+            Console.WriteLine(sql);
+            TestUtils.ExecuteSql(sql);
+        }
     }
 }

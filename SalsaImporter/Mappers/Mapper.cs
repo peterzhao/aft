@@ -37,13 +37,51 @@ namespace SalsaImporter.Mappers
             {
                 if (!aftObject.FieldNames.Contains(fieldMapping.AftField)) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.readOnly)) return;
-                if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && (salsaObject != null && salsaObject[fieldMapping.AftField] != null)) return;
+                if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && (salsaObject != null && !IsSalsaFieldBlank(salsaObject, fieldMapping))) return;
                 if (fieldMapping.MappingRule.EqualsIgnoreCase(MappingRules.salsaWins) && salsaObject != null) return;
                 SetFieldValueToSalsa(aftObject, fieldMapping, result);
             });
           
             SetPrimaryKeyToSalsa(aftObject, result);
             return result;
+        }
+
+       
+
+        public bool IsIdentical(SyncObject aftObject, SyncObject salsaObject)
+        {
+            if (salsaObject == null) return false;
+            foreach (var mapping in _mappings)
+            {
+                if (mapping.MappingRule.EqualsIgnoreCase(MappingRules.aftWins))
+                {
+                    if (IsObjectDifferent(aftObject, salsaObject, mapping)) return false;
+                }
+                if (mapping.MappingRule.EqualsIgnoreCase(MappingRules.onlyIfBlank) && IsSalsaFieldBlank(salsaObject, mapping))
+                {
+                    if (IsObjectDifferent(aftObject, salsaObject, mapping)) return false;
+                }
+
+            }
+        
+            return true;
+        }
+
+
+        private static bool IsSalsaFieldBlank(SyncObject salsaObject, FieldMapping fieldMapping)
+        {
+            if (fieldMapping.DataType.EqualsIgnoreCase(DataType.Boolean))
+                return false; //blank cannot be applied to bool in salsa;
+            return salsaObject[fieldMapping.AftField] == null;
+        }
+
+        private static bool IsObjectDifferent(SyncObject aftObject, SyncObject salsaObject, FieldMapping mapping)
+        {
+            var aftValue = aftObject[mapping.AftField];
+            var salsValue = salsaObject[mapping.AftField];
+            if (aftValue == null && salsValue == null) return false;
+            if (aftValue == null) return true;
+            return !aftValue.Equals(salsValue);
         }
 
         private  void SetPrimaryKeyToSalsa(SyncObject aftObject, NameValueCollection result)
@@ -64,7 +102,7 @@ namespace SalsaImporter.Mappers
             var syncObject = new SyncObject(_objectType);
             foreach (var mapping in _mappings)
             {
-                if(mapping.MappingRule == MappingRules.writeOnly) continue;
+                if(mapping.MappingRule.EqualsIgnoreCase(MappingRules.writeOnly)) continue;
                 var converter = DataTypeConverter.GetConverter(mapping.DataType);
                 var value = element.StringValueOrNull(mapping.SalsaField);
                 if (value == null) continue;

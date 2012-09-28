@@ -8,7 +8,14 @@ namespace SalsaImporterTests.Synchronization
         public DateTime MinimumModificationDate { get; set; }
         public int CurrentRecord { get; private set; }
         public int? SuccessCount { get; set; }
+        public int? IdenticalObjectCount { get; set; }
         public int? ErrorCount { get; set; }
+
+        public void CountIdenticalObject()
+        {
+            if (IdenticalObjectCount == null) IdenticalObjectCount = 0;
+            IdenticalObjectCount = IdenticalObjectCount + 1;
+        }
 
         public void SetCurrentRecord(int newValue)
         {

@@ -85,6 +85,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual(expectedStringValue, converter.ReadSalsaValue("field", element));
         }
 
+
         [Test]
         public void ShouldMakeSalsaValueBoolean()
         {

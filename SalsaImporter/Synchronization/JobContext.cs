@@ -14,7 +14,10 @@ namespace SalsaImporter.Synchronization
 
         public DateTime MinimumModificationDate { get { return SessionContext.MinimumModifiedDate; } }
         public int CurrentRecord { get; private set; }
-        
+
+        public int? IdenticalObjectCount { get; set; }
+
+      
         public void SetCurrentRecord(int newValue)
         {
             CurrentRecord = newValue;
@@ -44,6 +47,13 @@ namespace SalsaImporter.Synchronization
         {
             if (ErrorCount == null) ErrorCount = 0;
             ErrorCount = ErrorCount + 1;
+            JobContextChanged(this, null);
+        }
+
+        public void CountIdenticalObject()
+        {
+            if (IdenticalObjectCount == null) IdenticalObjectCount = 0;
+            IdenticalObjectCount = IdenticalObjectCount + 1;
             JobContextChanged(this, null);
         }
     }

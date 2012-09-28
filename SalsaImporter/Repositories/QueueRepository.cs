@@ -13,6 +13,8 @@ namespace SalsaImporter.Repositories
     {
         public const string QueueStatusExported = "Exported";
         public const string QueueStatusError = "Error";
+        public const string QueueStatusSkipped = "SkippedIdenticalObject";
+        
 
         private readonly IMapperFactory _mapperFactory;
 
@@ -43,9 +45,8 @@ namespace SalsaImporter.Repositories
 
         public List<SyncObject> GetBatchOfObjects(string objectType, string tableName, int batchSize, int startKey)
         {
-            var mapper = _mapperFactory.GetMapper(objectType);
-            var aftFields = mapper.Mappings.Select(m => m.AftField).ToList();
 
+            var mapper = _mapperFactory.GetMapper(objectType);
             var sql = String.Format("SELECT top {0} * FROM {1} WHERE (Status != '{2}' OR Status IS NULL) AND Id > {3} ORDER BY Id", batchSize, tableName, QueueStatusError, startKey);
             var returnValue = new List<SyncObject>();
             using (var dataAdaptor = new SqlDataAdapter(sql, Config.DbConnectionString))
@@ -53,26 +54,54 @@ namespace SalsaImporter.Repositories
                 var dataSet = new DataSet();
                 dataAdaptor.Fill(dataSet);
 
-                DataTable table = dataSet.Tables[0];
+                var table = dataSet.Tables[0];
                 foreach (DataRow row in table.Rows)
                 {
                     var syncObject = new SyncObject(objectType);
                     foreach (DataColumn column in table.Columns)
                     {
-                        if (column.ColumnName == "Id")
-                        {
-                            syncObject.QueueId = Int32.Parse(row[column].ToString());
-                        }
-                        else if (aftFields.Contains(column.ColumnName) && row[column] != DBNull.Value)
-                        {
-                            syncObject[column.ColumnName] = row[column];
-                        }
+                        SetValueToSyncObject(row, column, syncObject, mapper);
                     }
                     returnValue.Add(syncObject);
                 }
             }
 
             return returnValue;
+        }
+
+        private  void SetValueToSyncObject(DataRow row, DataColumn column, SyncObject syncObject, IMapper mapper)
+        {
+            
+            if (column.ColumnName == "Id")
+            {
+                syncObject.QueueId = Int32.Parse(row[column].ToString());
+                return;
+            }
+
+            if (mapper.Mappings.All(m => !m.AftField.Equals(column.ColumnName))) return;
+            if(row[column].Equals(DBNull.Value))
+            {
+                if (mapper.Mappings.First(m => m.AftField.Equals(column.ColumnName)).DataType == DataType.Boolean)
+                    syncObject[column.ColumnName] = false; //keep the same logic used to read bool from salsa
+                return;
+            }
+            
+            syncObject[column.ColumnName] = Format(row[column]);
+        }
+
+        private object Format(object value)
+        {
+            if (value is string)
+            {
+                var str = value as string;
+                return string.IsNullOrWhiteSpace(str) ? null : str.Trim(); //convert blank to null keeping the same login reading from salsa
+            }
+            if(value is DateTime)
+            {
+                var date = (DateTime) value;
+                return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
+            }
+            return value;
         }
 
         public void Dequeue(string tableName, int id)

@@ -55,10 +55,18 @@ namespace SalsaImporter.Synchronization
         {
             try
             {
-                _destination.Save(syncObject);
-                _source.UpdateStatus(_queueName, syncObject.QueueId, QueueRepository.QueueStatusExported, DateTime.Now);
+                if (_destination.Save(syncObject))
+                {
+                    _source.UpdateStatus(_queueName, syncObject.QueueId, QueueRepository.QueueStatusExported, DateTime.Now);
+                    jobContext.CountSuccess();
+                }
+                else
+                {
+                    _source.UpdateStatus(_queueName, syncObject.QueueId, QueueRepository.QueueStatusSkipped, DateTime.Now);
+                    jobContext.CountIdenticalObject();
+                }
                 _source.Dequeue(_queueName, syncObject.QueueId);
-                jobContext.CountSuccess();
+
             }
             catch (SaveToSalsaException ex)
             {

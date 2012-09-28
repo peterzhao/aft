@@ -37,6 +37,20 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(2, countOfEventRaised);
         }
 
+        [Test]
+        public void ShouldTrackIdenticalObjectEvent()
+        {
+            var context = new JobContext();
+
+            var countOfEventRaised = 0;
+            context.JobContextChanged += (obj, args) => countOfEventRaised++;
+            context.CountIdenticalObject();
+            Assert.AreEqual(1, context.IdenticalObjectCount);
+            context.CountIdenticalObject();
+            Assert.AreEqual(2, context.IdenticalObjectCount);
+            Assert.AreEqual(2, countOfEventRaised);
+        }
+
 
     }
 }

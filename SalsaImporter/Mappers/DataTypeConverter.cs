@@ -19,7 +19,7 @@ namespace SalsaImporter.Mappers
             new DataTypeConverter(DataType.DateTime, (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
             new DataTypeConverter(DataType.Float, (field, element) => element.FloatValueOrNull(field)),
             new DataTypeConverter(DataType.Int, (field, element) => element.IntValueOrNull(field)),
-            new DataTypeConverter(DataType.String, (field, element) => element.StringValueOrNull(field), value => value is string ? value as string : null)
+            new DataTypeConverter(DataType.String, (field, element) => element.StringValueOrNull(field))
         };
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue, Func<object, string> makeSalsaValue)
@@ -30,7 +30,7 @@ namespace SalsaImporter.Mappers
         }
 
         private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue)
-            : this(datatype, readSalsaValue, value => DBNull.Value == value ? null : value == null ? null : value.ToString())
+            : this(datatype, readSalsaValue, value => value == null ? null : value.ToString())
         {
         }
 

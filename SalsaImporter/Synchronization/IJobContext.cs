@@ -8,8 +8,10 @@ namespace SalsaImporter.Synchronization
         int CurrentRecord { get; }
         int? SuccessCount { get; set; }
         int? ErrorCount { get; set; }
+        int? IdenticalObjectCount { get; set; }
         void SetCurrentRecord(int newValue);
         void CountSuccess();
         void CountError();
+        void CountIdenticalObject();
     }
 }
