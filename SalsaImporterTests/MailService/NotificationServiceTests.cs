@@ -15,7 +15,7 @@ namespace SalsaImporterTests.MailService
     public class MailServiceTests
     {
 
-        private Mock<ISmtpClient> _mockMailer;
+        private StubSmtpClient _smtpClientStub;
         private NotificationService _targetNotificationService;
         private string _notification;
 
@@ -23,19 +23,21 @@ namespace SalsaImporterTests.MailService
         public void Setup()
         {
             Config.Environment = Config.Test;
-            _mockMailer = new Mock<ISmtpClient>();
+            _smtpClientStub = new StubSmtpClient();
             
             _notification = "Test notification for NotificationService testing.";
-            _targetNotificationService = new NotificationService(_mockMailer.Object);
+            _targetNotificationService = new NotificationService(_smtpClientStub);
         }
 
         [Test]
-        public void ShouldSendMailMessage()
+        public void ShouldSendMailMessageWithHtmlFormat()
         {
-            _mockMailer.Setup(mock => mock.Send(It.IsAny<MailMessage>()));
-            _targetNotificationService.SendNotification(_notification);
-            _mockMailer.Verify();
+            var body = "line 1" + Environment.NewLine + "line 2";
+            _targetNotificationService.SendNotification(body);
+            Assert.AreEqual("line 1<br/>line 2", _smtpClientStub.Message.Body);
         }
+
+        
 
         [Test]
         [Category("FunctionalTest")]

@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="FunctionalTests\DemoTests.cs" />
     <Compile Include="FunctionalTests\SyncTests.cs" />
-    <Compile Include="MailService\MockMailService.cs" />
+    <Compile Include="MailService\StubSmtpClient.cs" />
     <Compile Include="MailService\NotificationServiceTests.cs" />
     <Compile Include="Mappers\DataTypeConverterTests.cs" />
     <Compile Include="Mappers\MapperTests.cs" />

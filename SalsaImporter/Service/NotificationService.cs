@@ -9,10 +9,10 @@ namespace SalsaImporter.Service
 {
     public class NotificationService
     {
-        private string _sender;
-        private string _recipient;
-        private string _subject;
-        private ISmtpClient _mailer;
+        private readonly string _sender;
+        private readonly string _recipient;
+        private readonly string _subject;
+        private readonly ISmtpClient _mailer;
 
         public NotificationService(ISmtpClient mailer)
         {
@@ -24,7 +24,10 @@ namespace SalsaImporter.Service
 
         public void SendNotification(string notification)
         {
-            var msg = new MailMessage(_sender, _recipient, _subject, notification);
+            var html = notification.Replace(Environment.NewLine, "<br/>");
+            var msg = new MailMessage(_sender, _recipient, _subject, html) 
+            {IsBodyHtml = true, BodyEncoding = Encoding.UTF8};
+            
             _mailer.Send(msg);
         }
     }
