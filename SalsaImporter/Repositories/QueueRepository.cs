@@ -25,7 +25,7 @@ namespace SalsaImporter.Repositories
 
         public void Enqueue(string tableName, SyncObject syncObject)
         {
-            List<string> fields = syncObject.FieldNames;
+            var fields = syncObject.FieldNames.Where(field => syncObject[field] != null);
             using (var connection = new SqlConnection(Config.DbConnectionString))
             {
                 connection.Open();

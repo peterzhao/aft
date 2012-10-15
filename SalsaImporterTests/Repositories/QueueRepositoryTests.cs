@@ -46,6 +46,7 @@ namespace SalsaImporterTests.Repositories
             const string expectedEmail = "foo@abc.com";
 
             _syncObject["First_Name"] = expectedFirstName;
+            _syncObject["Last_Name"] = null; //make sure not cause error
             _syncObject["Email"] = expectedEmail;
             _syncObject.SalsaKey = 1234;
             _repository.Enqueue(TableName, _syncObject);
