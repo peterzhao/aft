@@ -94,12 +94,16 @@ namespace SalsaImporterTests.Utilities
             }
         }
 
-        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName, DateTime aft_Match_DateTime, string title, int salsaKey, int chapterKey = 0)
+        public static void InsertSupporterToExportQueue(string email, string firstName, string lastName, DateTime? aft_Match_DateTime, string title, int salsaKey, int chapterKey = 0)
         {
             using (var db = new AftDbContext())
             {
-                db.Database.ExecuteSqlCommand(String.Format(
-                    "INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, AFT_Match_DateTime, Title, SalsaKey, Chapter_KEY) VALUES ('{0}', '{1}', '{2}', '{3}','{4}', {5}, {6})", email, firstName, lastName, aft_Match_DateTime, title, salsaKey, chapterKey));
+                string sql = null;
+                if(aft_Match_DateTime.HasValue)
+                 sql = String.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, AFT_Match_DateTime, Title, SalsaKey, Chapter_KEY) VALUES ('{0}', '{1}', '{2}', '{3}','{4}', {5}, {6})", email, firstName, lastName, aft_Match_DateTime, title, salsaKey, chapterKey);
+                else
+                    sql = String.Format("INSERT INTO AftToSalsaQueue_Supporter ( Email, First_Name, Last_Name, Title, SalsaKey, Chapter_KEY) VALUES ('{0}', '{1}', '{2}', '{3}','{4}', {5})", email, firstName, lastName, title, salsaKey, chapterKey);
+                db.Database.ExecuteSqlCommand(sql);
             }
         }
 
@@ -186,6 +190,8 @@ namespace SalsaImporterTests.Utilities
                     {
                         new FieldMapping{ObjectType = "supporter",AftField = "Title",SalsaField = "Title",
                                          DataType = "string",MappingRule = MappingRules.salsaWins},
+                         new FieldMapping{ObjectType = "supporter",AftField = "Phone",SalsaField = "Phone",
+                                         DataType = "string",MappingRule = MappingRules.aftWins},
                         new FieldMapping{ObjectType = "supporter",AftField = "First_Name",SalsaField = "First_Name",
                                          DataType = "string",MappingRule = MappingRules.onlyIfBlank},
                         new FieldMapping{ObjectType = "supporter",AftField = "Last_Name",SalsaField = "Last_Name",

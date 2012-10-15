@@ -79,30 +79,11 @@ namespace SalsaImporter.Repositories
             }
 
             if (mapper.Mappings.All(m => !m.AftField.Equals(column.ColumnName))) return;
-            if(row[column].Equals(DBNull.Value))
-            {
-                if (mapper.Mappings.First(m => m.AftField.Equals(column.ColumnName)).DataType == DataType.Boolean)
-                    syncObject[column.ColumnName] = false; //keep the same logic used to read bool from salsa
-                return;
-            }
-            
-            syncObject[column.ColumnName] = Format(row[column]);
+            var mapping = mapper.Mappings.First(m => m.AftField.EqualsIgnoreCase(column.ColumnName));
+            syncObject[column.ColumnName] = DataTypeConverter.GetConverter(mapping.DataType).ReadAftValue(row[column]);
         }
 
-        private object Format(object value)
-        {
-            if (value is string)
-            {
-                var str = value as string;
-                return string.IsNullOrWhiteSpace(str) ? null : str.Trim(); //convert blank to null keeping the same login reading from salsa
-            }
-            if(value is DateTime)
-            {
-                var date = (DateTime) value;
-                return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second);
-            }
-            return value;
-        }
+     
 
         public void Dequeue(string tableName, int id)
         {

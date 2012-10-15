@@ -51,7 +51,7 @@ namespace SalsaImporter.Synchronization
         {
             string dictionaryFields = String.Join(", ",
                                                   _dictionary.Select(
-                                                      pair => String.Format("{0}: {1}", pair.Key, pair.Value.ToString())));
+                                                      pair => String.Format("{0}: {1}", pair.Key, pair.Value)));
 
             return String.Format("Id: {0}, {1}",
                                  QueueId,

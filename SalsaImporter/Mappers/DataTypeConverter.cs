@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using SalsaImporter.Exceptions;
@@ -7,60 +6,37 @@ using SalsaImporter.Utilities;
 
 namespace SalsaImporter.Mappers
 {
-    public class DataTypeConverter
+    public abstract class DataTypeConverter
     {
-        private readonly string _datatype;
-        private readonly Func<string, XElement, object> _readSalsaValue;
-        private readonly Func<object, string> _makeSalsaValue;
+        protected readonly string Datatype;
 
         private static readonly List<DataTypeConverter> DataTypeConverters = new List<DataTypeConverter>
         {
-            new DataTypeConverter(DataType.Boolean, (field, element) => element.BoolValueOrFalse(field), BooleanToString),
-            new DataTypeConverter(DataType.DateTime, (field, element) => element.DateTimeValueOrNull(field), DateTimeToString),
-            new DataTypeConverter(DataType.Float, (field, element) => element.FloatValueOrNull(field)),
-            new DataTypeConverter(DataType.Int, (field, element) => element.IntValueOrNull(field)),
-            new DataTypeConverter(DataType.String, (field, element) => element.StringValueOrNull(field))
+            new BooleanConverter(DataType.Boolean),
+            new DateTimeConverter(DataType.DateTime),
+            new FloatConverter(DataType.Float),
+            new IntConverter(DataType.Int),
+            new StringConverter(DataType.String)
         };
 
-        private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue, Func<object, string> makeSalsaValue)
-        {
-            _datatype = datatype;
-            _readSalsaValue = readSalsaValue;
-            _makeSalsaValue = makeSalsaValue;
-        }
-
-        private DataTypeConverter(string datatype, Func<string, XElement, object> readSalsaValue)
-            : this(datatype, readSalsaValue, value => value == null ? null : value.ToString())
-        {
-        }
-
-        public object ReadSalsaValue(string field, XElement element)
-        {
-            return _readSalsaValue(field, element);
-        }
-
-        public string MakeSalsaValue(object value)
-        {
-            return _makeSalsaValue(value);
-        }
 
         public static DataTypeConverter GetConverter(string datatype)
         {
-            var dataTypeConverter = DataTypeConverters.FirstOrDefault(converter => converter._datatype.EqualsIgnoreCase(datatype));
+            var dataTypeConverter = DataTypeConverters.FirstOrDefault(converter => converter.Datatype.EqualsIgnoreCase(datatype));
             if (dataTypeConverter == null) throw new InvalidDataTypeException(datatype);
             return dataTypeConverter;
         }
 
-        private static string BooleanToString(object value)
+        protected DataTypeConverter(string datatype)
         {
-            return value.Equals(true) ? "1" : "0";
+            Datatype = datatype;
         }
 
-        private static string DateTimeToString(object value)
-        {
-            if (value is DateTime)
-                return ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss");
-            return null;
-        }
+
+
+        public abstract object ReadSalsaValue(string field, XElement element);
+        public abstract string MakeSalsaValue(object value);
+        public abstract object ReadAftValue(object value);
+
     }
 }

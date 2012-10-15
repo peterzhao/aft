@@ -55,10 +55,15 @@
     <Compile Include="Exceptions\SalsaClientException.cs" />
     <Compile Include="Exceptions\SaveToSalsaException.cs" />
     <Compile Include="ISyncObjectComparator.cs" />
+    <Compile Include="Mappers\BooleanConverter.cs" />
     <Compile Include="Mappers\DataType.cs" />
     <Compile Include="Mappers\DataTypeConverter.cs" />
+    <Compile Include="Mappers\DateTimeConverter.cs" />
     <Compile Include="Mappers\FieldMapping.cs" />
+    <Compile Include="Mappers\FloatConverter.cs" />
+    <Compile Include="Mappers\IntConverter.cs" />
     <Compile Include="Mappers\MappingRules.cs" />
+    <Compile Include="Mappers\StringConverter.cs" />
     <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="Service\EmailService.cs" />
     <Compile Include="Service\ISmtpClient.cs" />

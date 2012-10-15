@@ -102,13 +102,7 @@ namespace SalsaImporterTests.Mappers
             Assert.AreEqual("2001-02-03 04:56:00", converter.MakeSalsaValue(new DateTime(2001,2,3,4,56,00)));
         }
 
-        [Test]
-        public void ShouldMakeSalsaValueInt()
-        {
-            var converter = DataTypeConverter.GetConverter(DataType.Int);
-            Assert.AreEqual("1234", converter.MakeSalsaValue(1234));
-            Assert.AreEqual(null, converter.MakeSalsaValue(null));
-        }
+      
 
         [Test]
         public void ShouldMakeSalsaValueString()
@@ -116,6 +110,16 @@ namespace SalsaImporterTests.Mappers
             var converter = DataTypeConverter.GetConverter(DataType.String);
             Assert.AreEqual("some value", converter.MakeSalsaValue("some value"));
         }
+
+        [Test]
+        public void ShouldConvertEmptyStringToNullFromAFT()
+        {
+            var converter = DataTypeConverter.GetConverter(DataType.String);
+            Assert.IsNull(converter.ReadAftValue(""));
+            Assert.IsNull(converter.ReadAftValue(" "));
+        }
+
+     
 
     }
 }

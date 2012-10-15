@@ -102,14 +102,14 @@ namespace SalsaImporterTests.Repositories
      
 
         [Test]
-        public void ShouldNotReadNullFieldsIntoSyncObject()
+        public void ShouldConvertDbNullFieldsToNullIntoSyncObject()
         {
             _mapperFactoryMock.Setup(factory => factory.GetMapper(ObjectType)).Returns(_mapper);
             Enqueue("foo@abc.com", "peter");
 
             var batch1 = _repository.GetBatchOfObjects(ObjectType, TableName, 1, 0);
             Assert.AreEqual("peter", batch1.First()["First_Name"]);
-            Assert.IsFalse(batch1.First().FieldNames.Contains("Last_Name"));
+            Assert.IsNull(batch1.First()["Last_Name"]);
         }
 
         [Test]

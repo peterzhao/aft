@@ -50,7 +50,7 @@ namespace SalsaImporterTests.FunctionalTests
             supporter["Email"] = string.Format("{0}@example.com", arg0);
             supporter["First_Name"] = string.Format("{0}First", arg0);
             supporter["Last_Name"] = string.Format("{0}Last", arg0);
-
+            supporter["Phone"] = "14168835678";
             var hour = Math.Abs(arg0.GetHashCode())%24;
             var minute = Math.Abs(arg0.GetHashCode())%60;
             supporter["AFT_Match_DateTime"] = new DateTime(2012, 8, 29, hour, minute, 0, 0);
@@ -136,7 +136,6 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(rowsInHistory.Any(r => r["Email"].Equals(emailTwo)));
             Assert.IsTrue(rowsInHistory.All(r => r["Status"].Equals("Exported")));
 
-            List<XElement> supporterChaptersOnSalsa = TestUtils.GetAllFromSalsa("supporter_chapter");
           
         }
 
@@ -264,6 +263,34 @@ namespace SalsaImporterTests.FunctionalTests
             Assert.IsTrue(rowsInHistory.Any(r => r["Status"].Equals(QueueRepository.QueueStatusSkipped) && r["Email"].Equals(email)));
 
 
+
+        }
+
+        [Test]
+        public void GivenNullValueShouldResetFieldsOnSalsaWhenExport()
+        {
+            TestUtils.InsertToSalsa(_supporterOne);
+            var supporterOnSalsa0 = TestUtils.GetAllFromSalsa("supporter").First();
+            Assert.AreNotEqual(string.Empty, supporterOnSalsa0.Element("cdb_match_date").Value);
+            Assert.AreNotEqual(string.Empty, supporterOnSalsa0.Element("Phone").Value);
+
+            var email = _supporterOne["Email"] as string;
+            TestUtils.InsertSupporterToExportQueue(email, "peter", "zhao",null, "Mr", 0, _chapterOne.SalsaKey);
+            new Sync().Start();
+
+            var supporterOnSalsa = TestUtils.GetAllFromSalsa("supporter").First();
+            Assert.AreEqual(string.Empty, supporterOnSalsa.Element("cdb_match_date").Value);
+            Assert.AreEqual(string.Empty, supporterOnSalsa.Element("Phone").Value);
+
+            Thread.Sleep(2000);
+
+            //make sure reset feilds not break identical checking
+            TestUtils.InsertSupporterToExportQueue(email, "peter", "zhao", null, "Mr", 0, _chapterOne.SalsaKey);
+            new Sync().Start();
+            var rowsInHistory = TestUtils.ReadAllFromTable("AftToSalsaQueue_Supporter_History");
+            Assert.AreEqual(2, rowsInHistory.Count);
+            Assert.IsTrue(rowsInHistory.Any(r => r["Status"].Equals(QueueRepository.QueueStatusExported) && r["Email"].Equals(email)));
+            Assert.IsTrue(rowsInHistory.Any(r => r["Status"].Equals(QueueRepository.QueueStatusSkipped) && r["Email"].Equals(email)));
 
         }
 

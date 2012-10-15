@@ -55,7 +55,12 @@
     <Compile Include="FunctionalTests\SyncTests.cs" />
     <Compile Include="MailService\StubSmtpClient.cs" />
     <Compile Include="MailService\NotificationServiceTests.cs" />
+    <Compile Include="Mappers\BooleanConverterTests.cs" />
+    <Compile Include="Mappers\StringConverterTests.cs" />
+    <Compile Include="Mappers\FloatConverterTests.cs" />
+    <Compile Include="Mappers\IntConverterTests.cs" />
     <Compile Include="Mappers\DataTypeConverterTests.cs" />
+    <Compile Include="Mappers\DateTimeConverterTests.cs" />
     <Compile Include="Mappers\MapperTests.cs" />
     <Compile Include="Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Salsa\SalsaClientTests.cs" />
