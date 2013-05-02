@@ -44,6 +44,7 @@ namespace SalsaImporter.Synchronization
                                                          jobContext.CurrentRecord).ToList();
                 var tasks = currentBatch.Select(syncObject => Task.Factory.StartNew(arg => ExportSyncObject(syncObject, jobContext), null));
                 Task.WaitAll(tasks.ToArray());
+                Logger.Trace("Updating current record...");
                 if (currentBatch.Any())
                     jobContext.SetCurrentRecord(currentBatch.Last().QueueId);
                 else
@@ -67,9 +68,10 @@ namespace SalsaImporter.Synchronization
                 }
                 _source.Dequeue(_queueName, syncObject.QueueId);
 
-            }
+            }           
             catch (SaveToSalsaException ex)
             {
+
                 _errorHandler.HandleSyncObjectFailure(syncObject, this, ex);
                 _source.UpdateStatus(_queueName, syncObject.QueueId, QueueRepository.QueueStatusError);
             }

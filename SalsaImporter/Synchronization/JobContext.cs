@@ -4,6 +4,7 @@ namespace SalsaImporter.Synchronization
 {
     public class JobContext: IJobContext
     {
+        private readonly Object _locker = new Object();
         public event EventHandler JobContextChanged = delegate{};
         public int Id { get; set; }
         public string JobName { get; set; }
@@ -38,23 +39,30 @@ namespace SalsaImporter.Synchronization
 
         public void CountSuccess()
         {
-            if (SuccessCount == null) SuccessCount = 0;
-            SuccessCount = SuccessCount + 1;
-            JobContextChanged(this, null);
+            lock (_locker)
+            {
+                if (SuccessCount == null) SuccessCount = 0;
+                SuccessCount = SuccessCount + 1;
+            }
+           
         }
 
         public void CountError()
         {
-            if (ErrorCount == null) ErrorCount = 0;
-            ErrorCount = ErrorCount + 1;
-            JobContextChanged(this, null);
+            lock (_locker)
+            {
+                if (ErrorCount == null) ErrorCount = 0;
+                ErrorCount = ErrorCount + 1;
+            }
         }
 
         public void CountIdenticalObject()
         {
-            if (IdenticalObjectCount == null) IdenticalObjectCount = 0;
-            IdenticalObjectCount = IdenticalObjectCount + 1;
-            JobContextChanged(this, null);
+            lock (_locker)
+            {
+                if (IdenticalObjectCount == null) IdenticalObjectCount = 0;
+                IdenticalObjectCount = IdenticalObjectCount + 1;  
+            }
         }
     }
 }

@@ -15,7 +15,6 @@ namespace SalsaImporter
         private readonly SyncSession _syncSession;
         private readonly ISyncErrorHandler _errorHandler;
         private readonly ISalsaClient _salsaClient;
-        private readonly ISyncErrorTracker _syncErrorTracker;
         private readonly ISalsaRepository _salsaRepository;
         private readonly QueueRepository _queueRepository;
         private NotificationService _notificationService;
@@ -29,7 +28,6 @@ namespace SalsaImporter
             _errorHandler = new SyncErrorHandler(Config.ErrorToleranceThreshold);
             _salsaClient = new SalsaClient();
             _objectComparator = new SyncObjectComparator(_salsaClient);
-            _syncErrorTracker = new SyncErrorTracker();
             _salsaRepository = new SalsaRepository(_salsaClient, mapperFactory, _errorHandler, _objectComparator);
             _queueRepository = new QueueRepository(mapperFactory);
             _notificationService = new NotificationService(new EmailService());
@@ -72,8 +70,6 @@ namespace SalsaImporter
 
         private void HandleErrors()
         {
-            _errorHandler.NotifySyncEvent += (sender, syncEventArgs) =>
-                                             _syncErrorTracker.TrackError(syncEventArgs, _syncSession.CurrentSessionContext);
             _errorHandler.NotifySyncEvent += (sender, syncEventArgs) => { if (_syncSession.CurrentJobContext != null) _syncSession.CurrentJobContext.CountError(); };
         }
 

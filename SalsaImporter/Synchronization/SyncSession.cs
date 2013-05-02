@@ -86,7 +86,7 @@ namespace SalsaImporter.Synchronization
                 _notificationService.SendNotification(message);
 
                 CurrentSessionContext.State = SessionState.Aborted;
-                _db.SaveChanges();
+                SaveContextToDb();
                 throw new SyncAbortedException(message, ex);
             }
         }
@@ -109,7 +109,7 @@ namespace SalsaImporter.Synchronization
                     CurrentSessionContext.JobContexts.Add(new JobContext { JobName = job.Name });
             });
 
-            _db.SaveChanges();
+            SaveContextToDb();
         }
 
         private void StartNewSession(DateTime modifiedDate)
@@ -117,7 +117,7 @@ namespace SalsaImporter.Synchronization
                 _currentSessionContext = new SessionContext { 
                     State = SessionState.New,
                     StartTime = DateTime.Now,
-                    JobContexts = new Collection<JobContext>(),
+                    JobContexts = new List<JobContext>(),
                     MinimumModifiedDate = modifiedDate};
                 Logger.Info("Start sync session...");
                 _db.SessionContexts.Add(_currentSessionContext);
@@ -125,22 +125,23 @@ namespace SalsaImporter.Synchronization
 
         private void StartJob(JobContext jobContext, ISyncJob job)
         {
-            jobContext.JobContextChanged += (obj, arg) => _db.SaveChanges();
+            jobContext.JobContextChanged += (obj, arg) => SaveContextToDb();
             if(jobContext.StartTime == null) jobContext.StartTime = DateTime.Now;
             Logger.Info(string.Format("Start job {0} at record {1}", job.Name, jobContext.CurrentRecord));
-            _db.SaveChanges();
+            SaveContextToDb();
 
             job.Start(jobContext);
-
+            Logger.Trace("Job finished: " + job.Name);
             jobContext.FinishedTime = DateTime.Now;
-            _db.SaveChanges();
+            SaveContextToDb();
         }
 
         private void UpdateSessionStateToFinished()
         {
+            Logger.Trace("Updating session state to finished...");
             CurrentSessionContext.State = SessionState.Finished;
             CurrentSessionContext.FinishedTime = DateTime.Now;
-            _db.SaveChanges();
+            SaveContextToDb();
 
             Logger.Info("Finished sync session.");
         }
@@ -150,6 +151,13 @@ namespace SalsaImporter.Synchronization
             _currentSessionContext = lastContext; //resume
             CurrentSessionContext.State = SessionState.Resumed;
             Logger.Info("Resuming sync session...");
+        }
+
+        private void SaveContextToDb()
+        {
+            Logger.Trace("Saving context to db...");
+            _db.SaveChanges();
+            Logger.Trace("Context saved.");
         }
     }
 }

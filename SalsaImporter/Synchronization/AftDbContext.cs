@@ -9,7 +9,6 @@ namespace SalsaImporter.Synchronization
 
         public DbSet<SessionContext> SessionContexts { get; set; }
         public DbSet<JobContext> JobContexts { get; set; }
-        public DbSet<SyncEvent> SyncEvents { get; set; }
         public DbSet<FieldMapping> FieldMappings { get; set; }
         public DbSet<SyncConfig> SyncConfigs { get; set; }
     }

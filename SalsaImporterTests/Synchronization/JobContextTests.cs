@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
 using NUnit.Framework;
 using SalsaImporter.Synchronization;
 
@@ -20,7 +17,6 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(1, context.SuccessCount);
             context.CountSuccess();
             Assert.AreEqual(2, context.SuccessCount);
-            Assert.AreEqual(2, countOfEventRaised);
         }
 
         [Test]
@@ -34,7 +30,6 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(1, context.ErrorCount);
             context.CountError();
             Assert.AreEqual(2, context.ErrorCount);
-            Assert.AreEqual(2, countOfEventRaised);
         }
 
         [Test]
@@ -48,7 +43,6 @@ namespace SalsaImporterTests.Synchronization
             Assert.AreEqual(1, context.IdenticalObjectCount);
             context.CountIdenticalObject();
             Assert.AreEqual(2, context.IdenticalObjectCount);
-            Assert.AreEqual(2, countOfEventRaised);
         }
 
 

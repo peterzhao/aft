@@ -98,15 +98,19 @@ namespace SalsaImporter.Repositories
                 var mapper = _mapperFactory.GetMapper(aftObject.ObjectType);
                 var salsaFields = mapper.Mappings.Select(mapping => mapping.SalsaField).ToList();
                 var primaryKeyMapping = mapper.PrimaryKeyMapping;
+                Logger.Trace("got primaryKeyMapping" + primaryKeyMapping.AftField + ":" + primaryKeyMapping.SalsaField);
                 var salsaXml = _salsa.GetObjectBy(aftObject.ObjectType, primaryKeyMapping.SalsaField,
                                                   aftObject[primaryKeyMapping.AftField].ToString(), salsaFields);
+                Logger.Trace("got salsaXml");
                  var salsaObject = mapper.ToAft(salsaXml);
                 if (_objectComparator.AreIdentical(aftObject, salsaObject, mapper.Mappings)) return false;
+                Logger.Trace("Saving to salsa");
                 aftObject.SalsaKey = int.Parse(_salsa.Save(aftObject.ObjectType, mapper.ToSalsa(aftObject, salsaObject)));
                 return true;
             }
             catch(Exception ex)
             {
+                Logger.Error("Got an error when saving object to salsa", ex);
                 throw new SaveToSalsaException("Got error when saving object to Salsa.", ex);
             }
         }

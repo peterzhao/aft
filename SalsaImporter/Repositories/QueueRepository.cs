@@ -65,7 +65,7 @@ namespace SalsaImporter.Repositories
                     returnValue.Add(syncObject);
                 }
             }
-
+            Logger.Trace("Got batch from queque:" + tableName + " started from: " + startKey);
             return returnValue;
         }
 

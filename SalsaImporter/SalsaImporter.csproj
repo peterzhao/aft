@@ -83,10 +83,7 @@
     </Compile>
     <Compile Include="Salsa\ISalsaClient.cs" />
     <Compile Include="Salsa\SalsaClient.cs" />
-    <Compile Include="Synchronization\ISyncErrorTracker.cs" />
-    <Compile Include="Synchronization\SyncEvent.cs" />
     <Compile Include="Synchronization\SyncEventArgs.cs" />
-    <Compile Include="Synchronization\SyncErrorTracker.cs" />
     <Compile Include="Synchronization\SyncEventType.cs" />
     <Compile Include="Mappers\MapperFactory.cs" />
     <Compile Include="Config.cs" />

@@ -8,6 +8,7 @@ namespace SalsaImporter.Synchronization
     {
         private int _errorCount;
         private readonly int _abortThreshold;
+        private Object _locker = new Object();
 
         public SyncErrorHandler(int abortThreshold)
         {
@@ -52,7 +53,7 @@ namespace SalsaImporter.Synchronization
 
         private void HandleFailure(SyncEventArgs syncEventArgs)
         {
-            lock (this) _errorCount += 1;
+            lock (_locker) _errorCount += 1;
 
             NotifySyncEvent(this, syncEventArgs);
             if (_abortThreshold < _errorCount)
